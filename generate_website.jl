@@ -16,6 +16,7 @@ open(joinpath(@__DIR__, "index.html"), "w") do io
                 rm(doctarget, recursive = true)
             end
             cp(joinpath(build_dir, name), doctarget)
+            index_url = string("https://juliadocs.github.io/juliadocs.org/docs/", name, "/index.html")
             push!(items,
                 MakieGallery.DataItem(
                     name,
@@ -23,7 +24,7 @@ open(joinpath(@__DIR__, "index.html"), "w") do io
                     ["stars" => stars], "",
                     """
                     <div>
-                        <a href=$(repr(joinpath(doctarget, "index.html")))> $name</a> <br>
+                        <a href=$(repr(index_url))> $name</a> <br>
                         Stars: $stars <br>
                         $(meta["description"])
                     <div>
