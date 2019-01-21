@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · OpenEphysLoader.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>OpenEphysLoader.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Home</a><ul class="internal"><li><a class="toctext" href="#Package-Features-1">Package Features</a></li><li><a class="toctext" href="#Example-Usage-1">Example Usage</a></li><li><a class="toctext" href="#Recording-metadata-1">Recording metadata</a></li><li><a class="toctext" href="#Dealing-with-corrupted-files-1">Dealing with corrupted files</a></li><li><a class="toctext" href="#Library-Outline-1">Library Outline</a></li></ul></li><li><span class="toctext">Library</span><ul><li><a class="toctext" href="lib/public/">Public</a></li><li><a class="toctext" href="lib/internals/">Internals</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="OpenEphysLoader.jl-Documentation-1" href="#OpenEphysLoader.jl-Documentation-1">OpenEphysLoader.jl Documentation</a></h1><p>A set of tools to load data files made by the <a href="http://www.open-ephys.org/gui/">Open Ephys GUI</a></p><h2><a class="nav-anchor" id="Package-Features-1" href="#Package-Features-1">Package Features</a></h2><ul><li>Provides easy access to sample values, time stamps, and recording numbers through an Array interface.</li><li>Data can be accessed in their raw form, or converted to voltage and seconds.</li><li>Accessing a data file does not require loading the entirety of its contents into RAM.</li><li>Provides tools to read the metadata for Open Ephys recordings.</li></ul><h2><a class="nav-anchor" id="Example-Usage-1" href="#Example-Usage-1">Example Usage</a></h2><p>Data in a file can be accessed by creating a <a href="lib/public/#OpenEphysLoader.SampleArray"><code>SampleArray</code></a>, <a href="lib/public/#OpenEphysLoader.TimeArray"><code>TimeArray</code></a>, or <a href="lib/public/#OpenEphysLoader.JointArray"><code>JointArray</code></a>. These arrays can be constructed with a <code>IOStream</code> at the beginning of an open <code>.continuous</code> data file, or alternatively the name of a <code>.continuous</code> file.</p><h3><a class="nav-anchor" id="Accessing-sample-values-1" href="#Accessing-sample-values-1">Accessing sample values</a></h3><p>For this example, we will demonstrate how to access sample values using <code>SampleArray</code>.</p><div></div><div><pre><code class="language-julia">using OpenEphysLoader
+io = open(path, &quot;r&quot;) # Where &#39;path&#39; is the path to a .continuous file
+A = SampleArray(io) # A is a regular julia matrix
+A[1:3] # Show the first three sampled voltages (in uV) in the file</code></pre><pre><code class="language-none">3-element Array{Float64,1}:
+ -0.089573
+ -0.090134
+ -0.090134</code></pre></div><p>Once constructed, <code>SampleArray</code> objects can be used like a normal Julia array.</p><p>Sample values are stored in .continuous files as ADC codes (<code>Int16</code> codes for the RHD2000 family), which OpenEphysLoader.jl automatically converts to voltages by default. In order to access the raw ADC codes, pass an integer type (ADC reads are <code>Int16</code> for the RHD2000 family) as the first argument when constructing a <a href="lib/public/#OpenEphysLoader.SampleArray"><code>SampleArray</code></a>:</p><div><pre><code class="language-julia">seek(io, 0) # IOStream neeeds to be at the beginning of the data file
+A = SampleArray(Int16, io)
+A[1:3]</code></pre><pre><code class="language-none">3-element Array{Int16,1}:
+ -2395
+ -2410
+ -2410</code></pre></div><p>If a floating point type is specified, the ADC codes are converted into voltages. If no sample type is specified, then the default is <code>Float64</code>.</p><p>Here we moved the <code>IOStream</code> back to the beginning of the file, because we used this <code>IOStream</code> for our previous example. When using the REPL, if you reuse <code>IOStream</code> objects to create new OpenEphysLoader arrays, you must return the <code>IOStream</code> to the beginning of the file.</p><h3><a class="nav-anchor" id="Accessing-time-stamps-1" href="#Accessing-time-stamps-1">Accessing time stamps</a></h3><p>Time stamps can be accessed with <a href="lib/public/#OpenEphysLoader.TimeArray"><code>TimeArray</code></a>.</p><p>Accessing the time stamps returns sample time by default, but the raw sample numbers can be easily accessed as well:</p><div><pre><code class="language-julia">io = open(path, &quot;r&quot;)
+B = TimeArray(io) # Time of each sample in seconds, equivalent to TimeArray(Float64, io)
+B[1]</code></pre><pre><code class="language-none">2750.399966666667</code></pre></div><div><pre><code class="language-julia">io = open(path, &quot;r&quot;)
+B = TimeArray(Int64, io) # sample number for each sample
+B[1]</code></pre><pre><code class="language-none">82512000</code></pre></div><h3><a class="nav-anchor" id="Accessing-all-information-about-a-sample-1" href="#Accessing-all-information-about-a-sample-1">Accessing all information about a sample</a></h3><p><a href="lib/public/#OpenEphysLoader.JointArray"><code>JointArray</code></a> provides access to the sample value, timestamp, and recording number for each sample. If you want to access both the time stamps and values for samples in a data file, it is most efficient to use a <a href="lib/public/#OpenEphysLoader.JointArray"><code>JointArray</code></a>:</p><div><pre><code class="language-julia">io = open(path, &quot;r&quot;)
+C = JointArray(io) # Time of each sample in seconds
+(sampval, timestamp, recno) = C[1] # Access information about the first sample</code></pre><pre><code class="language-none">(-0.089573, 2750.399966666667, 0)</code></pre></div><p>Elements of the <code>JointArray</code> are three-tuples, which can be destructured as shown above.</p><div><pre><code class="language-julia">sampval # inspect the destructured sample value from above</code></pre><pre><code class="language-none">-0.089573</code></pre></div><h3><a class="nav-anchor" id="Copying-file-contents-into-RAM-1" href="#Copying-file-contents-into-RAM-1">Copying file contents into RAM</a></h3><p>Arrays in OpenEphysLoader.jl access the data directly from disk. In order to pull the contents into memory, Create a regular Julia <code>Array</code> from OpenEphysLoader.jl arrays.</p><div><pre><code class="language-julia">io = open(path, &quot;r&quot;)
+A = SampleArray(Int16, io) # Elements of A will be read from disk
+D = Array(A) # This will copy the entire contents of A into a regular Julia array in RAM
+D[1:3]</code></pre><pre><code class="language-none">3-element Array{Int16,1}:
+ -2395
+ -2410
+ -2410</code></pre></div><h2><a class="nav-anchor" id="Recording-metadata-1" href="#Recording-metadata-1">Recording metadata</a></h2><p>The metadata of recordings can be accessed using the <a href="lib/public/#OpenEphysLoader.metadata"><code>metadata</code></a> function:</p><div><pre><code class="language-julia">using OpenEphysLoader
+meta = metadata(datadir) # Where datadir is the path to your recording directory</code></pre><pre><code class="language-none">file_version: v&quot;0.4.0&quot;
+experiment_number: 1
+separate_files: false
+recordings: OERecordingMeta{OERhythmProcessor{String}}[recording 0]
+settings:
+  info:
+    gui_version: v&quot;0.3.5&quot;
+    plugin_api_version: v&quot;0.0.0&quot;
+    datetime: 2015-07-21T14:50:12
+    os: &quot;Windows 7&quot;
+    machine: &quot;RIGDESK&quot;
+
+  recording_chain: OpenEphysLoader.OESignalTree{OERhythmProcessor{String}}(OpenEphysLoader.SignalNode{OERhythmProcessor{String}}[
+    id: 100
+    lowcut: 1.0
+    highcut: 7500.0
+    adcs_on: false
+    noiseslicer: false
+    ttl_fastsettle: true
+    dac_ttl: false
+    dac_hpf: true
+    dsp_offset: true
+    dsp_cutoff: 0.0
+    channels: OEChannel{String}[CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8, CH9, CH10  …  CH26, CH27, CH28, CH29, CH30, CH31, CH32, AUX1, AUX2, AUX3]
+])</code></pre></div><h2><a class="nav-anchor" id="Dealing-with-corrupted-files-1" href="#Dealing-with-corrupted-files-1">Dealing with corrupted files</a></h2><p>For whatever reason, Open Ephys seems to regularly produce data files that are missing samples at the end of the file. Because this library will by default check each file for corruption before attempting to access its data, such files will fail to open with a <a href="lib/public/#OpenEphysLoader.CorruptedException"><code>CorruptedException</code></a>.</p><p>In order to access the samples that are intact, use the optional third parameter of <a href="lib/public/#OpenEphysLoader.SampleArray"><code>SampleArray</code></a> to disable checking for corruption prior to opening a file:</p><div><pre><code class="language-julia">io = open(path, &quot;r&quot;)
+A = SampleArray(Float64, io, false)
+A[1:3]</code></pre><pre><code class="language-none">3-element Array{Float64,1}:
+ -0.089573
+ -0.090134
+ -0.090134</code></pre></div><div></div><p>Another common cause of receiving <code>CorruptedException</code> when opening a file is using an <code>IOStream</code> that is not at the beginning of the file. Either use a new <code>IOStream</code> object, or return the <code>IOStream</code> to the beginning of file with <code>seek(io, 0)</code> where <code>io</code> is the name of the <code>IOStream</code> variable.</p><h2><a class="nav-anchor" id="Library-Outline-1" href="#Library-Outline-1">Library Outline</a></h2><ul><li><a href="lib/public/#Public-Documentation-1">Public Documentation</a></li><li><a href="lib/internals/#Package-Internals-1">Package Internals</a></li></ul><footer><hr/><a class="next" href="lib/public/"><span class="direction">Next</span><span class="title">Public</span></a></footer></article></body></html>

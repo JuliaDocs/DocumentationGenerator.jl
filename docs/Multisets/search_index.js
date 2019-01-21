@@ -1,0 +1,131 @@
+var documenterSearchIndex = {"docs": [
+
+{
+    "location": "#Multisets.Multiset",
+    "page": "Home",
+    "title": "Multisets.Multiset",
+    "category": "type",
+    "text": "A Multiset is an unordered collection of things with repetition permitted. A new Multiset container is created with Multiset{T}() where T is the type of the objects held in the multiset. If T is omitted, it defaults to Any.\n\nA Multiset can be created from a collection list (such as a Vector or Set) with Multiset(list). If an element is repeated in list it has the appropriate multiplicity.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Multisets.set_braces_show-Tuple{}",
+    "page": "Home",
+    "title": "Multisets.set_braces_show",
+    "category": "method",
+    "text": "Set braces display mode for multisets, like this:\n\n{1,2,2,3,3,3,3}\n\nSee also set_short_show and set_julia_show.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Multisets.set_julia_show-Tuple{}",
+    "page": "Home",
+    "title": "Multisets.set_julia_show",
+    "category": "method",
+    "text": "Set Julia style display mode for multisets, like this:\n\nMultiset(Int64[1,2,2,3,3,3,3])\n\nSee also set_short_show and set_braces_show.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Multisets.set_short_show-Tuple{}",
+    "page": "Home",
+    "title": "Multisets.set_short_show",
+    "category": "method",
+    "text": "Set show display mode for multisets, like this:\n\nMultiset{Int64} with 7 elements\n\nSee also set_braces_show and set_julia_show.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.:&-Tuple{Multiset,Multiset}",
+    "page": "Home",
+    "title": "Base.:&",
+    "category": "method",
+    "text": "A&B for multisets is intersect(A,B).\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.:*-Union{Tuple{T}, Tuple{Int64,Multiset{T}}} where T",
+    "page": "Home",
+    "title": "Base.:*",
+    "category": "method",
+    "text": "n*A is the scalar multiple of a multiset in which the multiplicity of x is n*A[x]. Of course, we require n >= 0.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.:*-Union{Tuple{T}, Tuple{S}, Tuple{Multiset{S},Multiset{T}}} where T where S",
+    "page": "Home",
+    "title": "Base.:*",
+    "category": "method",
+    "text": "A*B for the Cartesian product of multisets A and B.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.:+-Union{Tuple{T}, Tuple{S}, Tuple{Multiset{S},Multiset{T}}} where T where S",
+    "page": "Home",
+    "title": "Base.:+",
+    "category": "method",
+    "text": "A+B for multisets is the disjoint union, i.e., a new multiset in which the multiplicity of x is A[x]+B[x]. This can be abbreviated A|B.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.:--Union{Tuple{T}, Tuple{S}, Tuple{Multiset{S},Multiset{T}}} where T where S",
+    "page": "Home",
+    "title": "Base.:-",
+    "category": "method",
+    "text": "A-B for multisets is the multiset difference, i.e., a new multiset in which the multiplicity of x is A[x]-B[x] unless this goes below 0, in which case the multiplicity is 0.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.:|-Tuple{Multiset,Multiset}",
+    "page": "Home",
+    "title": "Base.:|",
+    "category": "method",
+    "text": "For multisets, A|B is union(A,B). See also + which behaves differently.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.getindex-Union{Tuple{T}, Tuple{Multiset{T},Any}} where T",
+    "page": "Home",
+    "title": "Base.getindex",
+    "category": "method",
+    "text": "For a M[t] where M is a Multiset returns the multiplicity of t in M. A value of 0 means that t is not a member of M.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.intersect-Union{Tuple{T}, Tuple{S}, Tuple{Multiset{S},Multiset{T}}} where T where S",
+    "page": "Home",
+    "title": "Base.intersect",
+    "category": "method",
+    "text": "intersect(A,B) for multisets creates a new multiset in which the multiplicity of x is min(A[x],B[x]). This may be abbreviated A&B.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.push!-Union{Tuple{T}, Tuple{Multiset{T},Any}, Tuple{Multiset{T},Any,Int64}} where T",
+    "page": "Home",
+    "title": "Base.push!",
+    "category": "method",
+    "text": "push!(M,x,incr) increases the multiplicity of x in M by incr (which defaults to 1). incr can be negative, but it is not possible to decrease the multiplicty below 0.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Base.union-Union{Tuple{T}, Tuple{S}, Tuple{Multiset{S},Multiset{T}}} where T where S",
+    "page": "Home",
+    "title": "Base.union",
+    "category": "method",
+    "text": "union(A,B) for multisets creates a new multiset in which the multiplicity of x is max(A[x],B[x]).\n\n\n\n\n\n"
+},
+
+{
+    "location": "#Multisets.clean!-Tuple{Multiset}",
+    "page": "Home",
+    "title": "Multisets.clean!",
+    "category": "method",
+    "text": "clean!(M) removes elements of multiplicy 0 from the underlying data structure supporting M.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#",
+    "page": "Home",
+    "title": "Home",
+    "category": "page",
+    "text": "Package doesn\'t contain Documenter docs.Docs automatically generated by juliadocs.orgModules = [Multisets]\nOrder = [:type, :function]"
+},
+
+]}

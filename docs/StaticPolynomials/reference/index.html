@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Reference · StaticPolynomials.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>StaticPolynomials.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Introduction</a></li><li class="current"><a class="toctext" href>Reference</a><ul class="internal"><li><a class="toctext" href="#Polynomial-1">Polynomial</a></li><li><a class="toctext" href="#Systems-of-Polynomials-1">Systems of Polynomials</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Reference</a></li></ul></nav><hr/><div id="topbar"><span>Reference</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Reference-1" href="#Reference-1">Reference</a></h1><h2><a class="nav-anchor" id="Polynomial-1" href="#Polynomial-1">Polynomial</a></h2><pre><code class="language-none">Polynomial
+SExponents
+coefficients
+exponents
+nvariables(::Polynomial)
+nparameters(::Polynomial)
+coefficienttype(::Polynomial)
+scale_coefficients!(::Polynomial, λ)
+evaluate(::Polynomial, x)
+evaluate(::Polynomial, x, p)
+gradient
+gradient!
+evaluate_and_gradient
+evaluate_and_gradient!
+differentiate_parameters(::Polynomial, x, p)
+differentiate_parameters!(u, ::Polynomial, x, p)</code></pre><h2><a class="nav-anchor" id="Systems-of-Polynomials-1" href="#Systems-of-Polynomials-1">Systems of Polynomials</a></h2><pre><code class="language-none">PolynomialSystem
+npolynomials(::PolynomialSystem)
+nvariables(::PolynomialSystem)
+nparameters(::PolynomialSystem)
+foreach(f::Function, ::PolynomialSystem)
+scale_coefficients!(::PolynomialSystem, ::AbstractVector)
+evaluate(::PolynomialSystem, x)
+evaluate(::PolynomialSystem, ::AbstractVector, ::Any)
+evaluate!(u, ::PolynomialSystem, x)
+evaluate!(u, ::PolynomialSystem, x, p)
+jacobian
+jacobian!
+evaluate_and_jacobian
+evaluate_and_jacobian!
+differentiate_parameters(::PolynomialSystem, x, p)
+differentiate_parameters!(U, ::PolynomialSystem, x, p)</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Introduction</span></a></footer></article></body></html>

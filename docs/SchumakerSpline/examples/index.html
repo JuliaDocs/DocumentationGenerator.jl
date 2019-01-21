@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · SchumakerSpline</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>SchumakerSpline</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">SchumakerSpline.jl</a></li><li class="current"><a class="toctext" href>Examples</a><ul class="internal"></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Examples</a></li></ul></nav><hr/><div id="topbar"><span>Examples</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h1><p>Generating some example data</p><pre><code class="language-none">x = [1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6]
+y = log.(x) + sqrt.(x)
+gradients = missing</code></pre><p>In this case we do not have gradients information and so gradients will be imputed from the x and y data.</p><p>We can create a spline and plot it with linear extrapolation.</p><pre><code class="language-none">using SchumakerSpline
+using Plots
+########################
+# Linear Extrapolation #
+spline = Schumaker(x,y; extrapolation = Linear)
+# Now plotting the spline
+xrange =  collect(range(-5, stop=10, length=100))
+values  = evaluate.(spline, xrange)
+derivative_values  = evaluate.(spline, xrange, 1 )
+second_derivative_values  = evaluate.(spline, xrange , 2 )
+plot(xrange , values; label = &quot;Spline&quot;)
+plot!(xrange, derivative_values; label = &quot;First Derivative&quot;)
+plot!(xrange, second_derivative_values; label = &quot;Second Derivative&quot;)</code></pre><p>We can now do the same with constant extrapolation.</p><pre><code class="language-none">##########################
+# Constant Extrapolation #
+extrapolation = Constant
+spline = Schumaker(x,y; extrapolation = Constant)
+# Now plotting the spline
+xrange =  collect(range(-5, stop=10, length=100))
+values  = evaluate.(spline, xrange)
+derivative_values  = evaluate.(spline, xrange, 1 )
+second_derivative_values  = evaluate.(spline, xrange , 2 )
+plot(xrange , values; label = &quot;Spline&quot;)
+plot!(xrange, derivative_values; label = &quot;First Derivative&quot;)
+plot!(xrange, second_derivative_values; label = &quot;Second Derivative&quot;)</code></pre><p>If we did have gradient information we could get a better approximation by using it. In this case our gradients are:</p><pre><code class="language-none">analytical_first_derivative(e) = 1/e + 0.5 * e^(-0.5)
+first_derivs = analytical_first_derivative.(xrange)</code></pre><p>and we can generate a spline using these gradients with:</p><pre><code class="language-none">spline = Schumaker(x,y; gradients = first_derivs)</code></pre><p>We could also have only specified the left or the right gradients using the left<em>gradient and right</em>gradient optional arguments.</p><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">SchumakerSpline.jl</span></a></footer></article></body></html>

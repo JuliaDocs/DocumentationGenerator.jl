@@ -1,3 +1,4 @@
+using Distributed
 using Pkg
 using Pkg.TOML
 include("util.jl")
@@ -10,7 +11,6 @@ packages = registry["packages"]
 
 # path were we move build docs
 buildpath = joinpath(@__DIR__, "build")
-using Pkg
 
 function create_docs(pspec::PackageSpec, buildpath)
     _module, rootdir = install_and_use(pspec)
@@ -39,32 +39,56 @@ dont_work = []
 build_default_docs = []
 build_real_docs = []
 
-for (uuid, dict) in packages
+function package_docs(uuid, dict)
     pkgname = dict["name"]
-    pkgname == "GtkUtilities" && continue
-    pkgname == "Gtk" && continue
-
+    println("Generating docs for $pkgname")
+    installs = false
+    doctype = :default
     try
         if !isdir(buildpath, pkgname)
+            # I'm not sure how and why, but lots of packages get stuck. So we need
+            # to spawn processes and interrupt them after certain time outs.
+            # sadly, we won't be able to make the time out low, since some packages
+            # take really long building.
             println("building: $pkgname")
             mktempdir() do envdir
                 Pkg.activate(envdir)
                 pspec = PackageSpec(name = pkgname, uuid = uuid)
-                val = create_docs(pspec, buildpath)
-                if val == :real
-                    push!(build_real_docs, pkgname)
-                else
-                    push!(build_default_docs, pkgname)
-                end
+                doctype = create_docs(pspec, buildpath)
+                installs = true
+                println("Done generating docs for $pkgname")
             end
         end
     catch e
         if e isa PkgNoWork
-            push!(dont_work, e.name)
         else
             @warn("Package $pkgname didn't build")
             Base.showerror(stderr, e)
-            push!(dont_work, pkgname => e)
         end
+        installs = false
     end
+    open(joinpath(buildpath, pkgname, "meta.toml"), "w") do io
+        println(io, """
+        installs = $installs
+        doctype = $doctype
+        """)
+    end
+end
+
+for (uuid, dict) in packages
+    pkgname = dict["name"]
+    #those somehow get stuck - might be random
+    pkgname in ("Gtk", "OpenStreetMapPlotter", "GtkUtilities") && continue
+    t1 = time()
+    println("running example $pkgname")
+    package_docs(uuid, dict)
+    # p = @spawnat 2 package_docs(uuid, dict)
+    # while true
+    #     isready(p) && break # continue
+    #     # time out after 10 min
+    #     if time() - t1 > (10*60)
+    #         interrupt([2])
+    #         break
+    #     end
+    # end
 end

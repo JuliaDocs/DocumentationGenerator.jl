@@ -1,0 +1,107 @@
+var documenterSearchIndex = {"docs": [
+
+{
+    "location": "#WriteVTK.vtk_write_array-Union{Tuple{T}, Tuple{AbstractString,AbstractArray{T,N} where N}, Tuple{AbstractString,AbstractArray{T,N} where N,AbstractString}} where T<:Real",
+    "page": "Home",
+    "title": "WriteVTK.vtk_write_array",
+    "category": "method",
+    "text": "Write a Julia array to a VTK image data file (.vti).\n\nUseful for general visualisation of arrays. The input can be a 2D or 3D array.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.data_to_xml",
+    "page": "Home",
+    "title": "WriteVTK.data_to_xml",
+    "category": "function",
+    "text": "Add numerical data to VTK XML file.\n\nData is written under the xParent XML node.\n\nNc corresponds to the number of components of the data.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.data_to_xml_appended-Tuple{WriteVTK.DatasetFile,LightXML.XMLElement,Union{AbstractArray, Tuple{Vararg{T,N}} where T<:AbstractArray where N},AbstractString,Integer}",
+    "page": "Home",
+    "title": "WriteVTK.data_to_xml_appended",
+    "category": "method",
+    "text": "Add appended raw binary data to VTK XML file.\n\nData is written to the vtk.buf buffer.\n\nWhen compression is enabled:\n\nthe data array is written in compressed form (obviously);\nthe header, written before the actual numerical data, is an array of UInt32 values:     [num_blocks, blocksize, last_blocksize, compressed_blocksizes] All the sizes are in bytes. The header itself is not compressed, only the data is. For more details, see:     http://public.kitware.com/pipermail/paraview/2005-April/001391.html     http://mathema.tician.de/what-they-dont-tell-you-about-vtk-xml-binary-formats (This is not really documented in the VTK specification...)\n\nOtherwise, if compression is disabled, the header is just a single UInt32 value containing the size of the data array in bytes.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.data_to_xml_inline-Tuple{WriteVTK.DatasetFile,LightXML.XMLElement,Union{AbstractArray, Tuple{Vararg{T,N}} where T<:AbstractArray where N},AbstractString,Integer}",
+    "page": "Home",
+    "title": "WriteVTK.data_to_xml_inline",
+    "category": "method",
+    "text": "Add inline, base64-encoded data to VTK XML file.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.datatype_str-Union{Tuple{Type{T}}, Tuple{T}} where T<:Union{Float32, Float64, Int16, Int32, Int64, Int8, UInt16, UInt32, UInt64, UInt8}",
+    "page": "Home",
+    "title": "WriteVTK.datatype_str",
+    "category": "method",
+    "text": "Return the VTK string representation of a numerical data type.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.extent_attribute",
+    "page": "Home",
+    "title": "WriteVTK.extent_attribute",
+    "category": "function",
+    "text": "Return the \"extent\" attribute required for structured (including rectilinear) grids.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.num_cells_structured-Tuple{Any,Any,Any}",
+    "page": "Home",
+    "title": "WriteVTK.num_cells_structured",
+    "category": "method",
+    "text": "Number of cells in structured grids.\n\nIn 3D, all cells are hexahedrons (i.e. VTKHEXAHEDRON), and the number of cells is (Ni-1)(Nj-1)(Nk-1). In 2D, they are quadrilaterals (VTKQUAD), and in 1D they are line segments (VTK_LINE).\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.num_components-Tuple{AbstractArray,Int64}",
+    "page": "Home",
+    "title": "WriteVTK.num_components",
+    "category": "method",
+    "text": "Determine number of components of input data.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.save_with_appended_data-Tuple{WriteVTK.DatasetFile}",
+    "page": "Home",
+    "title": "WriteVTK.save_with_appended_data",
+    "category": "method",
+    "text": "Write VTK XML file containing appended binary data to disk.\n\nIn this case, the XML file is written manually instead of using the save_file function of LightXML, which doesn\'t allow to write raw binary data.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.sizeof_data-Tuple{Array}",
+    "page": "Home",
+    "title": "WriteVTK.sizeof_data",
+    "category": "method",
+    "text": "Total size of data in bytes.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.vtk_point_or_cell_data-Tuple{WriteVTK.DatasetFile,Union{AbstractArray, Tuple{Vararg{T,N}} where T<:AbstractArray where N},AbstractString,AbstractString,Integer}",
+    "page": "Home",
+    "title": "WriteVTK.vtk_point_or_cell_data",
+    "category": "method",
+    "text": "Add either point or cell data to VTK file.\n\nHere Nc is the number of components of the data (Nc >= 1).\n\n\n\n\n\n"
+},
+
+{
+    "location": "#WriteVTK.write_array-Tuple{Any,AbstractArray}",
+    "page": "Home",
+    "title": "WriteVTK.write_array",
+    "category": "method",
+    "text": "Write array of numerical data to stream.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#",
+    "page": "Home",
+    "title": "Home",
+    "category": "page",
+    "text": "Package doesn\'t contain Documenter docs.Docs automatically generated by juliadocs.orgModules = [WriteVTK]\nOrder = [:type, :function]"
+},
+
+]}
