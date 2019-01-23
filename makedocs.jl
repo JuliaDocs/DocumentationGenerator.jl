@@ -46,6 +46,8 @@ function run_process(name, url, version)
     return process
 end
 
+tstart = time()
+
 process_queue = []
 for (name, url, version, dependency) in packages
     #those somehow get stuck - might be random
@@ -60,3 +62,5 @@ end
 for proc in process_queue
     wait(proc)
 end
+
+@info("DONE in $(time() - tstart) seconds")
