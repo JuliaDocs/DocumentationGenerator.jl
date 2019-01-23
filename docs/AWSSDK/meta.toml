@@ -1,5 +1,12 @@
-stargazers_count = "8"
+stargazers_count = 8
+license_url = ""
 doctype = "default"
+owner = "JuliaCloud"
 installs = true
+license = "Other"
 version = "0.4.0"
 description = "Julia APIs for all public Amazon Web Services (requires AWSCore.jl)"
+
+[[contributors]]
+name = "samoconnor"
+contributions = 23

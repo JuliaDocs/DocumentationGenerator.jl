@@ -641,7 +641,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s828} where #s828<:(Volume{...}),AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,1} where T,Function}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s844} where #s844<:(Volume{...}),AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,1} where T,Function}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -649,7 +649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s828} where #s828<:Union{Surface{...}, Heatmap{...}, Image{...}},AbstractArray{T,2} where T}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s844} where #s844<:Union{Surface{...}, Heatmap{...}, Image{...}},AbstractArray{T,2} where T}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -657,7 +657,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:(Mesh{...}),AbstractArray,AbstractArray}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:(Mesh{...}),AbstractArray,AbstractArray}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -665,7 +665,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:(Mesh{...}),AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:(Mesh{...}),AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -673,7 +673,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:(Mesh{...}),AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:(Mesh{...}),AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -681,7 +681,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:(Mesh{...}),AbstractArray{T,1} where T}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:(Mesh{...}),AbstractArray{T,1} where T}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -689,7 +689,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,2} where T}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,2} where T}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -697,7 +697,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -705,7 +705,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T<:Number,AbstractArray{T,1} where T<:Number}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -713,7 +713,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T<:Number}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},AbstractArray{T,1} where T<:Number}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -721,7 +721,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},GeometryTypes.GeometryPrimitive}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},GeometryTypes.GeometryPrimitive}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -729,7 +729,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},GeometryTypes.HyperRectangle{2,T} where T}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{MeshScatter{...}, Scatter{...}, Lines{...}, LineSegments{...}},GeometryTypes.HyperRectangle{2,T} where T}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -737,7 +737,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s829} where #s829<:Union{Surface{...}, Heatmap{...}, Image{...}},Union{AbstractArray{T,1}, AbstractArray{T,2}} where T,Union{AbstractArray{T,1}, AbstractArray{T,2}} where T,AbstractArray{T,2} where T}",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Tuple{Type{#s845} where #s845<:Union{Surface{...}, Heatmap{...}, Image{...}},Union{AbstractArray{T,1}, AbstractArray{T,2}} where T,Union{AbstractArray{T,1}, AbstractArray{T,2}} where T,AbstractArray{T,2} where T}",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -753,7 +753,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{E}, Tuple{A}, Tuple{T}, Tuple{N}, Tuple{Type{#s829} where #s829<:(LineSegments{...}),AbstractArray{E,1}}} where E<:Union{Pair{A,A}, Tuple{A,A}} where A<:Union{Tuple{Vararg{T,N}}, StaticArray{Tuple{N},T,1}} where T where N",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{E}, Tuple{A}, Tuple{T}, Tuple{N}, Tuple{Type{#s845} where #s845<:(LineSegments{...}),AbstractArray{E,1}}} where E<:Union{Pair{A,A}, Tuple{A,A}} where A<:Union{Tuple{Vararg{T,N}}, StaticArray{Tuple{N},T,1}} where T where N",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -761,7 +761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{T2}, Tuple{T1}, Tuple{Type{#s829} where #s829<:Union{Surface{...}, Heatmap{...}, Image{...}},AbstractArray{T1,1},AbstractArray{T2,1},Function}} where T2 where T1",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{T2}, Tuple{T1}, Tuple{Type{#s845} where #s845<:Union{Surface{...}, Heatmap{...}, Image{...}},AbstractArray{T1,1},AbstractArray{T2,1},Function}} where T2 where T1",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -769,7 +769,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{T}, Tuple{Type{#s828} where #s828<:(Volume{...}),Array{T,3}}} where T",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{T}, Tuple{Type{#s844} where #s844<:(Volume{...}),Array{T,3}}} where T",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -777,7 +777,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{T}, Tuple{Type{#s829} where #s829<:(Volume{...}),AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,3}}} where T",
+    "location": "autodocs/#AbstractPlotting.convert_arguments-Union{Tuple{T}, Tuple{Type{#s845} where #s845<:(Volume{...}),AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{T,3}}} where T",
     "page": "Docstrings",
     "title": "AbstractPlotting.convert_arguments",
     "category": "method",
@@ -1417,7 +1417,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.plot!-Tuple{Union{AbstractScene, ScenePlot},Union{Type{Any}, Type{#s830} where #s830<:AbstractPlot},Attributes,Vararg{Any,N} where N}",
+    "location": "autodocs/#AbstractPlotting.plot!-Tuple{Union{AbstractScene, ScenePlot},Union{Type{Any}, Type{#s846} where #s846<:AbstractPlot},Attributes,Vararg{Any,N} where N}",
     "page": "Docstrings",
     "title": "AbstractPlotting.plot!",
     "category": "method",
@@ -2145,7 +2145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.atomic_limits-Union{Tuple{Union{Text{...}, MeshScatter{...}, Scatter{...}, Mesh{...}, LineSegments{...}, Lines{...}, Surface{...}, Volume{...}, Heatmap{...}, Image{...}} where #s829<:Tuple{Arg1}}, Tuple{Arg1}} where Arg1",
+    "location": "autodocs/#AbstractPlotting.atomic_limits-Union{Tuple{Union{Text{...}, MeshScatter{...}, Scatter{...}, Mesh{...}, LineSegments{...}, Lines{...}, Surface{...}, Volume{...}, Heatmap{...}, Image{...}} where #s845<:Tuple{Arg1}}, Tuple{Arg1}} where Arg1",
     "page": "Docstrings",
     "title": "AbstractPlotting.atomic_limits",
     "category": "method",
@@ -2361,7 +2361,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.plottype-Union{Tuple{T}, Tuple{Type{#s828} where #s828<:(Combined{Any,T} where T),Type{#s827} where #s827<:(Combined{T,T1} where T1)}} where T",
+    "location": "autodocs/#AbstractPlotting.plottype-Union{Tuple{T}, Tuple{Type{#s844} where #s844<:(Combined{Any,T} where T),Type{#s843} where #s843<:(Combined{T,T1} where T1)}} where T",
     "page": "Docstrings",
     "title": "AbstractPlotting.plottype",
     "category": "method",
@@ -2433,7 +2433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.to_func-Union{Tuple{Type{#s829} where #s829<:AbstractPlot{F}}, Tuple{F}} where F",
+    "location": "autodocs/#AbstractPlotting.to_func-Union{Tuple{Type{#s845} where #s845<:AbstractPlot{F}}, Tuple{F}} where F",
     "page": "Docstrings",
     "title": "AbstractPlotting.to_func",
     "category": "method",
@@ -2441,7 +2441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{AbstractArray{#s829,2} where #s829<:ColorTypes.Colorant}",
+    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{AbstractArray{#s845,2} where #s845<:ColorTypes.Colorant}",
     "page": "Docstrings",
     "title": "AbstractPlotting.to_spritemarker",
     "category": "method",
@@ -2457,7 +2457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{Array{#s829,2} where #s829<:AbstractFloat}",
+    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{Array{#s845,2} where #s845<:AbstractFloat}",
     "page": "Docstrings",
     "title": "AbstractPlotting.to_spritemarker",
     "category": "method",
@@ -2489,7 +2489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{Type{#s829} where #s829<:(GeometryTypes.HyperSphere{2,T} where T)}",
+    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{Type{#s845} where #s845<:(GeometryTypes.HyperSphere{2,T} where T)}",
     "page": "Docstrings",
     "title": "AbstractPlotting.to_spritemarker",
     "category": "method",
@@ -2497,7 +2497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{Type{#s829} where #s829<:GeometryTypes.SimpleRectangle}",
+    "location": "autodocs/#AbstractPlotting.to_spritemarker-Tuple{Type{#s845} where #s845<:GeometryTypes.SimpleRectangle}",
     "page": "Docstrings",
     "title": "AbstractPlotting.to_spritemarker",
     "category": "method",

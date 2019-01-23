@@ -1,5 +1,45 @@
-stargazers_count = "22"
+stargazers_count = 22
+license_url = ""
 doctype = "default"
+owner = "JuliaCloud"
 installs = true
+license = "Other"
 version = "0.5.2"
 description = "Amazon Web Services Core Functions and Types"
+
+[[contributors]]
+name = "samoconnor"
+contributions = 229
+[[contributors]]
+name = "ararslan"
+contributions = 8
+[[contributors]]
+name = "morris25"
+contributions = 5
+[[contributors]]
+name = "iamed2"
+contributions = 4
+[[contributors]]
+name = "omus"
+contributions = 3
+[[contributors]]
+name = "barcharcraz"
+contributions = 2
+[[contributors]]
+name = "ExpandingMan"
+contributions = 2
+[[contributors]]
+name = "tkelman"
+contributions = 2
+[[contributors]]
+name = "aviks"
+contributions = 1
+[[contributors]]
+name = "dtjohnson"
+contributions = 1
+[[contributors]]
+name = "jingpengw"
+contributions = 1
+[[contributors]]
+name = "rofinn"
+contributions = 1

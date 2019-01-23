@@ -1,5 +1,48 @@
-stargazers_count = "12"
+stargazers_count = 12
+license_url = ""
 doctype = "default"
+owner = "JuliaPlots"
 installs = true
+license = "Other"
 version = "0.9.3"
 description = "An abstract interface for plotting libraries"
+
+[[contributors]]
+name = "SimonDanisch"
+contributions = 298
+[[contributors]]
+name = "anthony-wang"
+contributions = 46
+[[contributors]]
+name = "piever"
+contributions = 30
+[[contributors]]
+name = "mkborregaard"
+contributions = 13
+[[contributors]]
+name = "Datseris"
+contributions = 6
+[[contributors]]
+name = "mschauer"
+contributions = 3
+[[contributors]]
+name = "dlfivefifty"
+contributions = 2
+[[contributors]]
+name = "louisponet"
+contributions = 2
+[[contributors]]
+name = "Evizero"
+contributions = 1
+[[contributors]]
+name = "colinxs"
+contributions = 1
+[[contributors]]
+name = "ffreyer"
+contributions = 1
+[[contributors]]
+name = "musm"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1
