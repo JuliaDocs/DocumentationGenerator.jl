@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Shuffle/5.2.0/shuffle.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://rawgit.com/Vestride/Shuffle/master/docs/css/prism.css">
+<link rel="stylesheet" href="https://rawgit.com/Vestride/Shuffle/master/docs/css/normalize.css">
+<link rel="stylesheet" href="https://rawgit.com/Vestride/Shuffle/master/docs/css/style.css">
+<link rel="stylesheet" href="https://rawgit.com/Vestride/Shuffle/master/docs/css/shuffle-styles.css">
+  <div class="container">
+    <div class="row">
+      <div class="col-12@sm">
+        <h2>Example<a href="#demo"></a></h2>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-4@sm col-3@md">
+        <div class="filters-group">
+          <label for="filters-search-input" class="filter-label">Search</label>
+          <input class="textfield filter__search js-shuffle-search" type="search" id="filters-search-input">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12@sm filters-group-wrap">
+        <div class="filters-group">
+          <p class="filter-label">Filter</p>
+          <div class="btn-group filter-options">
+            <button class="btn btn--primary" data-group="default">default</button>
+<button class="btn btn--primary" data-group="real">real</button>
+          </div>
+        </div>
+        <fieldset class="filters-group">
+          <legend class="filter-label">Sort</legend>
+          <div class="btn-group sort-options">
+            <label class="btn">
+  <input type="radio" name="sort-value" value="dom"> Default
+</label>
+
+<label class="btn">
+  <input type="radio" name="sort-value" value="stars"> By Stars
+</label>
+
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="grid" class="row my-shuffle-container shuffle" style="height: 1220px; transition: height 250ms cubic-bezier(0.4, 0, 0.2, 1) 0s;">
+      <figure class="col-2@sm picture-item" data-stars="2" data-groups='["default"]' data-title="AIControl" style="border-style: solid; border-width: 2px; width: 250px; height: 180px">
+<div>
+    <a href="docs/AIControl/index.html"> AIControl</a> <br>
+    Stars: 2 <br>
+    Implementation of the AIControl paper in Julia 1.0
+<div>
+
+</figure>
+
+<figure class="col-2@sm picture-item" data-stars="0" data-groups='["default"]' data-title="AMD" style="border-style: solid; border-width: 2px; width: 250px; height: 180px">
+<div>
+    <a href="docs/AMD/index.html"> AMD</a> <br>
+    Stars: 0 <br>
+    Approximate Minimum Degree Ordering in Julia
+<div>
+
+</figure>
+
+<figure class="col-2@sm picture-item" data-stars="5" data-groups='["default"]' data-title="AMQPClient" style="border-style: solid; border-width: 2px; width: 250px; height: 180px">
+<div>
+    <a href="docs/AMQPClient/index.html"> AMQPClient</a> <br>
+    Stars: 5 <br>
+    A Julia AMQP (Advanced Message Queuing Protocol) / RabbitMQ Client.
+<div>
+
+</figure>
+
+<figure class="col-2@sm picture-item" data-stars="4" data-groups='["default"]' data-title="ANOVA" style="border-style: solid; border-width: 2px; width: 250px; height: 180px">
+<div>
+    <a href="docs/ANOVA/index.html"> ANOVA</a> <br>
+    Stars: 4 <br>
+    Provides a Simple Way to Calculate ANOVAs From Fitted Linear Models.
+<div>
+
+</figure>
+
+<figure class="col-2@sm picture-item" data-stars="3" data-groups='["default"]' data-title="ASDF" style="border-style: solid; border-width: 2px; width: 250px; height: 180px">
+<div>
+    <a href="docs/ASDF/index.html"> ASDF</a> <br>
+    Stars: 3 <br>
+    A Julia implementation of the Advanced Scientific Data Format (ASDF)
+<div>
+
+</figure>
+
+      <div class="col-1@sm col-1@xs my-sizer-element"></div>
+    </div>
+  </div>
+
+    <script>
+    'use strict';
+
+var Shuffle = window.Shuffle;
+
+var Demo = function (element) {
+  this.element = element;
+
+  this.shuffle = new Shuffle(element, {
+    itemSelector: '.picture-item',
+    sizer: element.querySelector('.my-sizer-element'),
+  });
+
+  // Log events.
+  this.addShuffleEventListeners();
+
+  this._activeFilters = [];
+
+  this.addFilterButtons();
+  this.addSorting();
+  this.addSearchFilter();
+
+  this.mode = 'exclusive';
+};
+
+Demo.prototype.toggleMode = function () {
+  if (this.mode === 'additive') {
+    this.mode = 'exclusive';
+  } else {
+    this.mode = 'additive';
+  }
+};
+
+/**
+ * Shuffle uses the CustomEvent constructor to dispatch events. You can listen
+ * for them like you normally would (with jQuery for example).
+ */
+Demo.prototype.addShuffleEventListeners = function () {
+  this.shuffle.on(Shuffle.EventType.LAYOUT, function (data) {
+    console.log('layout. data:', data);
+  });
+
+  this.shuffle.on(Shuffle.EventType.REMOVED, function (data) {
+    console.log('removed. data:', data);
+  });
+};
+
+Demo.prototype.addFilterButtons = function () {
+  var options = document.querySelector('.filter-options');
+
+  if (!options) {
+    return;
+  }
+
+  var filterButtons = Array.from(options.children);
+
+  filterButtons.forEach(function (button) {
+    button.addEventListener('click', this._handleFilterClick.bind(this), false);
+  }, this);
+};
+
+Demo.prototype._handleFilterClick = function (evt) {
+  var btn = evt.currentTarget;
+  var isActive = btn.classList.contains('active');
+  var btnGroup = btn.getAttribute('data-group');
+
+  // You don't need _both_ of these modes. This is only for the demo.
+
+  // For this custom 'additive' mode in the demo, clicking on filter buttons
+  // doesn't remove any other filters.
+  if (this.mode === 'additive') {
+    // If this button is already active, remove it from the list of filters.
+    if (isActive) {
+      this._activeFilters.splice(this._activeFilters.indexOf(btnGroup));
+    } else {
+      this._activeFilters.push(btnGroup);
+    }
+
+    btn.classList.toggle('active');
+
+    // Filter elements
+    this.shuffle.filter(this._activeFilters);
+
+  // 'exclusive' mode lets only one filter button be active at a time.
+  } else {
+    this._removeActiveClassFromChildren(btn.parentNode);
+
+    var filterGroup;
+    if (isActive) {
+      btn.classList.remove('active');
+      filterGroup = Shuffle.ALL_ITEMS;
+    } else {
+      btn.classList.add('active');
+      filterGroup = btnGroup;
+    }
+
+    this.shuffle.filter(filterGroup);
+  }
+};
+
+Demo.prototype._removeActiveClassFromChildren = function (parent) {
+  var children = parent.children;
+  for (var i = children.length - 1; i >= 0; i--) {
+    children[i].classList.remove('active');
+  }
+};
+
+Demo.prototype.addSorting = function () {
+  var buttonGroup = document.querySelector('.sort-options');
+
+  if (!buttonGroup) {
+    return;
+  }
+
+  buttonGroup.addEventListener('change', this._handleSortChange.bind(this));
+};
+
+Demo.prototype._handleSortChange = function (evt) {
+  // Add and remove `active` class from buttons.
+  var wrapper = evt.currentTarget;
+  var buttons = Array.from(evt.currentTarget.children);
+  buttons.forEach(function (button) {
+    if (button.querySelector('input').value === evt.target.value) {
+      button.classList.add('active');
+    } else {
+      button.classList.remove('active');
+    }
+  });
+
+  // Create the sort options to give to Shuffle.
+  var value = evt.target.value;
+  var options = {};
+
+  function sortByDate(element) {
+    return element.getAttribute('data-created');
+  }
+
+  function sortByStars(element) {
+    return parseInt(element.getAttribute('data-stars'), 10);
+  }
+
+  function sortByTitle(element) {
+    return element.getAttribute('data-title').toLowerCase();
+  }
+
+  if (value === 'date-created') {
+    options = {
+      reverse: true,
+      by: sortByDate,
+    };
+  } else if (value === 'title') {
+    options = {
+      by: sortByTitle,
+    };
+  } else if (value === 'stars') {
+    options = {
+      reverse: true,
+      by: sortByStars,
+    };
+  }
+
+  this.shuffle.sort(options);
+};
+
+// Advanced filtering
+Demo.prototype.addSearchFilter = function () {
+  var searchInput = document.querySelector('.js-shuffle-search');
+
+  if (!searchInput) {
+    return;
+  }
+
+  searchInput.addEventListener('keyup', this._handleSearchKeyup.bind(this));
+};
+
+/**
+ * Filter the shuffle instance by items with a title that matches the search input.
+ * @param {Event} evt Event object.
+ */
+Demo.prototype._handleSearchKeyup = function (evt) {
+  var searchText = evt.target.value.toLowerCase();
+
+  this.shuffle.filter(function (element, shuffle) {
+
+    // If there is a current filter applied, ignore elements that don't match it.
+    if (shuffle.group !== Shuffle.ALL_ITEMS) {
+      // Get the item's groups.
+      var groups = JSON.parse(element.getAttribute('data-groups'));
+      var isElementInCurrentGroup = groups.indexOf(shuffle.group) !== -1;
+
+      // Only search elements in the current group
+      if (!isElementInCurrentGroup) {
+        return false;
+      }
+    }
+
+    var titleText = element.getAttribute('data-title').toLowerCase().trim();
+
+    return titleText.indexOf(searchText) !== -1;
+  });
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+  window.demo = new Demo(document.getElementById('grid'));
+});
+
+    </script>
+  </body>
+</html>
+

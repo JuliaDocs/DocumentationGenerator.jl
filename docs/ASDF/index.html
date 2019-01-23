@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · ASDF.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>ASDF.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Overview-1">Overview</a></li><li><a class="toctext" href="#Examples-1">Examples</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="[ASDF](https://github.com/eschnett/ASDF)-1" href="#[ASDF](https://github.com/eschnett/ASDF)-1"><a href="https://github.com/eschnett/ASDF">ASDF</a></a></h1><p>A Julia library for the <a href="https://asdf-standard.readthedocs.io/en/latest/index.html">Advanced Scientific Data Format (ASDF)</a>.</p><p><a href="https://travis-ci.org/eschnett/ASDF.jl"><img src="https://travis-ci.org/eschnett/ASDF.jl.svg?branch=master" alt="Build Status (Travis)"/></a> <a href="https://ci.appveyor.com/project/eschnett/asdf-jl/branch/master"><img src="https://ci.appveyor.com/api/projects/status/4voe93gewdi9i0pq/branch/master?svg=true" alt="Build Status (Appveyor)"/></a> <a href="https://coveralls.io/github/eschnett/ASDF.jl?branch=master"><img src="https://coveralls.io/repos/github/eschnett/ASDF.jl/badge.svg?branch=master" alt="Coverage Status (Coveralls)"/></a></p><h2><a class="nav-anchor" id="Overview-1" href="#Overview-1">Overview</a></h2><p>The Advanced Scientific Data Format (ASDF) is a file format for scientific data. This package provides a Julia implementation for reading and writing ASDF files, based on the <a href="https://github.com/spacetelescope/asdf"><em>asdf</em></a> Python package and the <a href="https://github.com/JuliaPy/PyCall.jl"><em>PyCall</em></a> Julia package.</p><p>The ASDF file format is based on the human-readable YAML standard, extended with efficient binary blocks to store array data. Basic arithmetic types (Bool, Int, Float, Complex) and strings are supported out of the box. Other types (structures) need to be declared to be supported.</p><p>ASDF supports arbitrary array strides, both C (Python) and Fortran (Julia) memory layouts, as well as compression. The YAML metadata can contain arbitrary information corresponding to scalars, arrays, or dictionaries.</p><p>The ASDF file format targets a similar audience as the HDF5 format.</p><h2><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h2><h3><a class="nav-anchor" id="Writing-to-a-file-1" href="#Writing-to-a-file-1">Writing to a file</a></h3><p>Here we create a few simple data items and write them into an ASDF file:</p><pre><code class="language-Julia">julia&gt; using ASDF
+julia&gt; # Define some data
+julia&gt; s = &quot;Hello, World!&quot;
+julia&gt; dict = Dict(&quot;a&quot; =&gt; 1, &quot;b&quot; =&gt; 2.0, &quot;c&quot; =&gt; &quot;cee&quot;)
+julia&gt; arr = Float32[i+j for i in 1:10, j in 1:10]
+julia&gt; # Create the ASDF tree
+julia&gt; tree = Dict{String, Any}(
+           &quot;comment&quot; =&gt; s,
+           &quot;table&quot; =&gt; dict,
+           &quot;data&quot; =&gt; arr)
+julia&gt; # Write the file
+julia&gt; ASDF.write_to(ASDF.File(tree), &quot;example.asdf&quot;)</code></pre><p>This creates a file <code>example.asdf</code>. The beginning of the file is human-readable and is a properly formatted YAML document. Note that the triple dashes <code>---</code> indicate the beginning and the triple dots <code>...</code> indicate the end of a YAML document:</p><pre><code class="language-YAML">#ASDF 1.0.0
+#ASDF_STANDARD 1.2.0
+%YAML 1.1
+%TAG ! tag:stsci.edu:asdf/
+--- !core/asdf-1.1.0
+asdf_library: !core/software-1.0.0 {author: Space Telescope Science Institute, homepage: &#39;http://github.com/spacetelescope/asdf&#39;,
+  name: asdf, version: 2.1.0}
+history:
+  extensions:
+  - !core/extension_metadata-1.0.0
+    extension_class: asdf.extension.BuiltinExtension
+    software: {name: asdf, version: 2.1.0}
+comment: Hello, World!
+data: !core/ndarray-1.0.0
+  source: 0
+  datatype: float32
+  byteorder: little
+  shape: [10, 10]
+  strides: [4, 40]
+table: {a: 1, b: 2.0, c: cee}
+...</code></pre><p>The file contains some metadata, including version numbers of the ASDF standard and the software used to create the file. This is followed by the data items <code>comment</code>, <code>data</code>, and <code>table</code> that we created. The actual array data is stored in binary after the triple dots. (It is also possible to store arrays in a human-readable form, but this becomes inefficient for large arrays.)</p><p>The <code>examples</code> directoy of this Julia packages contains several example ASDF files taken from the ASDF standard.</p><h3><a class="nav-anchor" id="Reading-from-file-1" href="#Reading-from-file-1">Reading from file</a></h3><p>Reading this file yields the data back:</p><pre><code class="language-Julia">julia&gt; using ASDF
+julia&gt; # Read the file that was written earlier
+julia&gt; tree = ASDF.tree(ASDF.open(&quot;example.asdf&quot;))
+julia&gt; # Look at all items in the ASDF tree:
+julia&gt; keys(tree)
+Set([&quot;history&quot;, &quot;data&quot;, &quot;table&quot;, &quot;asdf_library&quot;, &quot;comment&quot;])
+julia&gt; # Extract the comment
+julia&gt; tree[&quot;comment&quot;]
+&quot;Hello, World!&quot;
+julia&gt; # Extract the lookup table
+julia&gt; tree[&quot;table&quot;]
+Dict{Any,Any} with 3 entries:
+    &quot;c&quot; =&gt; &quot;cee&quot;
+    &quot;b&quot; =&gt; 2.0
+    &quot;a&quot; =&gt; 1
+julia&gt; # Extract the array
+julia&gt; typeof(tree[&quot;data&quot;])
+ASDF.NDArray{Float32,2,PyCall.PyArray{Float32,2}}
+julia&gt; collect(tree[&quot;data&quot;])
+10×10 Array{Float32,2}:
+  2.0   3.0   4.0   5.0   6.0   7.0   8.0   9.0  10.0  11.0
+  3.0   4.0   5.0   6.0   7.0   8.0   9.0  10.0  11.0  12.0
+  4.0   5.0   6.0   7.0   8.0   9.0  10.0  11.0  12.0  13.0
+  5.0   6.0   7.0   8.0   9.0  10.0  11.0  12.0  13.0  14.0
+  6.0   7.0   8.0   9.0  10.0  11.0  12.0  13.0  14.0  15.0
+  7.0   8.0   9.0  10.0  11.0  12.0  13.0  14.0  15.0  16.0
+  8.0   9.0  10.0  11.0  12.0  13.0  14.0  15.0  16.0  17.0
+  9.0  10.0  11.0  12.0  13.0  14.0  15.0  16.0  17.0  18.0
+ 10.0  11.0  12.0  13.0  14.0  15.0  16.0  17.0  18.0  19.0
+ 11.0  12.0  13.0  14.0  15.0  16.0  17.0  18.0  19.0  20.0</code></pre><p>The ASDF package ensures that arrays are not copied when they are written to or read from a file. When writing, ASDF creates a numpy array (via the PyCall package) that shares the same data as the Julia array. When reading, ASDF creates an object of type <code>NDArray</code> (which is a subtype of <code>AbstractArray</code>) that efficiently refers to a <em>numpy</em> array (again via the PyCall package). An <code>NDArray</code> can be converted to regular Julia <code>Array</code> by copying it via calling <code>collect</code>.</p><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>
