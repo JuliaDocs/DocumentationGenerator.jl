@@ -1,5 +1,27 @@
-stargazers_count = "5"
+stargazers_count = 5
+license_url = ""
 doctype = "default"
+owner = "samoconnor"
 installs = true
+license = "Other"
 version = "0.5.0"
 description = "AWS S3 Simple Storage Service interface for Julia."
+
+[[contributors]]
+name = "samoconnor"
+contributions = 114
+[[contributors]]
+name = "ararslan"
+contributions = 3
+[[contributors]]
+name = "tkelman"
+contributions = 2
+[[contributors]]
+name = "aviks"
+contributions = 1
+[[contributors]]
+name = "barcharcraz"
+contributions = 1
+[[contributors]]
+name = "jingpengw"
+contributions = 1
