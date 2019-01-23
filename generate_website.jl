@@ -4,33 +4,38 @@ using Pkg: TOML
 
 build_dir = joinpath(@__DIR__, "build")
 
-package_info = open(deserialize, "pkg_repo_infos.jls")
+docdir = joinpath(@__DIR__, "docs")
+
 open(joinpath(@__DIR__, "index.html"), "w") do io
     items = MakieGallery.DataItem[]
-    for (name, meta) in package_info
+    for name in readdir(build_dir)
         html = joinpath(build_dir, name, "index.html")
-        if meta["installs"] && isfile(html)
-            stars = meta["stargazers_count"]
-            doctarget = joinpath(@__DIR__, "docs", name)
-            if isdir(doctarget)
-                rm(doctarget, recursive = true)
-            end
-            cp(joinpath(build_dir, name), doctarget)
-            index_url = string("https://juliadocs.github.io/juliadocs.org/docs/", name, "/index.html")
-            push!(items,
-                MakieGallery.DataItem(
-                    name,
-                    [meta["doctype"]],
-                    ["stars" => stars], "",
-                    """
-                    <div>
-                        <a href=$(repr(index_url))> $name</a> <br>
-                        Stars: $stars <br>
-                        $(meta["description"])
-                    <div>
-                    """
+        meta_file = joinpath(build_dir, name, "meta.toml")
+        if isfile(meta_file) && isfile(html)
+            meta = TOML.parsefile(meta_file)
+            if meta["installs"]
+                stars = meta["stargazers_count"]
+                doctarget = joinpath(docdir, name)
+                if isdir(doctarget)
+                    rm(doctarget, recursive = true)
+                end
+                cp(joinpath(build_dir, name), doctarget)
+                index_url = joinpath("docs", name, "index.html")
+                push!(items,
+                    MakieGallery.DataItem(
+                        name,
+                        [meta["doctype"]],
+                        ["stars" => stars], "",
+                        """
+                        <div>
+                            <a href=$(repr(index_url))> $name</a> <br>
+                            Stars: $stars <br>
+                            $(meta["description"])
+                        <div>
+                        """
+                    )
                 )
-            )
+            end
         end
     end
     println(io, MakieGallery.create_page(
