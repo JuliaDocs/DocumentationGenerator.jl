@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>BLAST · BioTools.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="../index.html"><img class="logo" src="../assets/logo.png" alt="BioTools.jl logo"/></a><h1>BioTools.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li class="current"><a class="toctext" href>BLAST</a><ul class="internal"></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>BLAST</a></li></ul></nav><hr/><div id="topbar"><span>BLAST</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="The-BioTools-BLAST-wrapper-1" href="#The-BioTools-BLAST-wrapper-1">The BioTools BLAST wrapper</a></h1><p>The <code>BioTools.BLAST</code> module is a wrapper for the command line interface of <a href="https://www.ncbi.nlm.nih.gov/books/NBK279690/">BLAST+</a> from NCBI. It requires that you have BLAST+  <a href="https://www.ncbi.nlm.nih.gov/books/NBK279671/">installed</a> and accessible in your PATH (eg. you should be able to execute <code>$ blastn -h</code> from the command line).</p><h3><a class="nav-anchor" id="The-Basics-1" href="#The-Basics-1">The Basics</a></h3><p>This module allows you to run protein and nucleotide BLAST (<code>blastp</code> and <code>blastn</code> respectively) within julia and to parse BLAST results into Bio.jl types.</p><pre><code class="language-julia">using BioSequences,
+      BioTools.BLAST
+
+seq1 = dna&quot;&quot;&quot;
+CGGACCAGACGGACACAGGGAGAAGCTAGTTTCTTTCATGTGATTGANAT
+NATGACTCTACTCCTAAAAGGGAAAAANCAATATCCTTGTTTACAGAAGA
+GAAACAAACAAGCCCCACTCAGCTCAGTCACAGGAGAGAN
+&quot;&quot;&quot;
+
+seq2 = dna&quot;&quot;&quot;
+CGGAGCCAGCGAGCATATGCTGCATGAGGACCTTTCTATCTTACATTATG
+GCTGGGAATCTTACTCTTTCATCTGATACCTTGTTCAGATTTCAAAATAG
+TTGTAGCCTTATCCTGGTTTTACAGATGTGAAACTTTCAA
+&quot;&quot;&quot;
+
+blastn(seq1, seq2)</code></pre><p>These functions return a <code>Vector{BLASTResult}</code>. Each element is a hit which includes the sequence of the hit, an <a href="http://biojulia.github.io/Bio.jl/latest/man/alignments/"><code>AlignedSequence</code></a> using the original query as a reference and some additional information (expect vaue, bitscore) for the hit.</p><pre><code class="language-julia">struct BLASTResult
+    bitscore::Float64
+    expect::Float64
+    queryname::String
+    hitname::String
+    hit::BioSequence
+    alignment::AlignedSequence
+end</code></pre><p>If you&#39;ve already run a blast analysis or have downloaded blast results in XML format from NCBI you can also pass an XML string to <code>readblastXML()</code> in order to obtain an array of <code>BLASTResult</code>s.</p><pre><code class="language-julia">results = readall(open(&quot;blast_results.xml&quot;))
+# need to use `readstring` instead of `readall` for v0.5
+readblastXML(results)</code></pre><p>When parsing protein blast results, you must include the argument  <code>seqtype=&quot;prot&quot;</code>, eg. <code>readblastXML(&quot;results, seqtype=&quot;prot&quot;)</code>.</p><h3><a class="nav-anchor" id="Options-for-blastn-and-blastp-1" href="#Options-for-blastn-and-blastp-1">Options for <code>blastn</code> and <code>blastp</code></a></h3><p>Both of the basic BLAST+ commands can accept a single <code>BioSequence</code>, a <code>Vector{BioSequence}</code> or a sting representing a file path to a fasta formatted file as arguments for both <code>query</code> and <code>subject</code>.</p><pre><code class="language-julia">blastn([seq1, seq2], [seq2, seq3])
+
+blastp(aaseq, &quot;path/to/sequences.fasta&quot;)</code></pre><p>If you have a local blast database (eg through the use of <code>$ makeblastdb</code>), you can use this database as the <code>subject</code></p><pre><code class="language-julia">blastn(seq1, &quot;path/to/blast_db&quot;, db=true)</code></pre><p>If you want to modify the search using additional options (eg. return only results with greater than 90% identity), you may pass a <code>Vector</code> of flags (see <a href="http://www.ncbi.nlm.nih.gov/books/NBK279675/">here</a> for valid arguments - do not use flags that will alter file handling such as <code>-outfmt</code>)</p><pre><code class="language-julia">blastn(seq1, seq2, [&quot;-perc_identity&quot;, 90, &quot;-evalue&quot;, &quot;9.0&quot;])</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Home</span></a></footer></article></body></html>

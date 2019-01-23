@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "2"
 doctype = "default"
+installs = true
+version = "0.2.0"
+description = "a Julia wrapper for the knockoutjs library"

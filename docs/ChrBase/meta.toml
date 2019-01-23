@@ -1,0 +1,5 @@
+stargazers_count = "0"
+doctype = "default"
+installs = true
+version = "0.1.11"
+description = "Support for parameterized character type `Chr`, and common aliases (ASCIIChr, LatinChr, UCS2Chr, UTF32Chr)"

@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "1"
 doctype = "default"
+installs = true
+version = "0.3.6"
+description = "Developer tools for the GeoStats.jl framework"

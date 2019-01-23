@@ -1,0 +1,5 @@
+stargazers_count = "7"
+doctype = "default"
+installs = true
+version = "0.3.1"
+description = "Julia utilities for the conic benchmark format for mathematical optimization"

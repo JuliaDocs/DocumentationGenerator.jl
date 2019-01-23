@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "default"
+installs = true
+version = "4.8.0"
+description = "DiffEq solvers for delay differential equations"

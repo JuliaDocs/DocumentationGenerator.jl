@@ -1,0 +1,5 @@
+stargazers_count = "64"
+doctype = "real"
+installs = true
+version = "0.8.4"
+description = "An extensible framework for high-performance geostatistics in Julia"

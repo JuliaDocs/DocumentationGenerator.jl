@@ -1,0 +1,5 @@
+stargazers_count = "25"
+doctype = "default"
+installs = true
+version = "0.7.0"
+description = "A type based approach to working with filesystem paths in julia"

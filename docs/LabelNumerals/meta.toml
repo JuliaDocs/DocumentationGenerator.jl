@@ -1,0 +1,5 @@
+stargazers_count = "0"
+doctype = "real"
+installs = true
+version = "0.1.0"
+description = "Numbers used as labels like page number like alpha, roman numerals or prefixed like A-1,2 etc. "

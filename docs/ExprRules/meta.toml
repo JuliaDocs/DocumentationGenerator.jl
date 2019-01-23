@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "default"
+installs = true
+version = "0.3.3"
+description = "Base functions for generating and optimizing Julia expressions from a grammar."

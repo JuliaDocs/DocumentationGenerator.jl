@@ -1,0 +1,5 @@
+stargazers_count = "17"
+doctype = "default"
+installs = true
+version = "0.2.1"
+description = "Faster closure variable capture"

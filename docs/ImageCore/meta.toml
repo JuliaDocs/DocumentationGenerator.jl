@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "real"
+installs = true
+version = "0.7.3"
+description = "Julia types for representing images"

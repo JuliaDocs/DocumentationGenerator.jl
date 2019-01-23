@@ -1,0 +1,5 @@
+stargazers_count = "59"
+doctype = "real"
+installs = true
+version = "0.1.4"
+description = "Binary Dependency Builder for Julia"

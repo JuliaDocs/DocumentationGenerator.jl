@@ -1,0 +1,5 @@
+stargazers_count = "4"
+doctype = "real"
+installs = true
+version = "0.0.13"
+description = "Shared functionalities for multiple infrastructure network optimization packages"

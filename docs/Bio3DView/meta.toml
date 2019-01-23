@@ -1,0 +1,5 @@
+stargazers_count = "7"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "A julia package to view macromolecular structures in the REPL or in a Jupyter notebook/JupyterLab"

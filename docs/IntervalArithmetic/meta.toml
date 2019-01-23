@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "40"
 doctype = "real"
+installs = true
+version = "0.15.1"
+description = "Rigorous floating-point calculations using interval arithmetic in Julia"

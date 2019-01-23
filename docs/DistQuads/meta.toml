@@ -1,0 +1,5 @@
+stargazers_count = "2"
+doctype = "default"
+installs = true
+version = "2.0.0"
+description = "Small wrapper for quadrature code and Distributions.jl"

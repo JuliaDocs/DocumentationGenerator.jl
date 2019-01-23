@@ -1,0 +1,5 @@
+stargazers_count = "48"
+doctype = "default"
+installs = true
+version = "0.4.1"
+description = "Julia package for 1-d and 2-d splines"

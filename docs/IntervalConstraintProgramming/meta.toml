@@ -1,0 +1,5 @@
+stargazers_count = "18"
+doctype = "real"
+installs = true
+version = "0.9.0"
+description = "Calculate rigorously the feasible region for a set of real-valued inequalities with Julia"

@@ -1,0 +1,5 @@
+stargazers_count = "8"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Image inpainting algorithms in Julia"

@@ -1,0 +1,5 @@
+stargazers_count = "232"
+doctype = "default"
+installs = true
+version = "0.17.0"
+description = "An image library for Julia"

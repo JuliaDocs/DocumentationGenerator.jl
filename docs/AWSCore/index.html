@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · AWSCore.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>AWSCore.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="AWSCore.jl-1" href="#AWSCore.jl-1">AWSCore.jl</a></h1><p>Julia interface for <a href="https://aws.amazon.com">Amazon Web Services</a>.</p><p>This package provides core infrastructure functions and types.</p><p>The <a href="https://github.com/JuliaCloud/AWSSDK.jl">AWSSDK.jl</a> package provides automatically generated low-level API wrappers for each operation in each Amazon Web Service.</p><p>The following high-level packages are also available: <a href="http://github.com/samoconnor/AWSS3.jl">AWS S3</a>, <a href="http://github.com/samoconnor/AWSSQS.jl">AWS SQS</a>, <a href="http://github.com/samoconnor/AWSSNS.jl">AWS SNS</a>, <a href="http://github.com/samoconnor/AWSIAM.jl">AWS IAM</a>, <a href="http://github.com/samoconnor/AWSEC2.jl">AWS EC2</a>, <a href="http://github.com/samoconnor/AWSLambda.jl">AWS Lambda</a>, <a href="http://github.com/samoconnor/AWSSES.jl">AWS SES</a> and <a href="http://github.com/samoconnor/AWSSDB.jl">AWS SDB</a>. These packages include operation specific result structure parsing, error handling, type convenience functions, iterators, etc.</p><p>Full documentation <a href="https://juliacloud.github.io/AWSCore.jl/build/index.html">is available here</a>, or see below for some examples of how to get started.</p><p>There are three ways to use <code>AWSCore</code>:</p><ol><li>Call <a href="https://github.com/JuliaCloud/AWSCore.jl/blob/master/src/Services.jl"><code>AWSCore/Services.jl</code></a></li></ol><p>functions directly:</p><pre><code class="language-julia">using AWSCore.Services.cloudformation
+cloudformation(&quot;CreateStack&quot;,
+               StackName = &quot;mystack&quot;,
+               TemplateBody = readstring(&quot;cloudformation_template.yaml&quot;),
+               Parameters = [[&quot;ParameterKey&quot;   =&gt; &quot;Foo&quot;,
+                              &quot;ParameterValue&quot; =&gt; &quot;bar&quot;]],
+               Capabilities = [&quot;CAPABILITY_IAM&quot;])</code></pre><ol><li>Use the low-level <a href="https://github.com/JuliaCloud/AWSSDK.jl"><code>AWSSDK</code></a> wrappers:</li></ol><pre><code class="language-none">using AWSSDK.S3.list_buckets
+r = list_buckets()
+buckets = [b[&quot;Name&quot;] for b in r[&quot;Buckets&quot;][&quot;Bucket&quot;]]</code></pre><ol><li>Use one of the high-level convenience packages:</li></ol><pre><code class="language-none">using AWSS3
+buckets = s3_list_buckets()</code></pre><h3><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h3><p>Create an S3 bucket and store some data...</p><pre><code class="language-julia">aws = aws_config()
+s3_create_bucket(aws, &quot;my.bucket&quot;)
+s3_enable_versioning(aws, &quot;my.bucket&quot;)
+
+s3_put(aws, &quot;my.bucket&quot;, &quot;key&quot;, &quot;Hello!&quot;)
+println(s3_get(aws, &quot;my.bucket&quot;, &quot;key&quot;))</code></pre><p>Post a message to a queue...</p><pre><code class="language-julia">q = sqs_get_queue(aws, &quot;my-queue&quot;)
+
+sqs_send_message(q, &quot;Hello!&quot;)
+
+m = sqs_receive_message(q)
+println(m[&quot;message&quot;])
+sqs_delete_message(q, m)</code></pre><p>Post a message to a notification topic...</p><pre><code class="language-julia">sns_create_topic(aws, &quot;my-topic&quot;)
+sns_subscribe_sqs(aws, &quot;my-topic&quot;, q; raw = true)
+
+sns_publish(aws, &quot;my-topic&quot;, &quot;Hello!&quot;)
+
+m = sqs_receive_message(q)
+println(m[&quot;message&quot;])
+sqs_delete_message(q, m)
+</code></pre><p>Start an EC2 server and fetch info...</p><pre><code class="language-julia">ec2(aws, &quot;StartInstances&quot;, {&quot;InstanceId.1&quot; =&gt; my_instance_id})
+r = ec2(aws, &quot;DescribeInstances&quot;, {&quot;Filter.1.Name&quot; =&gt; &quot;instance-id&quot;,
+                                   &quot;Filter.1.Value.1&quot; =&gt; my_instance_id})
+println(r)</code></pre><p>Create an IAM user...</p><pre><code class="language-julia">iam(aws, &quot;CreateUser&quot;, {&quot;UserName&quot; =&gt; &quot;me&quot;})</code></pre><p>Automatically assume a role(<a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html">details</a>)...</p><p>For a user with the IAM profile <code>valid-iam-profile</code> already in their credentials file that has permissions to a role called <code>example-role-name</code>:</p><p>~/.aws/config:</p><pre><code class="language-none">[profile example-role-name]
+role_arn = arn:aws:iam::[role number here]:role/example-role-name
+source_profile = valid-iam-profile</code></pre><pre><code class="language-julia">ENV[&quot;AWS_PROFILE&quot;] = &quot;example-role-name&quot;
+AWSCore.aws_config()</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

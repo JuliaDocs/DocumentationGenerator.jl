@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "1.1.1"
+description = "Julia bindings to LCIO"

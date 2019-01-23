@@ -1,0 +1,5 @@
+stargazers_count = "11"
+doctype = "real"
+installs = true
+version = "0.4.0"
+description = "A julia package to read, write and manipulate macromolecular structures"

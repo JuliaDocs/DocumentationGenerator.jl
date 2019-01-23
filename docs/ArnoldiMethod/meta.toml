@@ -1,0 +1,5 @@
+stargazers_count = "22"
+doctype = "real"
+installs = true
+version = "0.0.4"
+description = "Implicitly Restarted Arnoldi Method, natively in Julia"

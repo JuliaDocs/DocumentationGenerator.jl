@@ -1,0 +1,5 @@
+stargazers_count = "76"
+doctype = "default"
+installs = true
+version = "0.5.0"
+description = "Functional and persistent data structures for Julia"

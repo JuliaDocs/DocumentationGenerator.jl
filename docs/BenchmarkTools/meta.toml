@@ -1,0 +1,5 @@
+stargazers_count = "146"
+doctype = "default"
+installs = true
+version = "0.4.1"
+description = "A benchmarking framework for the Julia language"

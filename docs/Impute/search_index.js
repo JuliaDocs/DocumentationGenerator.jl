@@ -297,7 +297,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/imputors/#Impute.impute!-Union{Tuple{T}, Tuple{Interpolate,Context,AbstractArray{#s13,1} where #s13<:Union{Missing, T}}} where T",
+    "location": "api/imputors/#Impute.impute!-Union{Tuple{T}, Tuple{Interpolate,Context,AbstractArray{#s1689,1} where #s1689<:Union{Missing, T}}} where T",
     "page": "Imputors",
     "title": "Impute.impute!",
     "category": "method",

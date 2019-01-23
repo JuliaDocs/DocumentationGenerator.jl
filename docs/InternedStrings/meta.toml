@@ -1,0 +1,5 @@
+stargazers_count = "18"
+doctype = "default"
+installs = true
+version = "0.7.0"
+description = "Fully transparent string interning functionality, with proper garbage collection"

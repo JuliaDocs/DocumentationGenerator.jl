@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "22"
 doctype = "real"
+installs = true
+version = "2.0.1"
+description = "colorschemes, colormaps, gradients; extract colorschemes from images"

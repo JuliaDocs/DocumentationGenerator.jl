@@ -1,0 +1,5 @@
+stargazers_count = "64"
+doctype = "default"
+installs = true
+version = "0.3.2"
+description = "Gauss quadrature nodes and weights in Julia."

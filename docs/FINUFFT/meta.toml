@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "real"
+installs = true
+version = "0.4.1"
+description = "Julia interface to the nonuniform FFT library FINUFFT"

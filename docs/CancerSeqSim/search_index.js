@@ -49,7 +49,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#Base.show-Tuple{IO,CancerSeqSim.Simulation}",
+    "location": "#Base.show-Tuple{IO,Simulation}",
     "page": "Home",
     "title": "Base.show",
     "category": "method",

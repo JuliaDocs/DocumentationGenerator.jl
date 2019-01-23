@@ -1,0 +1,5 @@
+stargazers_count = "11"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Julia module for CPU timing"

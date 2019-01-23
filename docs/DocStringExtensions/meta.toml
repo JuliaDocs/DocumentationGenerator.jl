@@ -1,0 +1,5 @@
+stargazers_count = "22"
+doctype = "real"
+installs = true
+version = "0.6.0"
+description = "Extensions for Julia's docsystem."

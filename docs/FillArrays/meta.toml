@@ -1,0 +1,5 @@
+stargazers_count = "27"
+doctype = "default"
+installs = true
+version = "0.4.0"
+description = "Julia package for lazily representing matrices filled with a single entry"

@@ -1,0 +1,5 @@
+stargazers_count = "369"
+doctype = "real"
+installs = true
+version = "0.16.4"
+description = "A Julia package for probability distributions and associated functions."

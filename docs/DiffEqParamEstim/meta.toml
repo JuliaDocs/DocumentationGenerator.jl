@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "12"
 doctype = "default"
+installs = true
+version = "1.5.1"
+description = "A component of the DiffEq ecosystem for parameter estimation"

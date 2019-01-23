@@ -1,0 +1,5 @@
+stargazers_count = "4"
+doctype = "real"
+installs = true
+version = "4.5.1"
+description = "Stan from Julia (Julia v1.x and up)"

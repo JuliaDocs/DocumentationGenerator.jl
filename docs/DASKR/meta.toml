@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "2"
 doctype = "default"
+installs = true
+version = "2.3.0"
+description = "Interface to DASKR, a differential algebraic system solver"

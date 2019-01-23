@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "18"
 doctype = "default"
+installs = true
+version = "0.4.6"
+description = "Incremental non-parametric (and parametric) solution to factor graphs"

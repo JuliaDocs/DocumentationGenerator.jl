@@ -1,0 +1,5 @@
+stargazers_count = "221"
+doctype = "real"
+installs = true
+version = "0.10.2"
+description = "Forward Mode Automatic Differentiation for Julia"

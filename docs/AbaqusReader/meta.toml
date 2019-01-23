@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "real"
+installs = true
+version = "0.2.2"
+description = "AbaqusReader.jl is a parse for ABAQUS FEM models. It's capable of parsing the geometry accurately, including surface sets, node sets, and other relevant geometrical data used in FEM calculations. Other option is to parse whole model, including boundary conditions, material data and load steps."

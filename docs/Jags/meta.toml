@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "6"
 doctype = "default"
+installs = true
+version = "2.0.1"
+description = "Julia package for using Jags as an external program"

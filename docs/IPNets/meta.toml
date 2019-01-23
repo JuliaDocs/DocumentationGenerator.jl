@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "default"
+installs = true
+version = "0.6.0"
+description = "IPv4 / IPv6 network abstractions for Julia"

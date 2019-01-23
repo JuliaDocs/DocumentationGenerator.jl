@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "25"
 doctype = "default"
+installs = true
+version = "0.8.0"
+description = "Extension functionality which uses Stan.jl, DynamicHMC.jl, and Turing.jl to estimate the parameters to differential equations"

@@ -1,0 +1,5 @@
+stargazers_count = "672"
+doctype = "default"
+installs = true
+version = "0.18.5"
+description = "Modeling language for Mathematical Optimization (linear, mixed-integer, conic, semidefinite, nonlinear)"

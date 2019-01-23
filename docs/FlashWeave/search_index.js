@@ -145,7 +145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#FlashWeave.mutual_information-Tuple{AbstractArray{#s31,2} where #s31<:Integer,Integer,Integer,AbstractArray{#s15,1} where #s15<:Integer,AbstractArray{#s14,1} where #s14<:Integer}",
+    "location": "#FlashWeave.mutual_information-Tuple{AbstractArray{#s1119,2} where #s1119<:Integer,Integer,Integer,AbstractArray{#s1118,1} where #s1118<:Integer,AbstractArray{#s1117,1} where #s1117<:Integer}",
     "page": "Home",
     "title": "FlashWeave.mutual_information",
     "category": "method",

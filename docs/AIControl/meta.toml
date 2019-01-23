@@ -1,0 +1,5 @@
+stargazers_count = "2"
+doctype = "default"
+installs = true
+version = "0.0.1"
+description = "Implementation of the AIControl paper in Julia 1.0"

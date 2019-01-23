@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "12"
 doctype = "default"
+installs = true
+version = "0.1.1"
+description = "Julia implementation of zlib decompression"

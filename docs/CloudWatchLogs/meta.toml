@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "real"
+installs = true
+version = "0.2.1"
+description = "AWS CloudWatch Logs integration for Julia using Memento.jl"

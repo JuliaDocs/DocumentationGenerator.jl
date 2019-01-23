@@ -1,0 +1,5 @@
+stargazers_count = "37"
+doctype = "default"
+installs = true
+version = "0.2.1"
+description = "Abstract julia interfaces for working with trees"

@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "8"
 doctype = "default"
+installs = true
+version = "0.5.0"
+description = "Julia implementation of indexed or \"lookup\" arrays"

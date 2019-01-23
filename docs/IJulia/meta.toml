@@ -1,0 +1,5 @@
+stargazers_count = "1565"
+doctype = "default"
+installs = true
+version = "1.15.2"
+description = "Julia kernel for Jupyter"

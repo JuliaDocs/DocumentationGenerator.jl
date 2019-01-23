@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "A fast module for computing proximity queries between convex bodies in 2D/3D"

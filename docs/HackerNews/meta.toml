@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "26"
 doctype = "default"
+installs = true
+version = "0.1.0"
+description = "The unofficial Julia API wrapper for HackerNews :fire:"

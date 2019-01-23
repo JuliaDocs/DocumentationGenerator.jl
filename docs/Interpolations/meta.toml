@@ -1,0 +1,5 @@
+stargazers_count = "130"
+doctype = "real"
+installs = true
+version = "0.11.1"
+description = "Fast, continuous interpolation of discrete datasets in Julia"

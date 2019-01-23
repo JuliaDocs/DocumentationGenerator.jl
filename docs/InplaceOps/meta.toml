@@ -1,0 +1,5 @@
+stargazers_count = "31"
+doctype = "default"
+installs = true
+version = "0.3.0"
+description = "Convenient macros for in-place matrix operations in Julia"

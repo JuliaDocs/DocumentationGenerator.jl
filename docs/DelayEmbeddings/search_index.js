@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "DelayEmbeddings.MTDelayEmbedding",
     "category": "type",
-    "text": "MTDelayEmbedding(γ, τ, B) -> `embedding`\n\nReturn a delay coordinates embedding structure to be used as a functor, given multiple timeseries (B in total), either as a Dataset or a SizedArray (see reconstruct), and some index. Calling\n\nembedding(s, n)\n\nwill create the n-th reconstructed vector of the embedded space, which has γ temporal neighbors with delay(s) τ. See reconstruct for more.\n\nBe very careful when choosing n, because @inbounds is used internally.\n\n\n\n\n\n"
+    "text": "MTDelayEmbedding(γ, τ, B) -> `embedding`\n\nReturn a delay coordinates embedding structure to be used as a functor, given multiple timeseries (B in total), either as a Dataset or a SizedArray), and some index. Calling\n\nembedding(s, n)\n\nwill create the n-th reconstructed vector of the embedded space, which has γ temporal neighbors with delay(s) τ. See reconstruct for more.\n\nBe very careful when choosing n, because @inbounds is used internally.\n\n\n\n\n\n"
 },
 
 {
@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "DelayEmbeddings.estimate_delay",
     "category": "function",
-    "text": "estimate_delay(s, method::String [, τs = 1:2:100]; kwargs...) -> τ\n\nEstimate an optimal delay to be used in reconstruct or embed. The method can be one of the following:\n\n\"ac_zero\" : first delay at which the auto-correlation function becomes <0.\n\"ac_min\" : delay of first minimum of the auto-correlation function.\n\"mi_min\" : delay of first minimum of mutual information of s with itself (shifted for various τs). Keywords nbins, binwidth are propagated into mutualinformation.\n\"exp_decay\" : exponential_decay_fit of the correlation function rounded  to an integer (uses least squares on c(t) = exp(-t/τ) to find τ).\n\"exp_extrema\" : same as above but the exponential fit is done to the absolute value of the local extrema of the correlation function.\n\nBoth the mutual information and correlation function (autocor) are computed only for delays τs. This means that the min methods can never return the first value of τs!\n\n\n\n\n\n"
+    "text": "estimate_delay(s, method::String [, τs = 1:2:100]; kwargs...) -> τ\n\nEstimate an optimal delay to be used in reconstruct or embed. The method can be one of the following:\n\n\"ac_zero\" : first delay at which the auto-correlation function becomes <0.\n\"ac_min\" : delay of first minimum of the auto-correlation function.\n\"mi_min\" : delay of first minimum of mutual information of s with itself (shifted for various τs). Keywords nbins, binwidth are propagated into mutualinformation.\n\"exp_decay\" : exponential_decay_fit of the correlation function rounded  to an integer (uses least squares on c(t) = exp(-t/τ) to find τ).\n\"exp_extrema\" : same as above but the exponential fit is done to the absolute value of the local extrema of the correlation function.\n\nBoth the mutual information and correlation function (autocor) are computed only for delays τs. This means that the min methods can never return the first value of τs!\n\nThe method mi_min is significantly more accurate than the others and also returns good results for most timeseries. It is however the slowest method (but still quite fast!).\n\n\n\n\n\n"
 },
 
 {
@@ -177,7 +177,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#DelayEmbeddings._mutualinfo!-Tuple{AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{#s1802,1} where #s1802<:Integer,AbstractArray{T,1} where T}",
+    "location": "#DelayEmbeddings._mutualinfo!-Tuple{AbstractArray{T,1} where T,AbstractArray{T,1} where T,AbstractArray{#s758,1} where #s758<:Integer,AbstractArray{T,1} where T}",
     "page": "Home",
     "title": "DelayEmbeddings._mutualinfo!",
     "category": "method",

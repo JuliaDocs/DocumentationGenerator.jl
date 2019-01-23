@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "16"
 doctype = "default"
+installs = true
+version = "0.2.0"
+description = "A Julia package for client side WebSockets."

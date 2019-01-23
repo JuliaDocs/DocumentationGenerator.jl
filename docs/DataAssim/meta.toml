@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "real"
+installs = true
+version = "0.3.0"
+description = "Implementation of various ensemble Kalman Filter data assimilation methods in Julia"

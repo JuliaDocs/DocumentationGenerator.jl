@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.2.2"
+description = "Custom interactive REPL prompts that convey status"

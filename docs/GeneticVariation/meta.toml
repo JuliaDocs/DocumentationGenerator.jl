@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "9"
 doctype = "real"
+installs = true
+version = "0.4.0"
+description = "Datastructures and algorithms for working with genetic variation"

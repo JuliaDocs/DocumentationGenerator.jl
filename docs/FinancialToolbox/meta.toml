@@ -1,0 +1,5 @@
+stargazers_count = "7"
+doctype = "default"
+installs = true
+version = "0.2.1"
+description = "Useful function for Black and Scholes Model in the Julia Language"

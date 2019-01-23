@@ -1,0 +1,5 @@
+stargazers_count = "32"
+doctype = "default"
+installs = true
+version = "0.5.6"
+description = "Bindings to the Cairo graphics library."

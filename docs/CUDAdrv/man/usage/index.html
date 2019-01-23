@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Usage · CUDAdrv.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>CUDAdrv.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Home</a></li><li><span class="toctext">Manual</span><ul><li class="current"><a class="toctext" href>Usage</a><ul class="internal"><li><a class="toctext" href="#Automatic-memory-management-1">Automatic memory management</a></li><li><a class="toctext" href="#Device-memory-1">Device memory</a></li><li><a class="toctext" href="#Modules-and-custom-kernels-1">Modules and custom kernels</a></li><li class="toplevel"><a class="toctext" href="#Other-notes-1">Other notes</a></li><li><a class="toctext" href="#Memory-storage-order-1">Memory storage order</a></li></ul></li></ul></li><li><span class="toctext">Library</span><ul><li><a class="toctext" href="../../lib/api/">API wrappers</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href>Usage</a></li></ul></nav><hr/><div id="topbar"><span>Usage</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Usage-1" href="#Usage-1">Usage</a></h1><p>Quick start:</p><pre><code class="language-julia">using CUDAdrv
+
+dev = CuDevice(0)
+ctx = CuContext(dev)
+
+# code that does GPU computations
+
+destroy!(ctx)
+
+# output
+</code></pre><p>To enable debug logging, launch Julia with the <code>JULIA_DEBUG</code> environment variable set to <code>CUDAdrv</code>.</p><h2><a class="nav-anchor" id="Automatic-memory-management-1" href="#Automatic-memory-management-1">Automatic memory management</a></h2><p>Except for the encapsulating context, <code>destroy</code> or <code>unload</code> calls are never needed. Objects are registered with the Julia garbage collector, and are automatically finalized when they go out of scope.</p><p>However, many CUDA API functions implicitly depend on global state, such as the current active context. The wrapper needs to model those dependencies in order for objects not to get destroyed before any dependent object is. If we fail to model these dependency relations, API calls might randomly fail, eg. in the case of a missing context dependency with a <code>INVALID_CONTEXT</code> or <code>CONTEXT_IS_DESTROYED</code> error message. File a bug report if that happens.</p><h2><a class="nav-anchor" id="Device-memory-1" href="#Device-memory-1">Device memory</a></h2><p>Device memory is represented as <code>Buffer</code> objects, which can be allocated or initialized from existing arrays:</p><pre><code class="language-julia">A   = zeros(Float32,3,4)
+d_A = Mem.upload(A);
+typeof(d_A)
+
+# output
+
+CUDAdrv.Mem.Buffer</code></pre><p>A variety of methods are defined to work with buffers, however, these are all low-level methods. Use the CuArrays.jl package for a higher-level array abstraction.</p><h2><a class="nav-anchor" id="Modules-and-custom-kernels-1" href="#Modules-and-custom-kernels-1">Modules and custom kernels</a></h2><p>This will not teach you about CUDA programming; for that, please refer to the CUDA documentation and other online sources.</p><h3><a class="nav-anchor" id="Compiling-your-own-modules-1" href="#Compiling-your-own-modules-1">Compiling your own modules</a></h3><p>You can write and use your own custom kernels, first writing a <code>.cu</code> file and compiling it as a <code>ptx</code> module. On Linux, compilation would look something like this:</p><pre><code class="language-none">nvcc -ptx mycudamodule.cu</code></pre><p>You can specify that the code should be compiled for compute capability 2.0 devices or higher using:</p><pre><code class="language-none">nvcc -ptx -gencode=arch=compute_20,code=sm_20 mycudamodule.cu</code></pre><p>If you want to write code that will support multiple datatypes (e.g., <code>Float32</code> and <code>Float64</code>), it&#39;s recommended that you use C++ and write your code using templates. Then use <code>extern C</code> to instantiate bindings for each datatype. For example:</p><pre><code class="language-cpp">template &lt;typename T&gt;
+__device__ void kernel_function1(T *data) {
+    // Code goes here
+}
+template &lt;typename T1, typename T2&gt;
+__device__ void kernel_function2(T1 *data1, T2 *data2) {
+    // Code goes here
+}
+
+extern &quot;C&quot;
+{
+    void __global__ kernel_function1_float(float *data) {kernel_function1(data);}
+    void __global__ kernel_function1_double(double *data) {kernel_function1(data);}
+    void __global__ kernel_function2_int_float(int *data1, float *data2) {kernel_function2(data1,data2);}
+}</code></pre><h4><a class="nav-anchor" id="Initializing-and-freeing-PTX-modules-1" href="#Initializing-and-freeing-PTX-modules-1">Initializing and freeing PTX modules</a></h4><p>To easily make your kernels available, the recommended approach is to define something analogous to the following for each <code>ptx</code> module (this example uses the kernels described in the previous section):</p><pre><code class="language-julia">module MyCudaModule
+
+import CUDAdrv
+import CUDAdrv: CuModule, CuModuleFile, CuFunction, cudacall
+
+export function1
+
+const ptxdict = Dict()
+const mdlist = Array{CuModule}(0)
+
+function mdinit(devlist)
+    global ptxdict
+    global mdlist
+    isempty(mdlist) || error(&quot;mdlist is not empty&quot;)
+    for dev in devlist
+        CuDevice(dev)
+        md = CuModuleFile(&quot;mycudamodule.ptx&quot;)
+
+        ptxdict[(&quot;function1&quot;, Float32)] = CuFunction(md, &quot;kernel_function1_float&quot;)
+        ptxdict[(&quot;function1&quot;, Float64)] = CuFunction(md, &quot;kernel_function1_double&quot;)
+        ptxdict[(&quot;function2&quot;, Int32, Float32)] = CuFunction(md, &quot;kernel_function2_int_float&quot;)
+
+        push!(mdlist, md)
+    end
+end
+
+mdclose() = (empty!(mdlist); empty!(ptxdict))
+
+function finit()
+  mdclose()
+end
+
+function init(devlist)
+  mdinit(devlist)
+end
+
+function function1(griddim::CuDim, blockdim::CuDim, data::CuArray{T}) where T
+    cufunction1 = ptxdict[(&quot;function1&quot;, T)]
+    cudacall(cufunction1, griddim, blockdim, (Ptr{T},), data)
+end
+
+...
+
+end  # MyCudaModule</code></pre><p>Usage will look something like the following:</p><pre><code class="language-julia">gpuid = 0
+dev = CuDevice(gpuid) # Or the ID of the GPU you want, if you have many of them
+ctx = CuContext(dev)
+
+MyCudaModule.init(gpuid)
+# Code that uses functions from your MyCudaModule
+MyCudaModule.finit()
+
+destroy!(ctx)</code></pre><h1><a class="nav-anchor" id="Other-notes-1" href="#Other-notes-1">Other notes</a></h1><h2><a class="nav-anchor" id="Memory-storage-order-1" href="#Memory-storage-order-1">Memory storage order</a></h2><p>Julia convention is that matrices are stored in column-major order, whereas C (and CUDA) use row-major. For efficiency this wrapper avoids reordering memory, so that the linear sequence of addresses is the same between main memory and the GPU. For most usages, this is probably what you want.</p><p>However, for the purposes of linear algebra, this effectively means that one is storing the transpose of matrices on the GPU. Keep this in mind when manipulating code on your GPU kernels.</p><footer><hr/><a class="previous" href="../../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../../lib/api/"><span class="direction">Next</span><span class="title">API wrappers</span></a></footer></article></body></html>

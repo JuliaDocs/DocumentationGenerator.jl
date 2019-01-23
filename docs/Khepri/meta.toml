@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "2"
 doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Khepri for Julia users."

@@ -1,0 +1,5 @@
+stargazers_count = "51"
+doctype = "real"
+installs = true
+version = "0.4.2"
+description = "Julia package for fast orthogonal polynomial transforms"

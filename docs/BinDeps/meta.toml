@@ -1,0 +1,5 @@
+stargazers_count = "39"
+doctype = "default"
+installs = true
+version = "0.8.10"
+description = "Tool for building binary dependencies for Julia modules"

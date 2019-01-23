@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "default"
+installs = true
+version = "0.3.0"
+description = "The fast multipole method (FMM). Julia interface to the library FMMLIB2D."

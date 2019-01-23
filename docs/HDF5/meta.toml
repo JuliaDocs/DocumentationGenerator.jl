@@ -1,0 +1,5 @@
+stargazers_count = "154"
+doctype = "default"
+installs = true
+version = "0.11.0"
+description = "Saving and loading data in the HDF5 file format"

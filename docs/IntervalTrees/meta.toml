@@ -1,0 +1,5 @@
+stargazers_count = "16"
+doctype = "real"
+installs = true
+version = "1.0.0"
+description = "A data structure for efficient manipulation of sets of intervals"

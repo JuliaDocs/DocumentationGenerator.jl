@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "default"
+installs = true
+version = "0.2.0"
+description = "A Julia AMQP (Advanced Message Queuing Protocol) / RabbitMQ Client."

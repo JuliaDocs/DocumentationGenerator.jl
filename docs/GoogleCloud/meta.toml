@@ -1,0 +1,5 @@
+stargazers_count = "11"
+doctype = "real"
+installs = true
+version = "0.8.0"
+description = "Google Cloud APIs for Julia"

@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "real"
+installs = true
+version = "0.2.0"
+description = "A julia port of the learning environment Kara"

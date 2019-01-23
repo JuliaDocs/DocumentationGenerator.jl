@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.2.1"
+description = "Finite fields for Julia"

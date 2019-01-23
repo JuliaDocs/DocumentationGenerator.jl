@@ -1,0 +1,5 @@
+stargazers_count = "568"
+doctype = "real"
+installs = true
+version = "0.17.0"
+description = "Library for working with tabular data in Julia"

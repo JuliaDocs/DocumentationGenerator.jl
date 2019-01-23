@@ -1,0 +1,5 @@
+stargazers_count = "43"
+doctype = "default"
+installs = true
+version = "1.0.3"
+description = "convenient input and display of LaTeX equation strings for the Julia language"

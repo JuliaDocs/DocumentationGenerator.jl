@@ -1,0 +1,5 @@
+stargazers_count = "17"
+doctype = "default"
+installs = true
+version = "1.0.0"
+description = "macro to change the default floating-point precision in Julia code"

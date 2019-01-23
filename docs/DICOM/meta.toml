@@ -1,0 +1,5 @@
+stargazers_count = "12"
+doctype = "default"
+installs = true
+version = "0.3.1"
+description = "DICOM for Julia"

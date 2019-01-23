@@ -1,0 +1,5 @@
+stargazers_count = "17"
+doctype = "real"
+installs = true
+version = "0.3.2"
+description = "A Julia package for representing block-banded matrices and banded-block-banded matrices"

@@ -1,0 +1,5 @@
+stargazers_count = "8"
+doctype = "default"
+installs = true
+version = "0.3.1"
+description = "Flexible interactive visualization for large trees in Julia using D3.js"

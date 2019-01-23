@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "real"
+installs = true
+version = "0.2.1"
+description = "Online empirical cumulative distribution functions"

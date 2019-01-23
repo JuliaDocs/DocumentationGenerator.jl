@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Package contains algorithms to calculate smallest enclosing sphere for a given set of points in N dimensions."

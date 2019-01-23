@@ -1,0 +1,5 @@
+stargazers_count = "34"
+doctype = "real"
+installs = true
+version = "0.8.1"
+description = "A Julia package for representing banded matrices"

@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "real"
+installs = true
+version = "0.2.1"
+description = "Efficient storage and handling of nested arrays in Julia"

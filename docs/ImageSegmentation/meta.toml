@@ -1,0 +1,5 @@
+stargazers_count = "16"
+doctype = "default"
+installs = true
+version = "1.1.0"
+description = "Partitioning images into meaningful regions"

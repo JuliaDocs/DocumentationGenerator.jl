@@ -1,0 +1,5 @@
+stargazers_count = "100"
+doctype = "default"
+installs = true
+version = "0.1.2"
+description = "HDF5-compatible file format in pure Julia"

@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.2.4"
+description = "Julia fixed-point decimals built from integers"

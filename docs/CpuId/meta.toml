@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "22"
 doctype = "default"
+installs = true
+version = "0.2.0"
+description = "Ask the CPU for cache sizes, SIMD feature support, a running hypervisor, and more."

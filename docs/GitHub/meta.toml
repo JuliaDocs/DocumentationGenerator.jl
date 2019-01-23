@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "67"
 doctype = "default"
+installs = true
+version = "5.0.2"
+description = "A Julia package for interfacing with GitHub"

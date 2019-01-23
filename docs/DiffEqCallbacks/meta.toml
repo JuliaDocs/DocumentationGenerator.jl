@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "default"
+installs = true
+version = "2.5.2"
+description = "A library of useful callbacks for DiffEq solvers"

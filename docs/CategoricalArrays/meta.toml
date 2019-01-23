@@ -1,0 +1,5 @@
+stargazers_count = "22"
+doctype = "real"
+installs = true
+version = "0.5.2"
+description = "Arrays for working with categorical data (both nominal and ordinal) in Julia"

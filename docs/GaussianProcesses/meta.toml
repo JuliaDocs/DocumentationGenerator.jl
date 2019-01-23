@@ -1,0 +1,5 @@
+stargazers_count = "82"
+doctype = "real"
+installs = true
+version = "0.9.0"
+description = "A Julia package for Gaussian Processes"

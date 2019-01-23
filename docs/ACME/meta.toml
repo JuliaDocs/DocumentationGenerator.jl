@@ -1,0 +1,5 @@
+stargazers_count = "41"
+doctype = "real"
+installs = true
+version = "0.7.5"
+description = "ACME.jl - Analog Circuit Modeling and Emulation for Julia"

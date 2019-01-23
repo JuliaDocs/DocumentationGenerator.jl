@@ -204,7 +204,7 @@ julia&gt; eval(code)
 ERROR: MethodError: no method matching eval(::Expr)
 You may have intended to import Base.eval
 Closest candidates are:
-  eval(!Matched::Module, !Matched::Any) at boot.jl:319</code></pre><p>Again, we should have 1.0 in corresponding nodal point or it&#39;s derivative, according to that order we have <span>$u(0), u&#39;(0), u(1), u&#39;(1)$</span>, so</p><pre><code class="language-julia-repl">julia&gt; B = C1Hermite()
+  eval(!Matched::Module, !Matched::Any) at boot.jl:328</code></pre><p>Again, we should have 1.0 in corresponding nodal point or it&#39;s derivative, according to that order we have <span>$u(0), u&#39;(0), u(1), u&#39;(1)$</span>, so</p><pre><code class="language-julia-repl">julia&gt; B = C1Hermite()
 ERROR: UndefVarError: C1Hermite not defined
 
 julia&gt; N = zeros(1, 4)

@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "real"
+installs = true
+version = "0.7.0"
+description = "Using Apriltags in Julia"

@@ -1,0 +1,5 @@
+stargazers_count = "15"
+doctype = "real"
+installs = true
+version = "1.0.0"
+description = "Continuous transformations from ℝ or ℝⁿ to various open sets"

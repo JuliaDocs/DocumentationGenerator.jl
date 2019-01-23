@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "1"
 doctype = "real"
+installs = true
+version = "0.1.0"
+description = "Cache Servers"

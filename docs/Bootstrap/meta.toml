@@ -1,0 +1,5 @@
+stargazers_count = "36"
+doctype = "real"
+installs = true
+version = "2.0.1"
+description = "Statistical bootstrapping library for Julia"

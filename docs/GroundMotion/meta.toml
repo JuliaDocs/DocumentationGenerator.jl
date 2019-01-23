@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "1"
 doctype = "default"
+installs = true
+version = "0.3.0"
+description = "The ground motion evaluation module (earthquake seismology)"

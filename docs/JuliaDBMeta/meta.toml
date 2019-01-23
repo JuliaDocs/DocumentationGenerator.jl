@@ -1,0 +1,5 @@
+stargazers_count = "19"
+doctype = "real"
+installs = true
+version = "0.4.1"
+description = "Metaprogramming tools for JuliaDB"

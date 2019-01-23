@@ -1,0 +1,5 @@
+stargazers_count = "8"
+doctype = "default"
+installs = true
+version = "2.1.1"
+description = "FreeType 2 bindings for Julia"

@@ -1,0 +1,5 @@
+stargazers_count = "140"
+doctype = "default"
+installs = true
+version = "0.37.0"
+description = "Plotting for Julia based on GR, a framework for visualisation applications"

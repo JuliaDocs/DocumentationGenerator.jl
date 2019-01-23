@@ -1,0 +1,5 @@
+stargazers_count = "30"
+doctype = "default"
+installs = true
+version = "0.2.3"
+description = "Julia implementation of the Apache Arrow data standard."

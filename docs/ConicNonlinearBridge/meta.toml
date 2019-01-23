@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "default"
+installs = true
+version = "0.2.1"
+description = "MathProgBase wrapper to solve conic optimization problems with derivative-based nonlinear solvers"

@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "real"
+installs = true
+version = "0.1.0"
+description = "Sum and cumulative sum using the Kahan-Babuska-Neumaier algorithm"

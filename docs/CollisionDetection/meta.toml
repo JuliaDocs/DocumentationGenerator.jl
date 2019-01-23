@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.1.2"
+description = "Tree data structure for log(N) collision testing"

@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "real"
+installs = true
+version = "1.0.0"
+description = "Interfaces to common external biological tools from julia scripts and programs"

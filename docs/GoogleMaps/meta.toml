@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "0"
 doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Unofficial Julia client for the Google Maps/Places API"

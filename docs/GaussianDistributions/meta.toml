@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.3.2"
+description = "Gaussian distributions as state variables and for uncertainty quantification with Unitful"

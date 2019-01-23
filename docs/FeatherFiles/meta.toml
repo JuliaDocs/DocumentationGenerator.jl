@@ -1,0 +1,5 @@
+stargazers_count = "2"
+doctype = "default"
+installs = true
+version = "0.7.0"
+description = "FileIO.jl integration for Feather files"

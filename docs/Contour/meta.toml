@@ -1,0 +1,5 @@
+stargazers_count = "15"
+doctype = "real"
+installs = true
+version = "0.5.1"
+description = "Calculating contour curves for 2D scalar fields in Julia"

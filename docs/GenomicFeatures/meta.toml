@@ -1,0 +1,5 @@
+stargazers_count = "4"
+doctype = "real"
+installs = true
+version = "1.0.0"
+description = "Tools for genomic features in Julia."

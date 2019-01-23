@@ -1,0 +1,5 @@
+stargazers_count = "55"
+doctype = "default"
+installs = true
+version = "0.2.2"
+description = "Lasso/Elastic Net linear and generalized linear models"

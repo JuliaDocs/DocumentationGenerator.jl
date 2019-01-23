@@ -1,0 +1,5 @@
+stargazers_count = "112"
+doctype = "real"
+installs = true
+version = "0.6.1"
+description = "Array operations defined for all kind of GPU backends."

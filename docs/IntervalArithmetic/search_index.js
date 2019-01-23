@@ -333,7 +333,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "IntervalArithmetic.bisect",
     "category": "function",
-    "text": "bisect(X::IntervalBox, i::Integer, α=0.49609375)\n\nBisect the IntervalBox in side number i.\n\n\n\n\n\n"
+    "text": "bisect(X::IntervalBox, α=0.49609375)\n\nBisect the IntervalBox X at position α ∈ [0,1] along its longest side.\n\n\n\n\n\n"
 },
 
 {
@@ -341,7 +341,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "IntervalArithmetic.bisect",
     "category": "function",
-    "text": "bisect(X::IntervalBox, α=0.49609375)\n\nBisect the IntervalBox X at position α ∈ [0,1] along its longest side.\n\n\n\n\n\n"
+    "text": "bisect(X::IntervalBox, i::Integer, α=0.49609375)\n\nBisect the IntervalBox in side number i.\n\n\n\n\n\n"
 },
 
 {
@@ -377,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.cancelplus-Tuple{IntervalArithmetic.Interval,IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.cancelplus-Tuple{Interval,Interval}",
     "page": "API",
     "title": "IntervalArithmetic.cancelplus",
     "category": "method",
@@ -417,7 +417,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.hull-Tuple{IntervalArithmetic.Interval,IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.hull-Tuple{Interval,Interval}",
     "page": "API",
     "title": "IntervalArithmetic.hull",
     "category": "method",
@@ -433,7 +433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.isatomic-Tuple{IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.isatomic-Tuple{Interval}",
     "page": "API",
     "title": "IntervalArithmetic.isatomic",
     "category": "method",
@@ -441,7 +441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.iscommon-Tuple{IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.iscommon-Tuple{Interval}",
     "page": "API",
     "title": "IntervalArithmetic.iscommon",
     "category": "method",
@@ -449,7 +449,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.isthin-Tuple{IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.isthin-Tuple{Interval}",
     "page": "API",
     "title": "IntervalArithmetic.isthin",
     "category": "method",
@@ -489,7 +489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.pow-Tuple{IntervalArithmetic.Interval,Integer}",
+    "location": "api/#IntervalArithmetic.pow-Tuple{Interval,Integer}",
     "page": "API",
     "title": "IntervalArithmetic.pow",
     "category": "method",
@@ -497,7 +497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.radius-Tuple{IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.radius-Tuple{Interval}",
     "page": "API",
     "title": "IntervalArithmetic.radius",
     "category": "method",
@@ -545,7 +545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.:==-Tuple{IntervalArithmetic.Interval,IntervalArithmetic.Interval}",
+    "location": "api/#Base.:==-Tuple{Interval,Interval}",
     "page": "API",
     "title": "Base.:==",
     "category": "method",
@@ -553,7 +553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.:⊆-Tuple{IntervalArithmetic.Interval,IntervalArithmetic.Interval}",
+    "location": "api/#Base.:⊆-Tuple{Interval,Interval}",
     "page": "API",
     "title": "Base.:⊆",
     "category": "method",
@@ -561,7 +561,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.Rounding.setrounding-Tuple{Type{IntervalArithmetic.Interval},Symbol}",
+    "location": "api/#Base.Rounding.setrounding-Tuple{Type{Interval},Symbol}",
     "page": "API",
     "title": "Base.Rounding.setrounding",
     "category": "method",
@@ -569,7 +569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.hash-Tuple{IntervalArithmetic.Interval,UInt64}",
+    "location": "api/#Base.hash-Tuple{Interval,UInt64}",
     "page": "API",
     "title": "Base.hash",
     "category": "method",
@@ -617,7 +617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.round-Tuple{IntervalArithmetic.Interval}",
+    "location": "api/#Base.round-Tuple{Interval}",
     "page": "API",
     "title": "Base.round",
     "category": "method",
@@ -625,7 +625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.setdiff-Tuple{IntervalArithmetic.Interval,IntervalArithmetic.Interval}",
+    "location": "api/#Base.setdiff-Tuple{Interval,Interval}",
     "page": "API",
     "title": "Base.setdiff",
     "category": "method",
@@ -649,7 +649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#Base.union-Tuple{IntervalArithmetic.Interval,IntervalArithmetic.Interval}",
+    "location": "api/#Base.union-Tuple{Interval,Interval}",
     "page": "API",
     "title": "Base.union",
     "category": "method",
@@ -665,7 +665,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.big53-Tuple{IntervalArithmetic.Interval{Float64}}",
+    "location": "api/#IntervalArithmetic.big53-Tuple{Interval{Float64}}",
     "page": "API",
     "title": "IntervalArithmetic.big53",
     "category": "method",
@@ -721,7 +721,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api/#IntervalArithmetic.multiply_by_positive_constant-Tuple{Any,IntervalArithmetic.Interval}",
+    "location": "api/#IntervalArithmetic.multiply_by_positive_constant-Tuple{Any,Interval}",
     "page": "API",
     "title": "IntervalArithmetic.multiply_by_positive_constant",
     "category": "method",

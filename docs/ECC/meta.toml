@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "0"
 doctype = "real"
+installs = true
+version = "0.2.1"
+description = "GitLab mirror"

@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Jfire is a simple julia package for auto generate  command line interfaces (CLIs) to call functions or modules, inspired by fire package of python"

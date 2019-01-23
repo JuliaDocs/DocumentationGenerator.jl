@@ -1,0 +1,5 @@
+stargazers_count = "36"
+doctype = "real"
+installs = true
+version = "1.0.1"
+description = "A Julia wrapper for the CUDA driver API."

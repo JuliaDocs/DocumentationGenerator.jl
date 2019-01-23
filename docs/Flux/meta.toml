@@ -1,0 +1,207 @@
+stargazers_count = "898"
+license_url = ""
+doctype = "real"
+owner = "FluxML"
+installs = true
+license = "Other"
+version = "0.6.0"
+description = "Relax! Flux is the ML library that doesn't make you tensor"
+
+[[contributors]]
+name = "MikeInnes"
+contributions = "1297"
+[[contributors]]
+name = "avik-pal"
+contributions = "89"
+[[contributors]]
+name = "alha02"
+contributions = "32"
+[[contributors]]
+name = "johnnychen94"
+contributions = "16"
+[[contributors]]
+name = "iblis17"
+contributions = "15"
+[[contributors]]
+name = "tejank10"
+contributions = "15"
+[[contributors]]
+name = "CarloLucibello"
+contributions = "12"
+[[contributors]]
+name = "gustafsson"
+contributions = "11"
+[[contributors]]
+name = "GenaBitu"
+contributions = "10"
+[[contributors]]
+name = "ylxdzsw"
+contributions = "10"
+[[contributors]]
+name = "boathit"
+contributions = "9"
+[[contributors]]
+name = "pevnak"
+contributions = "9"
+[[contributors]]
+name = "staticfloat"
+contributions = "9"
+[[contributors]]
+name = "JoshChristie"
+contributions = "7"
+[[contributors]]
+name = "baggepinnen"
+contributions = "6"
+[[contributors]]
+name = "safnuk"
+contributions = "5"
+[[contributors]]
+name = "chengchingwen"
+contributions = "5"
+[[contributors]]
+name = "c-p-murphy"
+contributions = "4"
+[[contributors]]
+name = "maetshju"
+contributions = "4"
+[[contributors]]
+name = "freeboson"
+contributions = "4"
+[[contributors]]
+name = "tkelman"
+contributions = "4"
+[[contributors]]
+name = "ChrisRackauckas"
+contributions = "4"
+[[contributors]]
+name = "domluna"
+contributions = "3"
+[[contributors]]
+name = "JobJob"
+contributions = "3"
+[[contributors]]
+name = "Roger-luo"
+contributions = "3"
+[[contributors]]
+name = "jessebett"
+contributions = "3"
+[[contributors]]
+name = "harryscholes"
+contributions = "3"
+[[contributors]]
+name = "mkborregaard"
+contributions = "3"
+[[contributors]]
+name = "iamed2"
+contributions = "2"
+[[contributors]]
+name = "jekbradbury"
+contributions = "2"
+[[contributors]]
+name = "jarvist"
+contributions = "2"
+[[contributors]]
+name = "jonathanBieler"
+contributions = "2"
+[[contributors]]
+name = "jjerphan"
+contributions = "2"
+[[contributors]]
+name = "piever"
+contributions = "2"
+[[contributors]]
+name = "americast"
+contributions = "2"
+[[contributors]]
+name = "Sheemon7"
+contributions = "2"
+[[contributors]]
+name = "yuehhua"
+contributions = "2"
+[[contributors]]
+name = "ayush1999"
+contributions = "2"
+[[contributors]]
+name = "kleskjr"
+contributions = "2"
+[[contributors]]
+name = "KristofferC"
+contributions = "2"
+[[contributors]]
+name = "ornithos"
+contributions = "1"
+[[contributors]]
+name = "ayan-b"
+contributions = "1"
+[[contributors]]
+name = "kleinschmidt"
+contributions = "1"
+[[contributors]]
+name = "schmrlng"
+contributions = "1"
+[[contributors]]
+name = "IsaacTay"
+contributions = "1"
+[[contributors]]
+name = "KadeG"
+contributions = "1"
+[[contributors]]
+name = "Keno"
+contributions = "1"
+[[contributors]]
+name = "oxinabox"
+contributions = "1"
+[[contributors]]
+name = "mcabbott"
+contributions = "1"
+[[contributors]]
+name = "mortenpi"
+contributions = "1"
+[[contributors]]
+name = "peterjdolan"
+contributions = "1"
+[[contributors]]
+name = "ninjin"
+contributions = "1"
+[[contributors]]
+name = "Proyag"
+contributions = "1"
+[[contributors]]
+name = "renato-zannon"
+contributions = "1"
+[[contributors]]
+name = "roberthoenig"
+contributions = "1"
+[[contributors]]
+name = "r3tex"
+contributions = "1"
+[[contributors]]
+name = "rdeits"
+contributions = "1"
+[[contributors]]
+name = "sambitdash"
+contributions = "1"
+[[contributors]]
+name = "Paethon"
+contributions = "1"
+[[contributors]]
+name = "SimonDanisch"
+contributions = "1"
+[[contributors]]
+name = "gitter-badger"
+contributions = "1"
+[[contributors]]
+name = "willtebbutt"
+contributions = "1"
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = "1"
+[[contributors]]
+name = "pshashk"
+contributions = "1"
+[[contributors]]
+name = "ranjanan"
+contributions = "1"
+[[contributors]]
+name = "skariel"
+contributions = "1"

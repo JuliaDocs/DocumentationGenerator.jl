@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Developer guide · GeoStats.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/style.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>GeoStats.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><span class="toctext">User guide</span><ul><li><a class="toctext" href="../problems_and_solvers/">Problems and solvers</a></li><li><a class="toctext" href="../spatialdata/">Spatial data</a></li><li><a class="toctext" href="../domains/">Domains</a></li><li><span class="toctext">Variography</span><ul><li><a class="toctext" href="../empirical_variograms/">Empirical variograms</a></li><li><a class="toctext" href="../theoretical_variograms/">Theoretical variograms</a></li><li><a class="toctext" href="../fitting_variograms/">Fitting variograms</a></li></ul></li><li><a class="toctext" href="../estimators/">Kriging estimators</a></li><li><a class="toctext" href="../comparisons/">Solver comparisons</a></li><li><a class="toctext" href="../plotting/">Plotting</a></li></ul></li><li><a class="toctext" href="../tutorials/">Tutorials</a></li><li><a class="toctext" href="../contributing/">Contributing</a></li><li><span class="toctext">About</span><ul><li><a class="toctext" href="../about/community/">Community</a></li><li><a class="toctext" href="../about/license/">License</a></li><li><a class="toctext" href="../about/citing/">Citing</a></li></ul></li><li class="current"><a class="toctext" href>Developer guide</a><ul class="internal"><li><a class="toctext" href="#Solver-macros-1">Solver macros</a></li><li><a class="toctext" href="#Domain-navigation-1">Domain navigation</a></li><li><a class="toctext" href="#Mapping-spatial-data-1">Mapping spatial data</a></li><li><a class="toctext" href="#Partitioning-spatial-data-1">Partitioning spatial data</a></li><li><a class="toctext" href="#Solver-example-1">Solver example</a></li></ul></li><li><a class="toctext" href="../links/">Index</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Developer guide</a></li></ul></nav><hr/><div id="topbar"><span>Developer guide</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Developer-guide-1" href="#Developer-guide-1">Developer guide</a></h1><p>This guide provides an overview of the tools implemented in the framework that can be used by developers while writing new geostatistical solvers. If you have any question, please don&#39;t hesitate to ask in our <a href="../about/community/">community</a> channel.</p><h2><a class="nav-anchor" id="Solver-macros-1" href="#Solver-macros-1">Solver macros</a></h2><p>To define a new solver with the same interface of built-in solvers, the developer can use solver macros:</p><pre><code class="language-julia">@estimsolver MySolver begin
+  @param variogram = GaussianVariogram()
+  @param mean # no default parameter
+  @global verbose = true
+end</code></pre><p>The <code>@estimsolver</code> macro defines a new estimation solver <code>MySolver</code>, a parameter type <code>MySolverParam</code>, and an outer constructor that accepts parameters for each variable as well as global parameters.</p><p>Similarly, simulation solvers can be created with the <code>@simsolver</code> macro.</p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsBase.@estimsolver" href="#GeoStatsBase.@estimsolver"><code>GeoStatsBase.@estimsolver</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-none">@estimsolver solver body</code></pre><p>A helper macro to create a estimation solver named <code>solver</code> with parameters specified in <code>body</code>. For examples, please check the documentation for <code>@metasolver</code>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsBase.@simsolver" href="#GeoStatsBase.@simsolver"><code>GeoStatsBase.@simsolver</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-none">@estimsolver solver body</code></pre><p>A helper macro to create a simulation solver named <code>solver</code> with parameters specified in <code>body</code>. For examples, please check the documentation for <code>@metasolver</code>.</p></div></div></section><h2><a class="nav-anchor" id="Domain-navigation-1" href="#Domain-navigation-1">Domain navigation</a></h2><p>To navigate through all locations of a (finite) spatial domain, we introduce the concept of paths. This package defines various path types such as <code>SimplePath</code> and <code>RandomPath</code> that can be used for iteration over any domain:</p><pre><code class="language-julia"># prints 1, 2, ..., npoints(domain)
+for location in SimplePath(domain)
+  println(location)
+end</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.SimplePath" href="#GeoStatsDevTools.SimplePath"><code>GeoStatsDevTools.SimplePath</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">SimplePath(domain)</code></pre><p>A simple (or default) path on a spatial <code>domain</code>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.RandomPath" href="#GeoStatsDevTools.RandomPath"><code>GeoStatsDevTools.RandomPath</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">RandomPath(domain)</code></pre><p>A random path on a spatial <code>domain</code>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.SourcePath" href="#GeoStatsDevTools.SourcePath"><code>GeoStatsDevTools.SourcePath</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">SourcePath(domain, sources)</code></pre><p>A path over a spatial <code>domain</code> that starts at given source locations <code>sources</code> and progresses outwards.</p></div></div></section><p>At a given location of a domain, we can query neighboring locations with the concept of neighborhoods. Various neighborhood types such as <code>BallNeighborhood</code> can be used to find all locations within a specified radius:</p><pre><code class="language-julia"># define ball neighborhood with radius 10
+neighborhood = Ballneighborhood(domain, 10.)
+
+# find neighbors for all locations of the domain
+for location in RandomPath(domain)
+  neighbors = neighborhood(location)
+end</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.BallNeighborhood" href="#GeoStatsDevTools.BallNeighborhood"><code>GeoStatsDevTools.BallNeighborhood</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">BallNeighborhood(domain, radius)</code></pre><p>A ball neighborhood of a given <code>radius</code> on a spatial <code>domain</code>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.CylinderNeighborhood" href="#GeoStatsDevTools.CylinderNeighborhood"><code>GeoStatsDevTools.CylinderNeighborhood</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">CylinderNeighborhood(domain, radius, height)</code></pre><p>A cylinder neighborhood with a given <code>radius</code> and <code>height</code> on a spatial <code>domain</code>.</p><p><strong>Notes</strong></p><p>The <code>height</code> parameter is only half of the actual cylinder height.</p></div></div></section><h2><a class="nav-anchor" id="Mapping-spatial-data-1" href="#Mapping-spatial-data-1">Mapping spatial data</a></h2><p>In GeoStats.jl, spatial data and domain types are disconnected from each other for many reasons:</p><ul><li>To enable agressive parallelism and to avoid expensive data copies</li><li>To give developers the power of deciding when and where data is to be copied</li><li>To enable higher-level comparison schemes such as cross-validation</li></ul><p>To map spatial data onto a domain, we introduce the notion of mappers. For example, a <code>SimpleMapper</code> can be used to find the mapping from domain locations to data locations for a given variable:</p><pre><code class="language-julia"># construct a problem mapping data onto domain using SimpleMapper (default)
+problem = EstimationProblem(..., mapper=SimpleMapper())
+
+# get the mapping for the `:precipitation` variable
+mapping = datamap(problem, :precipitation)
+
+for (loc, datloc) in mapping
+  println(&quot;Domain location $loc has data at spatial data index $datloc&quot;)
+end</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsBase.SimpleMapper" href="#GeoStatsBase.SimpleMapper"><code>GeoStatsBase.SimpleMapper</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">SimpleMapper</code></pre><p>A mapping strategy in which data points are assigned to their nearest point in the domain.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsBase.CopyMapper" href="#GeoStatsBase.CopyMapper"><code>GeoStatsBase.CopyMapper</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">CopyMapper</code></pre><p>A mapping strategy in which data points are copied directly to the domain at specified locations.</p></div></div></section><h2><a class="nav-anchor" id="Partitioning-spatial-data-1" href="#Partitioning-spatial-data-1">Partitioning spatial data</a></h2><p>To efficiently partition spatial data, we introduce the notion of partitioners. One can loop over subsets of the data without allocating memory:</p><pre><code class="language-julia">for dataview in partition(spatialdata, DirectionPartitioner(direction))
+  # do something with view of data
+end</code></pre><p>Complex partition schemes can be produced hierarchically with a <code>HierarchicalPartitioner</code>.</p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.UniformPartitioner" href="#GeoStatsDevTools.UniformPartitioner"><code>GeoStatsDevTools.UniformPartitioner</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">UniformPartitioner(k, [shuffle])</code></pre><p>A method for partitioning spatial data uniformly into <code>k</code> subsets of approximately equal size. Optionally <code>shuffle</code> the data (default to true).</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.PlanePartitioner" href="#GeoStatsDevTools.PlanePartitioner"><code>GeoStatsDevTools.PlanePartitioner</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">PlanePartitioner(normal; tol=1e-6)</code></pre><p>A method for partitioning spatial data into a family of hyperplanes defined by a <code>normal</code> direction. Two points <code>x</code> and <code>y</code> belong to the same hyperplane when <code>(x - y) ⋅ normal &lt; tol</code>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.DirectionPartitioner" href="#GeoStatsDevTools.DirectionPartitioner"><code>GeoStatsDevTools.DirectionPartitioner</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">DirectionPartitioner(direction; atol=20., btol=.95)</code></pre><p>A method for partitioning spatial data along a given <code>direction</code> with angle tolerance <code>atol</code> in degrees and bandwidth tolerance <code>btol</code>.</p><pre><code class="language-none">      ________________
+     /        | btol
+    /         |             ILLUSTRATION OF DIRECTION TOLERANCES
+    -----------------&gt;
+    \ ) atol
+     \________________</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.SpatialPredicatePartitioner" href="#GeoStatsDevTools.SpatialPredicatePartitioner"><code>GeoStatsDevTools.SpatialPredicatePartitioner</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">SpatialPredicatePartitioner(predicate)</code></pre><p>A method for partitioning spatial data based on a <code>predicate</code>. Given two coordinates <code>x</code> and <code>y</code>, the value <code>predicate(x,y)</code> informs whether or not the points belong to the same subset.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GeoStatsDevTools.HierarchicalPartitioner" href="#GeoStatsDevTools.HierarchicalPartitioner"><code>GeoStatsDevTools.HierarchicalPartitioner</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">HierarchicalPartitioner(first, second)</code></pre><p>A partitioning method in which a <code>first</code> partition is applied and then a <code>second</code> partition is applied to each subset of the <code>first</code>.</p></div></div></section><h2><a class="nav-anchor" id="Solver-example-1" href="#Solver-example-1">Solver example</a></h2><p>For illustration purposes, we write an estimation solver that, for each location of the domain, assigns the 2-norm of the coordinates as the mean and the ∞-norm as the variance:</p><pre><code class="language-">using GeoStatsBase
+using GeoStatsDevTools
+using LinearAlgebra: norm
+
+# implement method for new solver
+import GeoStatsBase: solve
+
+@estimsolver NormSolver begin
+  @param pmean = 2
+  @param pvar  = Inf
+end
+
+function solve(problem::EstimationProblem, solver::NormSolver)
+  pdomain = domain(problem)
+
+  # results for each variable
+  μs = []; σs = []
+
+  for (var,V) in variables(problem)
+    # get user parameters
+    if var in keys(solver.params)
+      varparams = solver.params[var]
+    else
+      varparams = NormSolverParam()
+    end
+
+    # allocate memory for result
+    varμ = Vector{V}(undef, npoints(pdomain))
+    varσ = Vector{V}(undef, npoints(pdomain))
+
+    for location in SimplePath(pdomain)
+      x = coordinates(pdomain, location)
+
+      varμ[location] = norm(x, varparams.pmean)
+      varσ[location] = norm(x, varparams.pvar)
+    end
+
+    push!(μs, var =&gt; varμ)
+    push!(σs, var =&gt; varσ)
+  end
+
+  EstimationSolution(pdomain, Dict(μs), Dict(σs))
+end;</code></pre><p>We can test the newly defined solver on an estimation problem:</p><pre><code class="language-">using GeoStats
+using Plots
+gr(size=(600,400)) # hide
+
+# dummy spatial data with a single point and no value
+spatialdata = PointSetData(Dict(:z =&gt; [NaN]), reshape([0.,0.], 2, 1))
+
+# estimate on a regular grid
+spatialgrid = RegularGrid{Float64}(100,100)
+
+# the problem to be solved
+problem = EstimationProblem(spatialdata, spatialgrid, :z)
+
+# our new solver
+solver = NormSolver()
+
+solution = solve(problem, solver)
+
+plot(solution)
+png(&quot;images/normsolver.png&quot;) # hide</code></pre><p><img src="images/normsolver.png" alt/></p><footer><hr/><a class="previous" href="../about/citing/"><span class="direction">Previous</span><span class="title">Citing</span></a><a class="next" href="../links/"><span class="direction">Next</span><span class="title">Index</span></a></footer></article></body></html>

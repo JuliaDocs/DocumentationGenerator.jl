@@ -1,0 +1,5 @@
+stargazers_count = "66"
+doctype = "real"
+installs = true
+version = "0.5.1"
+description = "Read and write feather files in pure Julia"

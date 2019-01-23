@@ -1,0 +1,5 @@
+stargazers_count = "1"
+doctype = "default"
+installs = true
+version = "0.3.0"
+description = "A Julia package for automating data analysis"

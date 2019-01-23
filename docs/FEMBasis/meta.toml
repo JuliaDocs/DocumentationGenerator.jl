@@ -1,0 +1,5 @@
+stargazers_count = "7"
+doctype = "real"
+installs = true
+version = "0.2.0"
+description = "FEMBasis contains interpolation routines for finite element function spaces. Given ansatz and coordinates of domain, shape functions are calculated symbolically in a very general way to get efficient code. Shape functions can also be given directly and in that case partial derivatives are calculated automatically."

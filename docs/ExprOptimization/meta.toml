@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "11"
 doctype = "default"
+installs = true
+version = "0.2.1"
+description = "Algorithms for optimization of Julia expressions"

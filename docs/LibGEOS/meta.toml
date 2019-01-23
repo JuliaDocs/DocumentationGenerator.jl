@@ -1,0 +1,5 @@
+stargazers_count = "10"
+doctype = "default"
+installs = true
+version = "0.4.1"
+description = "Julia package for manipulation and analysis of planar geometric objects"

@@ -1,0 +1,5 @@
+stargazers_count = "7"
+doctype = "default"
+installs = true
+version = "0.4.0"
+description = "A Julia Protocol for Geospatial Data"

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · ExtractMacro.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>ExtractMacro.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Home</a><ul class="internal"></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="ExtractMacro.jl-documentation-1" href="#ExtractMacro.jl-documentation-1">ExtractMacro.jl documentation</a></h1><p>This package provides just one macro, <code>@extract</code>, which you can use by entering:</p><pre><code class="language-none">using ExtractMacro</code></pre><p>The macro creates local variables from expressions involving composite types (structs) fields. It is especially useful to avoid writing expressions of the form <code>obj.field</code> repeatedly. For example, instead of having code like this:</p><pre><code class="language-julia">potential(network::Network, i::Int) =
+    dot(unsafe(network.J[i]), unsafe(network.current_state.s)) - network.H0 -
+        network.lambda * (network.current_state.S - network.f * network.N)</code></pre><p>you could use the macro and get a more readable version:</p><pre><code class="language-julia">function potential(network::Network, i::Int)
+    @extract network : N f H0 lambda state=current_state Ji=unsafe(J[i])
+    @extract state   : S s=unsafe(s)
+
+    return dot(Ji, s) - H0 - lambda * (S - f * N)
+end</code></pre><p>This makes the function look a little bit like a method in some standard OO languages (e.g., C++) where class methods bring the class fields in scope. Note however that the <code>@extract</code> macro does not work like that: it always works by creating local variables. The consequences of this are discussed after the macro documentation.</p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="ExtractMacro.@extract-Tuple{Any,Vararg{Any,N} where N}" href="#ExtractMacro.@extract-Tuple{Any,Vararg{Any,N} where N}"><code>ExtractMacro.@extract</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-none">@extract obj : exprs...</code></pre><p>Extracts fields from composite types. E.g.</p><pre><code class="language-julia">@extract x : a b
+
+# is translated to:
+
+a = x.a
+b = x.b</code></pre><p>The colon is optional: <code>@extract x a b</code> is the same as above. Destination variable names can be changed, and arbitrary functions (including indexing) applied, e.g.:</p><pre><code class="language-julia">@extract x : q=b a1=abs(a[1]) ai=abs(a[i]) y=max(a[1],b)
+
+# is translated to:
+
+q = x.b
+a1 = abs(x.a[1])
+ai = abs(x.a[i])
+y = max(x.a[1], x.b)</code></pre><p>Notice that the <code>i</code> within the indexing expression is left untouched: indexing is special in this regard.</p><p>In order to explicitly avoid symbol manipulation on the right hand side, use <code>esc()</code>, e.g.:</p><pre><code class="language-julia">@extract x : y=abs(a[1] + esc(b))
+
+# is translated to:
+
+y = abs(x.a[1] + b) # b is left untouched</code></pre></div></div></section><p>As mentioned above, since the assignments follow the usual Julia pass-by-reference rules, if you extract a scalar value (e.g. an <code>Int</code>) from a field, and subsequently modify it, the value of the field in the parent object will not be affected. But if you extract a container (e.g. a <code>Vector</code>) and modify its contents, the change will be reflected in the parent object. For example:</p><pre><code class="language-julia">mutable struct X
+    a::Int
+    v::Vector{Int}
+end
+x = X(1, [2,3,4])
+@extract x : a v
+a = 5     # will not change x.a
+v[1] = 5  # will change x.v[1]</code></pre><footer><hr/></footer></article></body></html>

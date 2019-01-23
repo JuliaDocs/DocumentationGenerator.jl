@@ -1,0 +1,5 @@
+stargazers_count = "79"
+doctype = "real"
+installs = true
+version = "0.6.1"
+description = "Package for parsing command-line arguments to Julia programs."

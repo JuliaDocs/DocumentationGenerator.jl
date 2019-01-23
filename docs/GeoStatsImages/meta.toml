@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "7"
 doctype = "default"
+installs = true
+version = "0.3.0"
+description = "Training images for geostastical simulation"

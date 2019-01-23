@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "real"
+installs = true
+version = "2.2.0"
+description = "DIVAnd performs an n-dimensional variational analysis of arbitrarily located observations"

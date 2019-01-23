@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "4"
 doctype = "default"
+installs = true
+version = "0.0.2"
+description = "Metadata for julia fields"

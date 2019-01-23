@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "15"
 doctype = "real"
+installs = true
+version = "0.3.0"
+description = ""

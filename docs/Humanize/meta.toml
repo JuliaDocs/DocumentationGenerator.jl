@@ -1,0 +1,5 @@
+stargazers_count = "24"
+doctype = "default"
+installs = true
+version = "1.0.0"
+description = "Humanize numbers: data sizes, datetime deltas, digit separators"

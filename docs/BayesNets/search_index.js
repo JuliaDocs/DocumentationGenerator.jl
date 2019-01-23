@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "BayesNets.Factor",
     "category": "type",
-    "text": "Factor(bn, name, evidence=Assignment())\n\nCreate a factor for a node, given some evidence.\n\n\n\n\n\n"
+    "text": "Factor(dims, potential)\n\nCreate a Factor corresponding to the potential.\n\n\n\n\n\n"
 },
 
 {
@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "BayesNets.Factor",
     "category": "type",
-    "text": "Factor(dims, potential)\n\nCreate a Factor corresponding to the potential.\n\n\n\n\n\n"
+    "text": "Factor(bn, name, evidence=Assignment())\n\nCreate a factor for a node, given some evidence.\n\n\n\n\n\n"
 },
 
 {
@@ -377,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#BayesNets.sumout-Tuple{BayesNets.Table,Union{AbstractArray{Symbol,1}, Symbol}}",
+    "location": "#BayesNets.sumout-Tuple{Table,Union{AbstractArray{Symbol,1}, Symbol}}",
     "page": "Home",
     "title": "BayesNets.sumout",
     "category": "method",
@@ -441,7 +441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#StatsBase.fit-Tuple{Type{BayesNets.Table},DataFrame}",
+    "location": "#StatsBase.fit-Tuple{Type{Table},DataFrame}",
     "page": "Home",
     "title": "StatsBase.fit",
     "category": "method",
@@ -473,7 +473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#Base.:*-Tuple{BayesNets.Table,BayesNets.Table}",
+    "location": "#Base.:*-Tuple{Table,Table}",
     "page": "Home",
     "title": "Base.:*",
     "category": "method",
@@ -497,7 +497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#Base.Sort.partialsort-Tuple{BayesNets.Table,Dict{Symbol,Any}}",
+    "location": "#Base.Sort.partialsort-Tuple{Table,Dict{Symbol,Any}}",
     "page": "Home",
     "title": "Base.Sort.partialsort",
     "category": "method",
@@ -753,19 +753,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#LinearAlgebra.normalize!-Tuple{BayesNets.Table}",
-    "page": "Home",
-    "title": "LinearAlgebra.normalize!",
-    "category": "method",
-    "text": "Table normalization Ensures that the :p column sums to one\n\n\n\n\n\n"
-},
-
-{
     "location": "#LinearAlgebra.normalize!-Tuple{Factor,Union{AbstractArray{Symbol,1}, Symbol}}",
     "page": "Home",
     "title": "LinearAlgebra.normalize!",
     "category": "method",
     "text": "normalize!(ϕ, dims; p=1)\nnormalize!(ϕ; p=1)\n\nNormalize the factor so all instances of dims have (or the entire factors has) p-norm of 1\n\n\n\n\n\n"
+},
+
+{
+    "location": "#LinearAlgebra.normalize!-Tuple{Table}",
+    "page": "Home",
+    "title": "LinearAlgebra.normalize!",
+    "category": "method",
+    "text": "Table normalization Ensures that the :p column sums to one\n\n\n\n\n\n"
 },
 
 {

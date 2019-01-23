@@ -1,0 +1,5 @@
+stargazers_count = "84"
+doctype = "real"
+installs = true
+version = "0.8.0"
+description = "Julia interface to libclang and C wrapper generator"

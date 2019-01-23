@@ -1,0 +1,5 @@
+stargazers_count = "54"
+doctype = "default"
+installs = true
+version = "0.7.0"
+description = "A combinatorics library for Julia"

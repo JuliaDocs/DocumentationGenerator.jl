@@ -309,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Base.iterate",
     "category": "function",
-    "text": "Base.iterate(partition)\n\nIterate the partition returning views of spatial data.\n\n\n\n\n\n"
+    "text": "Base.iterate(path, state=1)\n\nIterate path from a given state.\n\n\n\n\n\n"
 },
 
 {
@@ -317,7 +317,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Base.iterate",
     "category": "function",
-    "text": "Base.iterate(path, state=1)\n\nIterate path from a given state.\n\n\n\n\n\n"
+    "text": "Base.iterate(partition)\n\nIterate the partition returning views of spatial data.\n\n\n\n\n\n"
 },
 
 {

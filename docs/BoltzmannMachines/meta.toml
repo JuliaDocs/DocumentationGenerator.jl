@@ -1,0 +1,5 @@
+stargazers_count = "6"
+doctype = "default"
+installs = true
+version = "1.0.1"
+description = "A Julia package for training and evaluating multimodal deep Boltzmann machines"

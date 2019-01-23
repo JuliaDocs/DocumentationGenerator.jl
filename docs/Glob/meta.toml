@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "40"
 doctype = "default"
+installs = true
+version = "1.2.0"
+description = "Posix-compliant file name pattern matching"

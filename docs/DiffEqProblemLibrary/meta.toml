@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "4"
 doctype = "default"
+installs = true
+version = "4.1.0"
+description = "A library of premade problems for examples and testing"

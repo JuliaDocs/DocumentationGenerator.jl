@@ -1,0 +1,5 @@
+stargazers_count = "59"
+doctype = "real"
+installs = true
+version = "1.0.2"
+description = "Bare-bones implementation of robust dynamic Hamiltonian Monte Carlo methods."

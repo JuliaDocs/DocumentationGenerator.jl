@@ -1,0 +1,5 @@
+stargazers_count = "9"
+doctype = "default"
+installs = true
+version = "0.3.0"
+description = "Julia package for selecting hardware, libraries, and algorithms for a computation"

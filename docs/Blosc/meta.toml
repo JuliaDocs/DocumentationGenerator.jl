@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "15"
 doctype = "default"
+installs = true
+version = "0.5.1"
+description = "Blosc compression for the Julia language"

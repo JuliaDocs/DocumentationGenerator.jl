@@ -1,0 +1,5 @@
+stargazers_count = "58"
+doctype = "default"
+installs = true
+version = "0.4.0"
+description = "Graph-related recipes to be used with Plots.jl"

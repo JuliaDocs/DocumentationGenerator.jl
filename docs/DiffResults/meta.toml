@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "real"
+installs = true
+version = "0.0.3"
+description = "A package which provides an API for querying differentiation results at multiple orders simultaneously"

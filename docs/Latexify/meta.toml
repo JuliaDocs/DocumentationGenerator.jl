@@ -1,0 +1,5 @@
+stargazers_count = "109"
+doctype = "real"
+installs = true
+version = "0.6.0"
+description = "Convert julia objects to LaTeX equations, arrays or other environments. "

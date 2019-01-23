@@ -137,7 +137,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#Dagger.DArray-Union{Tuple{N}, Tuple{Any,ArrayDomain{N},AbstractArray{ArrayDomain{N},N},AbstractArray{#s17,N} where #s17}, Tuple{Any,ArrayDomain{N},AbstractArray{ArrayDomain{N},N},AbstractArray{#s16,N} where #s16,Any}} where N",
+    "location": "#Dagger.DArray-Union{Tuple{N}, Tuple{Any,ArrayDomain{N},AbstractArray{ArrayDomain{N},N},AbstractArray{#s35,N} where #s35}, Tuple{Any,ArrayDomain{N},AbstractArray{ArrayDomain{N},N},AbstractArray{#s34,N} where #s34,Any}} where N",
     "page": "Home",
     "title": "Dagger.DArray",
     "category": "method",
@@ -313,7 +313,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#Dagger.write_event-Tuple{Dagger.Context,Dagger.Event}",
+    "location": "#Dagger.write_event-Tuple{Context,Dagger.Event}",
     "page": "Home",
     "title": "Dagger.write_event",
     "category": "method",

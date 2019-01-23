@@ -1,7 +1,7 @@
 var documenterSearchIndex = {"docs": [
 
 {
-    "location": "#FreqTables.prop-Tuple{AbstractArray{#s22,N} where N where #s22<:Number}",
+    "location": "#FreqTables.prop-Tuple{AbstractArray{#s767,N} where N where #s767<:Number}",
     "page": "Home",
     "title": "FreqTables.prop",
     "category": "method",

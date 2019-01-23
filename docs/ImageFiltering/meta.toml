@@ -1,0 +1,5 @@
+stargazers_count = "25"
+doctype = "real"
+installs = true
+version = "0.5.2"
+description = "Julia implementations of multidimensional array convolution and nonlinear stencil operations"

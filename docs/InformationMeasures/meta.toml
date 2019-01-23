@@ -1,0 +1,5 @@
+stargazers_count = "22"
+doctype = "default"
+installs = true
+version = "0.3.0"
+description = "Entropy, mutual information and higher order measures from information theory, with various estimators and discretisation methods."

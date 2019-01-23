@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Extra tools for setting up Documenter"

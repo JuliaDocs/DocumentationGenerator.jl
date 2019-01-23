@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "9"
 doctype = "default"
+installs = true
+version = "0.4.0"
+description = "Jackknife resampling and estimation in Julia"

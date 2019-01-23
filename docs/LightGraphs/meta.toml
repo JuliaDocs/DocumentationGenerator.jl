@@ -1,0 +1,5 @@
+stargazers_count = "268"
+doctype = "real"
+installs = true
+version = "1.2.0"
+description = "An optimized graphs package for the Julia programming language"

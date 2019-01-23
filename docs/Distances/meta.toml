@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "112"
 doctype = "default"
+installs = true
+version = "0.7.4"
+description = "A Julia package for evaluating distances(metrics) between vectors."

@@ -1,0 +1,5 @@
+stargazers_count = "13"
+doctype = "default"
+installs = true
+version = "1.0.1"
+description = "Statistical bootstrap procedures for time-series data"

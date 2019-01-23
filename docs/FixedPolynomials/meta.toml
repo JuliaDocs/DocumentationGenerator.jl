@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "real"
+installs = true
+version = "0.4.0"
+description = "A package for fast evaluation of multivariate polynomials."

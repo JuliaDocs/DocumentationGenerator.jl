@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · GeoStats.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/><link href="assets/style.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>GeoStats.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Home</a><ul class="internal"><li><a class="toctext" href="#Overview-1">Overview</a></li><li><a class="toctext" href="#Installation-1">Installation</a></li><li><a class="toctext" href="#Project-organization-1">Project organization</a></li><li><a class="toctext" href="#Quick-example-1">Quick example</a></li></ul></li><li><span class="toctext">User guide</span><ul><li><a class="toctext" href="problems_and_solvers/">Problems and solvers</a></li><li><a class="toctext" href="spatialdata/">Spatial data</a></li><li><a class="toctext" href="domains/">Domains</a></li><li><span class="toctext">Variography</span><ul><li><a class="toctext" href="empirical_variograms/">Empirical variograms</a></li><li><a class="toctext" href="theoretical_variograms/">Theoretical variograms</a></li><li><a class="toctext" href="fitting_variograms/">Fitting variograms</a></li></ul></li><li><a class="toctext" href="estimators/">Kriging estimators</a></li><li><a class="toctext" href="comparisons/">Solver comparisons</a></li><li><a class="toctext" href="plotting/">Plotting</a></li></ul></li><li><a class="toctext" href="tutorials/">Tutorials</a></li><li><a class="toctext" href="contributing/">Contributing</a></li><li><span class="toctext">About</span><ul><li><a class="toctext" href="about/community/">Community</a></li><li><a class="toctext" href="about/license/">License</a></li><li><a class="toctext" href="about/citing/">Citing</a></li></ul></li><li><a class="toctext" href="developers/">Developer guide</a></li><li><a class="toctext" href="links/">Index</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><p><img src="images/GeoStats.png" alt="GeoStatsLogo"/></p><p><a href="https://travis-ci.org/juliohm/GeoStats.jl"><img src="https://travis-ci.org/juliohm/GeoStats.jl.svg?branch=master" alt="Build Status"/></a> <a href="http://pkg.julialang.org/?pkg=GeoStats"><img src="http://pkg.julialang.org/badges/GeoStats_0.6.svg" alt="GeoStats"/></a> <a href="https://codecov.io/gh/juliohm/GeoStats.jl"><img src="https://codecov.io/gh/juliohm/GeoStats.jl/branch/master/graph/badge.svg" alt="Coverage Status"/></a> <a href="https://juliohm.github.io/GeoStats.jl/stable"><img src="https://img.shields.io/badge/docs-stable-blue.svg" alt="Stable Documentation"/></a> <a href="https://juliohm.github.io/GeoStats.jl/latest"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Latest Documentation"/></a> <a href="https://github.com/juliohm/GeoStats.jl/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-ISC-blue.svg" alt="License File"/></a> <a href="https://gitter.im/JuliaEarth/GeoStats.jl"><img src="https://img.shields.io/badge/chat-on%20gitter-bc0067.svg" alt="Gitter"/></a> <a href="https://doi.org/10.21105/joss.00692"><img src="http://joss.theoj.org/papers/10.21105/joss.00692/status.svg" alt="JOSS"/></a> <a href="https://zenodo.org/badge/latestdoi/33827844"><img src="https://zenodo.org/badge/33827844.svg" alt="DOI"/></a></p><h2><a class="nav-anchor" id="Overview-1" href="#Overview-1">Overview</a></h2><p>Geostatistics (a.k.a. spatial statistics) is the branch of statistics that deals with spatial data. In many fields of science, such as mining engineering, hidrogeology, petroleum engineering, and environmental sciences, traditional regression techniques fail to capture spatiotemporal correlation, and therefore are not satisfactory tools for decision making involving spatial resources.</p><p>GeoStats.jl is an attempt to bring together bleeding-edge research in the geostatistics community into a comprehensive framework, and to empower researchers and practioners with a toolkit for fast assessment of different modeling approaches.</p><p>The design of this package is the result of many years developing geostatistical software. I hope that it can serve to promote more collaboration between geostatisticians around the globe and to standardize this incredible science.</p><p>If you would like to help support the project, please <a href="https://github.com/juliohm/GeoStats.jl">star the repository on GitHub</a> and share it with your colleagues. If you are a developer, please check <a href="https://github.com/juliohm/GeoStatsBase.jl">GeoStatsBase.jl</a> and <a href="https://github.com/juliohm/GeoStatsDevTools.jl">GeoStatsDevTools.jl</a>.</p><h2><a class="nav-anchor" id="Installation-1" href="#Installation-1">Installation</a></h2><p>Get the latest stable release with Julia&#39;s package manager:</p><pre><code class="language-julia">] add GeoStats</code></pre><h2><a class="nav-anchor" id="Project-organization-1" href="#Project-organization-1">Project organization</a></h2><p>The project is split into various packages:</p><table><tr><th>Package</th><th>Description</th></tr><tr><td><a href="https://github.com/juliohm/GeoStats.jl">GeoStats.jl</a></td><td>Main package containing Kriging-based solvers, and other geostatistical tools.</td></tr><tr><td><a href="https://github.com/juliohm/GeoStatsImages.jl">GeoStatsImages.jl</a></td><td>Training images for multiple-point geostatistical simulation.</td></tr><tr><td><a href="https://github.com/juliohm/GslibIO.jl">GslibIO.jl</a></td><td>Utilities to read/write <em>extended</em> GSLIB files.</td></tr><tr><td><a href="https://github.com/juliohm/Variography.jl">Variography.jl</a></td><td>Variogram estimation and modeling, and related tools.</td></tr><tr><td><a href="https://github.com/juliohm/KrigingEstimators.jl">KrigingEstimators.jl</a></td><td>High-performance implementations of Kriging estimators.</td></tr><tr><td><a href="https://github.com/juliohm/GeoStatsBase.jl">GeoStatsBase.jl</a></td><td>Base package containing problem and solution specifications (for developers).</td></tr><tr><td><a href="https://github.com/juliohm/GeoStatsDevTools.jl">GeoStatsDevTools.jl</a></td><td>Developer tools for writing new solvers (for developers).</td></tr></table><p>The main package (i.e. GeoStats.jl) is self-contained, and provides high-performance Kriging-based estimation/simulation algorithms over arbitrary domains. Other packages can be installed from the list above for additional functionality.</p><h2><a class="nav-anchor" id="Quick-example-1" href="#Quick-example-1">Quick example</a></h2><p>Below is a quick preview of the high-level API. For the full example, please see the <a href="https://github.com/juliohm/GeoStatsTutorials">GeoStatsTutorials</a> repository.</p><pre><code class="language-julia">using GeoStats
+using Plots
+
+# data.csv:
+#    x,    y,       station, precipitation
+# 25.0, 25.0,     palo alto,           1.0
+# 50.0, 75.0,  redwood city,           0.0
+# 75.0, 50.0, mountain view,           1.0
+
+# read spreadsheet file containing spatial data
+geodata = readgeotable(&quot;data.csv&quot;, coordnames=[:x,:y])
+
+# define spatial domain (e.g. regular grid, point collection)
+grid = RegularGrid{Float64}(100, 100)
+
+# define estimation problem for any data column(s) (e.g. :precipitation)
+problem = EstimationProblem(geodata, grid, :precipitation)
+
+# choose a solver from the list of solvers
+solver = Kriging(
+  :precipitation =&gt; (variogram=GaussianVariogram(range=35.),)
+)
+
+# solve the problem
+solution = solve(problem, solver)
+
+# plot the solution
+plot(solution)</code></pre><p><img src="images/EstimationSolution.png" alt="EstimationSolution"/></p><h3><a class="nav-anchor" id="Low-level-API-1" href="#Low-level-API-1">Low-level API</a></h3><p>If you are interested in finer control, Kriging estimators can also be used directly:</p><div><pre><code class="language-julia">using GeoStats
+
+# create some data
+dim, nobs = 3, 10
+X = rand(dim, nobs)
+z = rand(nobs)
+
+# target location
+xₒ = rand(dim)
+
+# define a variogram model
+γ = GaussianVariogram(sill=1., range=1., nugget=0.)
+
+# define an estimator (i.e. build the Kriging system)
+sk = SimpleKriging(X, z, γ, mean(z))
+ok = OrdinaryKriging(X, z, γ)
+uk = UniversalKriging(X, z, γ, 0)
+
+# estimate at target location
+μ, σ² = predict(sk, xₒ)
+μ, σ² = predict(ok, xₒ)
+μ, σ² = predict(uk, xₒ)</code></pre><pre><code class="language-none">Simple Kriging:
+  μ = 0.7232301963921766, σ² = 0.051064311782382465
+Ordinary Kriging:
+  μ = 0.7216984245864058, σ² = 0.05172790340852507
+Universal Kriging:
+  μ = 0.7216984245864058, σ² = 0.05172790340852507</code></pre></div><footer><hr/><a class="next" href="problems_and_solvers/"><span class="direction">Next</span><span class="title">Problems and solvers</span></a></footer></article></body></html>

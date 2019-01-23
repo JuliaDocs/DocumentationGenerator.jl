@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.2.1"
+description = "A Julia package to estimate discrete entropy and mutual information"

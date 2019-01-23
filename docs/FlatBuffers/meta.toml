@@ -1,0 +1,5 @@
+stargazers_count = "16"
+doctype = "real"
+installs = true
+version = "0.5.3"
+description = "A pure Julia implementation of google flatbuffers"

@@ -1,0 +1,5 @@
+stargazers_count = "3"
+doctype = "default"
+installs = true
+version = "0.7.2"
+description = "A Julia package to provide C and Python-like formatting support"

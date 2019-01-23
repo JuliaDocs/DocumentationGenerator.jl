@@ -1,0 +1,5 @@
+stargazers_count = "675"
+doctype = "default"
+installs = true
+version = "5.3.1"
+description = "Julia suite for high-performance solvers of differential equations"

@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "31"
 doctype = "default"
+installs = true
+version = "1.0.0"
+description = "Concatenated Array views in Julia."

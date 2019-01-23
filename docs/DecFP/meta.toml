@@ -1,0 +1,5 @@
+stargazers_count = "19"
+doctype = "default"
+installs = true
+version = "0.4.8"
+description = "Julia IEEE decimal floating-point via the Intel decimal-float library"

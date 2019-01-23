@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · KnetLayers.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>KnetLayers.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Home</a><ul class="internal"><li><a class="toctext" href="#How-does-it-look-like-?-1">How does it look like ?</a></li><li><a class="toctext" href="#Example-Layers-and-Usage-1">Example Layers and Usage</a></li><li><a class="toctext" href="#Example-Models-1">Example Models</a></li><li><a class="toctext" href="#[Exported-Layers](https://ekinakyurek.github.io/KnetLayers.jl/latest/reference.html#Function-Index-1)-1">Exported Layers</a></li><li><a class="toctext" href="#TO-DO-1">TO-DO</a></li><li><a class="toctext" href="#Function-Documentation-1">Function Documentation</a></li></ul></li><li><span class="toctext">Function Documentation</span><ul><li><a class="toctext" href="reference/">Reference</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Welcome-to-KnetLayers.jl&#39;s-documentation!-1" href="#Welcome-to-KnetLayers.jl&#39;s-documentation!-1">Welcome to KnetLayers.jl&#39;s documentation!</a></h1><p><a href="https://ekinakyurek.github.io/KnetLayers.jl/latest"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt/></a> <a href="https://gitlab.com/JuliaGPU/KnetLayers/pipelines"><img src="https://gitlab.com/JuliaGPU/KnetLayers/badges/master/pipeline.svg" alt/></a> <a href="https://travis-ci.org/ekinakyurek/KnetLayers.jl"><img src="https://travis-ci.org/ekinakyurek/KnetLayers.jl.svg?branch=master" alt/></a> <a href="https://codecov.io/gh/ekinakyurek/KnetLayers.jl"><img src="https://codecov.io/gh/ekinakyurek/KnetLayers.jl/branch/master/graph/badge.svg" alt="codecov"/></a></p><p>KnetLayers provides configurable deep learning layers for Knet, fostering your model development. You are able to use Knet and AutoGrad functionalities without adding them to current workspace.</p><h2><a class="nav-anchor" id="How-does-it-look-like-?-1" href="#How-does-it-look-like-?-1">How does it look like ?</a></h2><pre><code class="language-Julia">model = Chain(
+          Dense(input=768, output=128, activation=Sigm()),
+          Dense(input=128, output=10, activation=nothing),
+          CrossEntropyLoss()
+        )
+
+loss(x, y) = model[end](model[1:end-1](x), y)</code></pre><h2><a class="nav-anchor" id="Example-Layers-and-Usage-1" href="#Example-Layers-and-Usage-1">Example Layers and Usage</a></h2><pre><code class="language-JULIA">using KnetLayers
+
+#Instantiate an MLP model with random parameters
+mlp = MLP(100,50,20; activation=Sigm()) # input size=100, hidden=50 and output=20
+
+#Do a prediction with the mlp model
+prediction = mlp(randn(Float32,100,1))
+
+#Instantiate a convolutional layer with random parameters
+cnn = Conv(height=3, width=3, inout=3=&gt;10, padding=1, stride=1) # A conv layer
+
+#Filter your input with the convolutional layer
+output = cnn(randn(Float32,224,224,3,1))
+
+#Instantiate an LSTM model
+lstm = LSTM(input=100, hidden=100, embed=50)
+
+#You can use integers to represent one-hot vectors.
+#Each integer corresponds to vocabulary index of corresponding element in your data.
+
+#For example a pass over 5-Length sequence
+rnnoutput = lstm([3,2,1,4,5];hy=true,cy=true)
+
+#After you get the output, you may acces to hidden states and
+#intermediate hidden states produced by the lstm model
+rnnoutput.y
+rnnoutput.hidden
+rnnoutput.memory
+
+#You can also use normal array inputs for low-level control
+#One iteration of LSTM with a random input
+rnnoutput = lstm(randn(100,1);hy=true,cy=true)
+
+#Pass over a random 10-length sequence:
+rnnoutput = lstm(randn(100,1,10);hy=true,cy=true)
+
+#Pass over a mini-batch data which includes unequal length sequences
+rnnoutput = lstm([[1,2,3,4],[5,6]];sorted=true,hy=true,cy=true)
+
+#To see and modify rnn params in a structured view
+lstm.gatesview</code></pre><h2><a class="nav-anchor" id="Example-Models-1" href="#Example-Models-1">Example Models</a></h2><ol><li><p><a href="examples/resnet.jl">ResNet</a></p></li><li><p><a href="examples/s2smodel.jl">Seq2Seq</a></p></li></ol><h2><a class="nav-anchor" id="[Exported-Layers](https://ekinakyurek.github.io/KnetLayers.jl/latest/reference.html#Function-Index-1)-1" href="#[Exported-Layers](https://ekinakyurek.github.io/KnetLayers.jl/latest/reference.html#Function-Index-1)-1"><a href="https://ekinakyurek.github.io/KnetLayers.jl/latest/reference.html#Function-Index-1">Exported Layers</a></a></h2><h2><a class="nav-anchor" id="TO-DO-1" href="#TO-DO-1">TO-DO</a></h2><ol><li>Examples</li><li>Special layers such Google&#39;s <code>inception</code>   </li><li>Known embeddings such <code>Gloove</code>   </li><li>Pretrained Models   </li></ol><h2><a class="nav-anchor" id="Function-Documentation-1" href="#Function-Documentation-1">Function Documentation</a></h2><ul><li><a href="reference/#Reference-1">Reference</a></li><ul><li><a href="reference/#Core-Layers-1">Core Layers</a></li><li><a href="reference/#Nonlinearities-1">Nonlinearities</a></li><li><a href="reference/#Loss-Functions-1">Loss Functions</a></li><li><a href="reference/#Convolutional-Layers-1">Convolutional Layers</a></li><li><a href="reference/#Recurrent-Layers-1">Recurrent Layers</a></li><li><a href="reference/#Special-Layers-1">Special Layers</a></li><li><a href="reference/#Function-Index-1">Function Index</a></li></ul></ul><footer><hr/><a class="next" href="reference/"><span class="direction">Next</span><span class="title">Reference</span></a></footer></article></body></html>

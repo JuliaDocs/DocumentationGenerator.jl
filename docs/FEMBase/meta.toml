@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "7"
 doctype = "real"
+installs = true
+version = "0.2.1"
+description = "JuliaFEM base package (core functionality)"

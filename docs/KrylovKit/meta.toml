@@ -1,0 +1,5 @@
+stargazers_count = "20"
+doctype = "real"
+installs = true
+version = "0.3.3"
+description = "Krylov methods for linear problems, eigenvalues, singular values and matrix functions"

@@ -1,0 +1,5 @@
+stargazers_count = "2"
+doctype = "default"
+installs = true
+version = "0.2.0"
+description = "Line numbering reader for Julia"

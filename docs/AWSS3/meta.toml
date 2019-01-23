@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "default"
+installs = true
+version = "0.5.0"
+description = "AWS S3 Simple Storage Service interface for Julia."

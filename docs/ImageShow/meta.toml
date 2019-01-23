@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "2"
 doctype = "default"
+installs = true
+version = "0.1.2"
+description = "Inline graphical display of images in Julia graphical environments"

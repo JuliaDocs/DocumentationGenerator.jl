@@ -17,7 +17,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#IncrementalInference.addNode!-Tuple{FactorGraph,Symbol,Type{#s57} where #s57<:InferenceVariable}",
+    "location": "#IncrementalInference.addNode!-Tuple{FactorGraph,Symbol,Type{#s2286} where #s2286<:InferenceVariable}",
     "page": "Home",
     "title": "IncrementalInference.addNode!",
     "category": "method",

@@ -1,0 +1,5 @@
+stargazers_count = "5"
+doctype = "default"
+installs = true
+version = "0.2.6"
+description = "Automatic transformations for constrained random variables. "

@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "13"
 doctype = "default"
+installs = true
+version = "0.2.2"
+description = "Abstractions for Julia Machine Learning Packages"

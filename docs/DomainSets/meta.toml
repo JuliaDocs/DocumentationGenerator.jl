@@ -1,0 +1,5 @@
+stargazers_count = "9"
+doctype = "default"
+installs = true
+version = "0.0.1"
+description = "A Julia package for describing domains in Euclidean space"

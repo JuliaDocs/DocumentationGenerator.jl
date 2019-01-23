@@ -1,0 +1,5 @@
+stargazers_count = "39"
+doctype = "real"
+installs = true
+version = "1.0.0"
+description = "Julia wrapper for the LLVM C API"

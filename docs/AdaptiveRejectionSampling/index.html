@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · AdaptiveRejectionSampling.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>AdaptiveRejectionSampling.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Sampling-from-a-shifted-normal-distribution-1">Sampling from a shifted normal distribution</a></li><li><a class="toctext" href="#Let&#39;s-try-a-Gamma-1">Let&#39;s try a Gamma</a></li><li><a class="toctext" href="#Truncated-distributions-and-unknown-normalisation-constant-1">Truncated distributions and unknown normalisation constant</a></li><li><a class="toctext" href="#Elastic-Net-distribution-1">Elastic Net distribution</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><p><a href="https://travis-ci.org/mauriciogtec/AdaptiveRejectionSampling.jl"><img src="https://travis-ci.org/mauriciogtec/AdaptiveRejectionSampling.jl.svg?branch=master" alt="Build Status"/></a> <a href="http://pkg.julialang.org/detail/AdaptiveRejectionSampling"><img src="http://pkg.julialang.org/badges/AdaptiveRejectionSampling_0.7.svg" alt="AdaptiveRejectionSampling"/></a> <a href="http://pkg.julialang.org/detail/AdaptiveRejectionSampling"><img src="http://pkg.julialang.org/badges/AdaptiveRejectionSampling_1.0.svg" alt="AdaptiveRejectionSampling"/></a></p><p><a href="https://coveralls.io/github/mauriciogtec/AdaptiveRejectionSampling.jl?branch=master"><img src="https://coveralls.io/repos/github/mauriciogtec/AdaptiveRejectionSampling.jl/badge.svg?branch=master" alt="Coverage Status"/></a> <a href="https://codecov.io/gh/mauriciogtec/AdaptiveRejectionSampling.jl"><img src="https://codecov.io/gh/mauriciogtec/AdaptiveRejectionSampling.jl/branch/master/graph/badge.svg" alt="codecov"/></a></p><p><a href="https://opensource.org/licenses/mit-license.php"><img src="https://badges.frapsoft.com/os/mit/mit.png?v=103" alt="MIT Licence"/></a></p><h1><a class="nav-anchor" id="AdaptiveRejectionSampling-1" href="#AdaptiveRejectionSampling-1">AdaptiveRejectionSampling</a></h1><pre><code class="language-julia">using AdaptiveRejectionSampling
+using Plots</code></pre><h2><a class="nav-anchor" id="Sampling-from-a-shifted-normal-distribution-1" href="#Sampling-from-a-shifted-normal-distribution-1">Sampling from a shifted normal distribution</a></h2><pre><code class="language-julia"># Define function to be sampled
+μ, σ = 1.0, 2.0
+f(x) = exp(-0.5(x - μ)^2 / σ^2) / sqrt(2pi * σ^2) 
+support = (-Inf, Inf)
+
+# Build the sampler and simulate 10,000 samples
+sampler = RejectionSampler(f, support, max_segments = 5)
+@time sim = run_sampler!(sampler, 10000);</code></pre><pre><code class="language-none">  0.010434 seconds (192.15 k allocations: 3.173 MiB)</code></pre><p>Let&#39;s verify the result</p><pre><code class="language-julia"># Plot the results and compare to target distribution
+x = range(-10.0, 10.0, length=100)
+envelop = [eval_envelop(sampler.envelop, xi) for xi in x]
+target = [f(xi) for xi in x]
+
+histogram(sim, normalize = true, label = &quot;Histogram&quot;)
+plot!(x, [target envelop], width = 2, label = [&quot;Normal(μ, σ)&quot; &quot;Envelop&quot;])</code></pre><p><img src="img/example1.png" alt/></p><h2><a class="nav-anchor" id="Let&#39;s-try-a-Gamma-1" href="#Let&#39;s-try-a-Gamma-1">Let&#39;s try a Gamma</a></h2><pre><code class="language-julia">α, β = 5.0, 2.0
+f(x) = β^α * x^(α-1) * exp(-β*x) / gamma(α)
+support = (0.0, Inf)
+
+# Build the sampler and simulate 10,000 samples
+sampler = RejectionSampler(f, support)
+@time sim = run_sampler!(sampler, 10000) 
+
+# Plot the results and compare to target distribution
+x = range(0.0, 5.0, length=100)
+envelop = [eval_envelop(sampler.envelop, xi) for xi in x]
+target = [f(xi) for xi in x]
+
+histogram(sim, normalize = true, label = &quot;Histogram&quot;)
+plot!(x, [target envelop], width = 2, label = [&quot;Gamma(α, β)&quot; &quot;Envelop&quot;])</code></pre><pre><code class="language-none">  0.007299 seconds (182.00 k allocations: 3.027 MiB)</code></pre><p><img src="img/example2.png" alt/></p><h2><a class="nav-anchor" id="Truncated-distributions-and-unknown-normalisation-constant-1" href="#Truncated-distributions-and-unknown-normalisation-constant-1">Truncated distributions and unknown normalisation constant</a></h2><p>We don&#39;t to provide an exact density–it will sample up to proportionality–and we can do truncated distributions</p><pre><code class="language-julia">α, β = 5.0, 2.0
+f(x) = β^α * x^(α-1) * exp(-β*x) / gamma(α)
+support = (1.0, 3.5)
+
+# Build the sampler and simulate 10,000 samples
+sampler = RejectionSampler(f, support)
+@time sim = run_sampler!(sampler, 10000) 
+
+# Plot the results and compare to target distribution
+x = range(0.01, 8.0, length=100)
+envelop = [eval_envelop(sampler.envelop, xi) for xi in x]
+target = [f(xi) for xi in x]
+
+histogram(sim, normalize = true, label = &quot;histogram&quot;)
+plot!(x, [target envelop], width = 2, label = [&quot;target density&quot; &quot;envelop&quot;])</code></pre><pre><code class="language-none">  0.007766 seconds (181.82 k allocations: 3.024 MiB)</code></pre><p><img src="img/example3.png" alt/></p><h2><a class="nav-anchor" id="Elastic-Net-distribution-1" href="#Elastic-Net-distribution-1">Elastic Net distribution</a></h2><p>The following example arises from elastic net regression and smoothing problems. In these cases, the integration constants are not available analytically.</p><pre><code class="language-julia"># Define function to be sampled
+function f(x, μ, λ1, λ2)
+      δ = x - μ
+      nl = λ1 * abs(δ) + λ2 * δ^2
+      return exp(-nl)
+end
+support = (-Inf, Inf)
+
+# Build the sampler and simulate 10,000 samples
+μ, λ1, λ2 = 0.0, 2.0, 1.0
+sampler = RejectionSampler(x -&gt; f(x, μ, λ1, λ2), support, max_segments = 5)
+@time sim = run_sampler!(sampler, 10000);
+
+# Plot the results and compare to target distribution
+x = range(-2.3, 2.3, length=100)
+envelop = [eval_envelop(sampler.envelop, xi) for xi in x]
+target = [f(xi, μ, λ1, λ2) for xi in x]
+
+histogram(sim, normalize = true, label = &quot;histogram&quot;)
+plot!(x, [target envelop], width = 2, label = [&quot;target density&quot; &quot;envelop&quot;])</code></pre><p><img src="img/example4.png" alt/></p><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

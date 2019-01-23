@@ -1,0 +1,5 @@
+stargazers_count = "58"
+doctype = "real"
+installs = true
+version = "0.4.1"
+description = "A fast, generic framework for transferring table-like data structures in Julia"

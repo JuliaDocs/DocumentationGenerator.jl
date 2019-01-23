@@ -1,0 +1,5 @@
+stargazers_count = "17"
+doctype = "real"
+installs = true
+version = "0.8.2"
+description = "Build interactive HTML5 widgets in Julia"

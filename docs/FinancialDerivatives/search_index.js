@@ -233,6 +233,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "api/#FinancialDerivatives.evaluate",
+    "page": "API",
+    "title": "FinancialDerivatives.evaluate",
+    "category": "function",
+    "text": "evaluate(IRD, BlackKarasinski(), n = 12)\n\nEvaluate interest rate derivative using BlackKarasinski model.\n\nArguments\n\nIRD::InterestRateDerivative: interest rate derivative\nn: number of paths to simulate\n\n\n\n\n\nevaluate(O, BlackScholes())\n\nEvaluate option O using BlackScholes model.\n\nArguments\n\nO::Option: Option\n\n\n\n\n\nevaluate(o)\n\nEvaluate option o using Back-Scholes model as default valuation model.\n\n\n\n\n\nevaluate(IRD, BrennanSchwartz(), n = 12)\n\nEvaluate interest rate derivative IRD using BrennanSchwartz model.\n\nArguments\n\nIRD::InterestRateDerivative: interest rate derivative\nn: number of paths to simulate\n\n\n\n\n\nevaluate(IRD, CoxIngersollRoss(), n)\n\nEvaluate interest rate derivative IRD using CoxIngersollRoss model.\n\nArguments\n\nIRD::InterestRateDerivative: interest rate derivative\nn: number of paths to simulate\n\n\n\n\n\nevaluate(O, CoxRossRubinstein(), N = 1000)\n\nEvaluate option O using CoxRossRubinstein.\n\nArguments\n\nO::Option: option\nN: number of paths to simulate\n\n\n\n\n\nevaluate(O::FXOption, GarmanKohlhagen())\n\nEvaluate FX Option using GarmanKohlhagen model.\n\nArguments\n\nO::FXOption\n\n\n\n\n\nevaluate(O, JarrowRudd(), risk_neutral = true, N = 1000)\n\nEvaluate option O using JarrowRudd binomial model (defaults to the risk-neutral version).\n\nArguments\n\nO::Option: option\nrisk_neutral: true if risk neutral, false if equal probability.\nN: number of paths to simulate\n\n\n\n\n\nevaluate(O, LeisenReimer(), N = 1001)\n\nEvaluate option O using LeisenReimer binomial model.\n\nArguments\n\nN: number of paths to simulate, must be odd\n\n\n\n\n\nevaluate(O, LongstaffSchwartz(), N = 1000, P = 10000)\n\nEvaluate option O using LongstaffSchwartz binomial model.\n\nArguments\n\nN: number of paths to simulate\nP: number of periods\n\n\n\n\n\nevaluate(IRD, RendlemanBartter(), n = 12)\n\nEvaluate interest rate derivative IRD using RendlemanBartter model.\n\nArguments\n\nn: number of paths to simulate\n\n\n\n\n\nevaluate(O, RendlemanBartter(), k = 1, N = 1000)\n\nEvaluate option O using RendlemanBartter model.\n\nArguments\n\nk:\nN: \n\n\n\n\n\nevaluate(O, Tian(), N = 1000)\n\nEvaluate option O using Tian binomial model.\n\nArguments\n\nN: number of paths to simulate\n\n\n\n\n\nevaluate(IRD, Vasicek(), n = 12)\n\nEvaluate interest rate derivative IRD using Vasicek model.\n\nArguments\n\nn: number of paths to simulate\n\n\n\n\n\n"
+},
+
+{
     "location": "api/#Evaluation-1",
     "page": "API",
     "title": "Evaluation",

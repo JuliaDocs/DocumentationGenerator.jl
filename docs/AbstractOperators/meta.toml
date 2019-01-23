@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = "14"
 doctype = "real"
+installs = true
+version = "0.1.0"
+description = "Abstract operators for large scale optimization in Julia"
