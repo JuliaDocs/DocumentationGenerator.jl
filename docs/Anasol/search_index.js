@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Docstrings",
     "title": "Anasol.documentationoff",
     "category": "method",
-    "text": "Do not make documentation\n\nMethods\n\nAnasol.documentationoff() in Anasol : /home/sd/.julia/packages/Anasol/ggocy/src/Anasol.jl:237\n\n\n\n\n\n"
+    "text": "Do not make documentation\n\nMethods\n\nAnasol.documentationoff() in Anasol : /root/.julia/packages/Anasol/ggocy/src/Anasol.jl:237\n\n\n\n\n\n"
 },
 
 {
@@ -85,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Docstrings",
     "title": "Anasol.documentationon",
     "category": "method",
-    "text": "Make documentation\n\nMethods\n\nAnasol.documentationon() in Anasol : /home/sd/.julia/packages/Anasol/ggocy/src/Anasol.jl:228\n\n\n\n\n\n"
+    "text": "Make documentation\n\nMethods\n\nAnasol.documentationon() in Anasol : /root/.julia/packages/Anasol/ggocy/src/Anasol.jl:228\n\n\n\n\n\n"
 },
 
 {

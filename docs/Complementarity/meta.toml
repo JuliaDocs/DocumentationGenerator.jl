@@ -1,0 +1,5 @@
+stargazers_count = 22
+doctype = "default"
+installs = true
+version = "0.5.0"
+description = "provides a modeling interface for mixed complementarity problems (MCP) and math programs with equilibrium problems (MPEC) via JuMP "

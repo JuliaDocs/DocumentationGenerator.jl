@@ -1,12 +1,5 @@
 stargazers_count = 5
-license_url = ""
 doctype = "default"
-owner = "andyferris"
 installs = true
-license = "Other"
 version = "0.2.1"
 description = "Arrays with acceleration indices"
-
-[[contributors]]
-name = "andyferris"
-contributions = 20

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · LinearFractionalTransformations.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>LinearFractionalTransformations.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Constructors-1">Constructors</a></li><li><a class="toctext" href="#Operations-1">Operations</a></li><li><a class="toctext" href="#Equality-checking-1">Equality checking</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Linear-Fractional-Transformations-1" href="#Linear-Fractional-Transformations-1">Linear Fractional Transformations</a></h1><p><a href="https://travis-ci.org/scheinerman/LinearFractionalTransformations.jl"><img src="https://travis-ci.org/scheinerman/LinearFractionalTransformations.jl.svg?branch=master" alt="Build Status"/></a></p><p><a href="https://coveralls.io/github/scheinerman/LinearFractionalTransformations.jl?branch=master"><img src="https://coveralls.io/repos/scheinerman/LinearFractionalTransformations.jl/badge.svg?branch=master&amp;service=github" alt="Coverage Status"/></a></p><p>This module defines a <code>LFT</code> data type to represent a complex <em>linear fractional transformation</em>. This is a function on the extended complex numbers (include complex infinity) defined by</p><pre><code class="language-none">f(z) = (a*z + b) / (c*z + d)</code></pre><p>where <code>a,b,c,d</code> are (finite) complex numbers and <code>a*d-b*c != 0</code>.</p><p>These are also known as <em>Möbius transformations</em>.</p><h2><a class="nav-anchor" id="Constructors-1" href="#Constructors-1">Constructors</a></h2><p>The basic constructor takes four values:</p><pre><code class="language-julia">julia&gt; using LinearFractionalTransformations
+
+julia&gt; julia&gt; f = LFT(1,2,3,4)
+LFT( 1.0 + 0.0im , 2.0 + 0.0im , 3.0 + 0.0im , 4.0 + 0.0im )</code></pre><p>Notice that the <code>LFT</code> is represented by a 2-by-2 complex matrix. A <code>LFT</code> can also be defined by specifying a matrix.</p><pre><code class="language-julia">julia&gt; A = [1 2; 3 4];
+
+julia&gt; g = LFT(A)
+LFT( 1.0 + 0.0im , 2.0 + 0.0im , 3.0 + 0.0im , 4.0 + 0.0im )</code></pre><p>The identity <code>LFT</code> is constructed by <code>LFT()</code>:</p><pre><code class="language-julia">julia&gt; LFT()
+LFT( 1.0 + 0.0im , 0.0 + 0.0im , 0.0 + 0.0im , 1.0 + 0.0im )</code></pre><p>Given (complex) numbers <code>a,b,c</code> (including <code>Inf</code>) we can construct a <code>LFT</code> that maps <code>a</code> to 0, <code>b</code> to 1, and <code>c</code> to infinity.</p><pre><code class="language-julia">julia&gt; f = LFT(2,5,-1)
+LFT( 6.0 + 0.0im , -12.0 + 0.0im , 3.0 + 0.0im , 3.0 + 0.0im )
+
+julia&gt; f[2]
+0.0 + 0.0im
+
+julia&gt; f[5]
+1.0 + 0.0im
+
+julia&gt; f[-1]
+Inf + Inf*im</code></pre><p>Finally, we provide a constructor for mapping a given triple of values <code>(a,b,c)</code> to another triple <code>(aa,bb,cc)</code>. The syntax is <code>LFT(a,aa,b,bb,c,cc)</code>. Here&#39;s an example:</p><pre><code class="language-julia">julia&gt; f = LFT(1,2+im, 3,Inf, 4,1-im)
+LFT( 5.0 + 1.0im , -17.0 - 7.0im , 3.0 + 0.0im , -9.0 + 0.0im )
+
+julia&gt; f[1]
+2.0 + 1.0im
+
+julia&gt; f[3]
+Inf + Inf*im
+
+julia&gt; f[4]
+1.0 - 1.0im</code></pre><h4><a class="nav-anchor" id="Under-the-hood-1" href="#Under-the-hood-1">Under the hood</a></h4><p>The matrix representing a <code>LFT</code> object is held in a field named <code>:M</code>.</p><pre><code class="language-julia">julia&gt; f = LFT(1,2,3)
+LFT( -1.0 + 0.0im , 1.0 + 0.0im , 1.0 + 0.0im , -3.0 + 0.0im )
+
+julia&gt; f.M
+2x2 Array{Complex{Float64},2}:
+ -1.0+0.0im   1.0+0.0im
+  1.0+0.0im  -3.0+0.0im</code></pre><h2><a class="nav-anchor" id="Operations-1" href="#Operations-1">Operations</a></h2><h3><a class="nav-anchor" id="Function-application-1" href="#Function-application-1">Function application</a></h3><p>Since a <code>LFT</code> is a function, the most basic operation we may wish to perform is applying that function of a complex number. That&#39;s done with <code>f[x]</code> notation (or with <code>f(x)</code>):</p><pre><code class="language-julia">julia&gt; f = LFT(3,2,1,1)
+LFT( 3.0 + 0.0im , 2.0 + 0.0im , 1.0 + 0.0im , 1.0 + 0.0im )
+
+julia&gt; f[1]
+2.5 + 0.0im
+
+julia&gt; f[0]
+2.0 + 0.0im
+
+julia&gt; f[-1]
+Inf + Inf*im
+
+julia&gt; f[Inf]
+3.0 + 0.0im
+
+julia&gt; f[1+2im]
+2.75 + 0.25im</code></pre><p><strong>Note</strong>: Staring in Julia 0.4, I plan to replace <code>f[x]</code> with <code>f(x)</code> by defining <code>call</code>.</p><h3><a class="nav-anchor" id="Composition-and-inverse-1" href="#Composition-and-inverse-1">Composition and inverse</a></h3><p>The <code>*</code> operation is used for function composition.</p><pre><code class="language-julia">julia&gt; f = LFT(3,2,1,1);
+
+julia&gt; g = LFT(0,1,-1,2);
+
+julia&gt; f*g
+LFT( -2.0 + 0.0im , 7.0 + 0.0im , -1.0 + 0.0im , 3.0 + 0.0im )
+
+julia&gt; g*f
+LFT( 1.0 + 0.0im , 1.0 + 0.0im , -1.0 + 0.0im , 0.0 + 0.0im )</code></pre><p>The inverse of a <code>LFT</code> is computed with <code>inv</code>:</p><pre><code class="language-julia">julia&gt; f = LFT(1,2,3,4);
+
+julia&gt; g = inv(f)
+LFT( 4.0 + 0.0im , -2.0 - 0.0im , -3.0 - 0.0im , 1.0 + 0.0im )
+
+julia&gt; f*g
+LFT( -2.0 + 0.0im , 0.0 + 0.0im , 0.0 + 0.0im , -2.0 + 0.0im )</code></pre><p>Notice that the matrix representing <code>f*g</code> is a scaled version of the identity matrix.</p><h2><a class="nav-anchor" id="Equality-checking-1" href="#Equality-checking-1">Equality checking</a></h2><p>We can use <code>==</code> or <code>isequal</code> to check if two <code>LFT</code> objects are equal. Note that there is no unique matrix representation for a <code>LFT</code> object and we might have that <code>f</code> and <code>g</code> are equal, but <code>f.M</code> and <code>g.M</code> are different.</p><pre><code class="language-julia">julia&gt; f = LFT(1,2,3,4);
+
+julia&gt; g = LFT(-2,-4,-6,-8);
+
+julia&gt; f==g
+true
+
+julia&gt; f.M == g.M
+false</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

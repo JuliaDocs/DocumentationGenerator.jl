@@ -1,0 +1,5 @@
+stargazers_count = 28
+doctype = "default"
+installs = true
+version = "0.4.0"
+description = "Julia module for reading/writing NIfTI MRI files"

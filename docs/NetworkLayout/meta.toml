@@ -1,0 +1,5 @@
+stargazers_count = 20
+doctype = "default"
+installs = true
+version = "0.2.0"
+description = "Layout algorithms for graphs and trees in pure Julia."

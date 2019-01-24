@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · ObjectStores.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>ObjectStores.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li class="toplevel"><a class="toctext" href="#What-is-an-object-store?-1">What is an object store?</a></li><li class="toplevel"><a class="toctext" href="#Permissions-1">Permissions</a></li><li class="toplevel"><a class="toctext" href="#Example-Usage-1">Example Usage</a></li><li class="toplevel"><a class="toctext" href="#API-1">API</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="ObjectStores-1" href="#ObjectStores-1">ObjectStores</a></h1><p>This package defines an abstract type, <code>ObjectStore</code>, and a common API for accessing object storage. This allows you to swap storage back-ends without changing your code.</p><p>Storage back-ends include in-memory, local disk and cloud-based object storage.</p><h1><a class="nav-anchor" id="What-is-an-object-store?-1" href="#What-is-an-object-store?-1">What is an object store?</a></h1><p>In an object store, data is stored as objects and objects are grouped into buckets.</p><p>Concrete examples of object stores include:</p><ul><li><a href="https://github.com/JockLawrie/LocalDiskObjectStores.jl">LocalDiskObjectStores.jl</a>, which uses the local file system to store objects (files) in buckets (directories).</li><li><a href="https://github.com/JockLawrie/GCSObjectStores.jl">GCSObjectStores.jl</a>, which uses Google Cloud Storage.</li></ul><h1><a class="nav-anchor" id="Permissions-1" href="#Permissions-1">Permissions</a></h1><p>An object store&#39;s access to buckets and objects is controlled using the small but flexible <a href="https://github.com/JockLawrie/Authorization.jl">Authorization.jl</a> framework. This framework allows both fine-grained access control for specific buckets and objects, as well as more coarse access control such as uniform access for all buckets and/or objects. Please read the <a href="https://github.com/JockLawrie/Authorization.jl">README</a> to understand how to access buckets and objects can be controlled.</p><p><strong>NOTE:</strong> An <code>ObjectStore</code> cannot act on (create/read/delete) buckets or objects that are outside the root bucket.</p><h1><a class="nav-anchor" id="Example-Usage-1" href="#Example-Usage-1">Example Usage</a></h1><p>See the examples and tests in <a href="https://github.com/JockLawrie/LocalDiskObjectStores.jl">LocalDiskObjectStores.jl</a> and <a href="https://github.com/JockLawrie/GCSObjectStores.jl">GCSObjectStores.jl</a>, which uses the local file system as the storage back-end.</p><h1><a class="nav-anchor" id="API-1" href="#API-1">API</a></h1><pre><code class="language-julia">store = T(args...)  # Constructor for some T &lt;: ObjectStore
+
+# Set access permissions
+setpermission!(store, :bucket, Permission(false, true, false, false))  # Bucket access is cRud (read-only) without expiry
+setpermission!(store, :object, Permission(false, true, false, false))  # Object access is cRud (read-only) without expiry
+
+# Allow CRUD (read/write) access for 5 minutes to objects in the bucket called &quot;mybucket&quot;
+setpermission!(store, r&quot;^rootbucket/mybucket/.+&quot;, Permission(true, true, true, true, now() + Minute(5)))
+
+# Buckets
+createbucket!(store, &quot;mybucket&quot;)  # Create mybucket in the root bucket
+listcontents(store,  &quot;mybucket&quot;)  # List the contents of rootbucket/mybucket. Return nothing if it doesn&#39;t exist
+deletebucket!(store, &quot;mybucket&quot;)  # Delete rootbucket/mybucket if it exists
+
+# Objects
+store[&quot;mybucket/myobject&quot;] = value     # Create/update. Not possible if the bucket doesn&#39;t exist.
+store[&quot;mybucket/myobject&quot;]             # Read. Returns nothing if the object doesn&#39;t exist.
+delete!(store, &quot;mybucket/myobject&quot;)
+
+# Conveniences
+isbucket(store,  bucketname)  # True if bucketname refers to a bucket
+isobject(store,  objectname)  # True if objectname refers to an object
+
+# Permission queries
+p = getpermission(store, bucket_or_object)  # Get the permission settings for the specific bucket/object
+setexpiry!(store, now() + Hour(1))          # Set an expiry for all the buckets/objects that the store has access to
+
+haspermission(store, bucket_or_object, :create)  # True if the store has :create access to the bucket/object
+permissions_conflict(store, &quot;mybucket&quot;)          # True if the rules that define the store&#39;s access to &quot;mybucket&quot; conflict</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

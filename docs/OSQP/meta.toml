@@ -1,0 +1,27 @@
+stargazers_count = 17
+license_url = "https://api.github.com/licenses/apache-2.0"
+doctype = "default"
+owner = "oxfordcontrol"
+installs = true
+license = "Apache License 2.0"
+version = "0.5.1"
+description = "Julia interface for OSQP: The Operator Splitting QP Solver"
+
+[[contributors]]
+name = "bstellato"
+contributions = 111
+[[contributors]]
+name = "tkoolen"
+contributions = 94
+[[contributors]]
+name = "blegat"
+contributions = 15
+[[contributors]]
+name = "rdeits"
+contributions = 3
+[[contributors]]
+name = "gbanjac"
+contributions = 3
+[[contributors]]
+name = "lostella"
+contributions = 1

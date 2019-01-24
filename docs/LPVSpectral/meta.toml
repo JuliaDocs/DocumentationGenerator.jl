@@ -1,0 +1,5 @@
+stargazers_count = 1
+doctype = "default"
+installs = true
+version = "0.1.1"
+description = "Least-squares (sparse) spectral estimation and (sparse) LPV spectral decomposition."

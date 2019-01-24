@@ -1,0 +1,18 @@
+stargazers_count = 1
+license_url = ""
+doctype = "default"
+owner = "JuliaNLSolvers"
+installs = true
+license = "Other"
+version = "2.0.2"
+description = "A collection of test problems for optimization problems."
+
+[[contributors]]
+name = "anriseth"
+contributions = 10
+[[contributors]]
+name = "pkofod"
+contributions = 10
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1

@@ -1,0 +1,18 @@
+stargazers_count = 1
+license_url = ""
+doctype = "default"
+owner = "tlnagy"
+installs = true
+license = "Other"
+version = "0.2.1"
+description = "I/O operations for OME-TIFF files in Julia"
+
+[[contributors]]
+name = "tlnagy"
+contributions = 71
+[[contributors]]
+name = "rsrock"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1

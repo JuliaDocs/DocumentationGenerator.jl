@@ -1,2 +1,39 @@
-installs = true
+stargazers_count = 10
+license_url = ""
 doctype = "default"
+owner = "dextorious"
+installs = true
+license = "Other"
+version = "0.2.0"
+description = "Basic numerical integration routines for presampled data."
+
+[[contributors]]
+name = "dextorious"
+contributions = 13
+[[contributors]]
+name = "Datseris"
+contributions = 2
+[[contributors]]
+name = "jw3126"
+contributions = 2
+[[contributors]]
+name = "i2000s"
+contributions = 2
+[[contributors]]
+name = "bernatguillen"
+contributions = 1
+[[contributors]]
+name = "ChrisRackauckas"
+contributions = 1
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "musm"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1
+[[contributors]]
+name = "nbrantut"
+contributions = 1

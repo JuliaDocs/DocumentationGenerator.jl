@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · PDMats.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>PDMats.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Positive-definite-matrix-types-1">Positive definite matrix types</a></li><li><a class="toctext" href="#Common-interface-1">Common interface</a></li><li><a class="toctext" href="#Define-Customized-Subtypes-1">Define Customized Subtypes</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="PDMats.jl-1" href="#PDMats.jl-1">PDMats.jl</a></h1><p>Uniform interface for positive definite matrices of various structures.</p><p><a href="https://travis-ci.org/JuliaStats/PDMats.jl"><img src="https://travis-ci.org/JuliaStats/PDMats.jl.svg?branch=master" alt="Build Status"/></a> <a href="https://coveralls.io/r/JuliaStats/PDMats.jl?branch=master"><img src="https://img.shields.io/coveralls/JuliaStats/PDMats.jl.svg" alt="Coverage Status"/></a> <a href="http://pkg.julialang.org/?pkg=PDMats&amp;ver=0.6"><img src="http://pkg.julialang.org/badges/PDMats_0.6.svg" alt="PDMats"/></a> <a href="http://pkg.julialang.org/?pkg=PDMats&amp;ver=0.7"><img src="http://pkg.julialang.org/badges/PDMats_0.7.svg" alt="PDMats"/></a></p><hr/><p>Positive definite matrices are widely used in machine learning and probabilistic modeling, especially in applications related to graph analysis and Gaussian models. It is not uncommon that positive definite matrices used in practice have special structures (e.g. diagonal), which can be exploited to accelerate computation.</p><p><em>PDMats.jl</em> supports efficient computation on positive definite matrices of various structures. In particular, it provides uniform interfaces to use positive definite matrices of various structures for writing generic algorithms, while ensuring that the most efficient implementation is used in actual computation.</p><hr/><h2><a class="nav-anchor" id="Positive-definite-matrix-types-1" href="#Positive-definite-matrix-types-1">Positive definite matrix types</a></h2><p>This package defines an abstract type <code>AbstractPDMat{T&lt;:Real}</code> as the base type for positive definite matrices with different internal representations.</p><p>Elemenent types are in princple all Real types, but in practice this is limited by the support for floating point types in Base.LinAlg.Cholesky.</p><ul><li><p><code>Float64</code>     Fully supported from Julia 0.3.</p></li><li><p><code>Float32</code>     Fully supported from Julia 0.4.2. Full, diagonal and scale matrix types are supported in Julia 0.3 or higher.</p></li><li><p><code>Float16</code>     Promoted to <code>Float32</code> for full, diagonal and scale matrix. Currently unsupported for sparse matrix.</p></li><li><p><code>BigFloat</code>    Supported in Julia 0.4 for full, diagonal and scale matrix. Currently unsupported for sparse matrix.</p></li><li><p><code>PDMat</code>: full covariance matrix, defined as</p></li></ul><pre><code class="language-julia">struct PDMat{T&lt;:Real,S&lt;:AbstractMatrix} &lt;: AbstractPDMat{T}
+    dim::Int                    # matrix dimension
+    mat::S                      # input matrix
+    chol::Cholesky{T,S}         # Cholesky factorization of mat
+end
+
+# Constructors
+
+PDMat(mat, chol)    # with both the input matrix and a Cholesky factorization
+
+PDMat(mat)          # with the input matrix, of type Matrix or Symmetric
+                    # Remarks: the Cholesky factorization will be computed
+                    # upon construction.
+
+PDMat(chol)         # with the Cholesky factorization
+                    # Remarks: the full matrix will be computed upon
+                    # construction.</code></pre><ul><li><code>PDiagMat</code>: diagonal matrix, defined as</li></ul><pre><code class="language-julia">struct PDiagMat{T&lt;:Real,V&lt;:AbstractVector} &lt;: AbstractPDMat{T}
+    dim::Int                    # matrix dimension
+    diag::V                     # the vector of diagonal elements
+    inv_diag::V                 # the element-wise inverse of diag
+end
+
+# Constructors
+
+PDiagMat(v,inv_v)   # with the vector of diagonal elements and its inverse
+PDiagMat(v)         # with the vector of diagonal elements
+                    # inv_diag will be computed upon construction</code></pre><ul><li><code>ScalMat</code>: uniform scaling matrix, as <code>v * eye(d)</code>, defined as</li></ul><pre><code class="language-julia">struct ScalMat{T&lt;:Real} &lt;: AbstractPDMat{T}
+    dim::Int         # matrix dimension
+    value::T         # diagonal value (shared by all diagonal elements)
+    inv_value::T     # inv(value)
+end
+
+
+# Constructors
+
+ScalMat(d, v, inv_v) # with dimension d, diagonal value v and its inverse inv_v
+ScalMat(d, v)        # with dimension d and diagonal value v</code></pre><ul><li><code>PDSparseMat</code>: sparse covariance matrix, defined as</li></ul><pre><code class="language-julia">struct PDSparseMat{T&lt;:Real,S&lt;:AbstractSparseMatrix} &lt;: AbstractPDMat{T}
+    dim::Int                       # matrix dimension
+    mat::SparseMatrixCSC           # input matrix
+    chol::CholTypeSparse           # Cholesky factorization of mat
+end
+
+# Constructors
+
+PDSparseMat(mat, chol)    # with both the input matrix and a Cholesky factorization
+
+PDSparseMat(mat)          # with the sparse input matrix, of type SparseMatrixCSC
+                          # Remarks: the Cholesky factorization will be computed
+                          # upon construction.
+
+PDSparseMat(chol)         # with the Cholesky factorization
+                          # Remarks: the sparse matrix &#39;mat&#39; will be computed upon
+                          # construction.</code></pre><h2><a class="nav-anchor" id="Common-interface-1" href="#Common-interface-1">Common interface</a></h2><p>All subtypes of <code>AbstractPDMat</code> share the same API, <em>i.e.</em> with the same set of methods to operate on their instances. These methods are introduced below, where <code>a</code> is an instance of a subtype of <code>AbstractPDMat</code> to represent a positive definite matrix, <code>x</code> be a column vector or a matrix with <code>size(x,1) == dim(a)</code>, and <code>c</code> be a positive real value.</p><pre><code class="language-julia">
+dim(a)      # return the dimension of `a`.
+            # Let `a` represent a d x d matrix, then `dim(a)` returns d.
+
+size(a)     # return the size tuple of `a`, i.e. `(dim(a), dim(a))`.
+
+size(a, i)  # return the i-th dimension of `a`.
+
+ndims(a)    # the number of dimensions, which is always 2.
+
+eltype(a)   # the element type
+
+Matrix(a)   # return a copy of the matrix in full form.
+
+diag(a)     # return a vector of diagonal elements.
+
+inv(a)      # inverse of `a`, of a proper subtype of `AbstractPDMat`.
+            # Note: when `a` is an instance of either `PDMat`, `PDiagMat`,
+            # and `ScalMat`, `inv(a)` is of the same type of `a`.
+            # This needs not be required for customized subtypes -- the
+            # inverse does not always has the same pattern as `a`.
+
+eigmax(a)   # maximum eigenvalue of `a`.
+
+eigmin(a)   # minimum eigenvalue of `a`.
+
+logdet(a)   # log-determinant of `a`, computed in a numerically stable way.
+
+a * x       # multiple `a` with `x` (forward transform)
+
+a \ x       # multiply `inv(a)` with `x` (backward transform).
+            # The internal implementation may not explicitly instantiate
+            # the inverse of `a`.
+
+a * c       # scale `a` by a positive scale `c`.
+            # The result is in general of the same type of `a`.
+
+c * a       # equivalent to a * c.
+
+a + b       # add two positive definite matrices
+
+pdadd(a, b, c)      # add `a` with `b * c`, where both `a` and `b` are
+                    # instances of `AbstractPDMat`.
+
+pdadd(m, a)         # add `a` to a dense matrix `m` of the same size.
+
+pdadd(m, a, c)      # add `a * c` to a dense matrix `m` of the same size.
+
+pdadd!(m, a)        # add `a` to a dense matrix `m` of the same size inplace.
+
+pdadd!(m, a, c)     # add `a * c` to a dense matrix `m` of the same size,
+                    # inplace.
+
+pdadd!(r, m, a)     # add `a` to a dense matrix `m` of the same size, and write
+                    # the result to `r`.
+
+pdadd!(r, m, a, c)  # add `a * c` to a dense matrix `m` of the same size, and
+                    # write the result to `r`.
+
+quad(a, x)          # compute x&#39; * a * x when `x` is a vector.
+                    # perform such computation in a column-wise fashion, when
+                    # `x` is a matrix, and return a vector of length `n`,
+                    # where `n` is the number of columns in `x`.
+
+quad!(r, a, x)      # compute x&#39; * a * x in a column-wise fashion, and write
+                    # the results to `r`.
+
+invquad(a, x)       # compute x&#39; * inv(a) * x when `x` is a vector.
+                    # perform such computation in a column-wise fashion, when
+                    # `x` is a matrix, and return a vector of length `n`.
+
+invquad!(r, a, x)   # compute x&#39; * inv(a) * x in a column-wise fashion, and
+                    # write the results to `r`.
+
+X_A_Xt(a, x)        # compute `x * a * x&#39;` for a matrix `x`.
+
+Xt_A_X(a, x)        # compute `x&#39; * a * x` for a matrix `x`.
+
+X_invA_Xt(a, x)     # compute `x * inv(a) * x&#39;` for a matrix `x`.
+
+Xt_invA_X(a, x)     # compute `x&#39; * inv(a) * x` for a matrix `x`.
+
+whiten(a, x)        # whitening transform. `x` can be a vector or a matrix.
+                    #
+                    # Note: If the covariance of `x` is `a`, then the
+                    # covariance of the transformed result is an identity
+                    # matrix.
+
+whiten!(a, x)       # whitening transform inplace, directly updating `x`.
+
+whiten!(r, a, x)    # write the transformed result to `r`.
+
+unwhiten(a, x)      # inverse of whitening transform. `x` can be a vector or
+                    # a matrix.
+                    #
+                    # Note: If the covariance of `x` is an identity matrix,
+                    # then the covariance of the transformed result is `a`.
+                    # Note: the un-whitening transform is useful for
+                    # generating Gaussian samples.
+
+unwhiten!(a, x)     # un-whitening transform inplace, updating `x`.
+
+unwhiten!(r, a, x)  # write the transformed result to `r`.
+
+test_pdmat(a, amat)     # test the correctness of implementation, given an
+                        # instance of some sub-type of `AbstractPDMat`, and
+                        # a corresponding full matrix.
+                        #
+                        # Note: this function is provided for the developers
+                        # who want to define their own customized sub types.</code></pre><h2><a class="nav-anchor" id="Define-Customized-Subtypes-1" href="#Define-Customized-Subtypes-1">Define Customized Subtypes</a></h2><p>In some situation, it is useful to define a customized subtype of <code>AbstractPDMat</code> to capture positive definite matrices with special structures. For this purpose, one has to define a subset of methods (as listed below), and other methods will be automatically provided.</p><pre><code class="language-julia">
+# Let `M` be the name of the subtype, then the following methods need
+# to be implemented for `M`:
+
+dim(a::M)       # return the dimension of `a`
+
+Matrix(a::M)    # return a copy of the matrix in full form, of type
+                # `Matrix{eltype(M)}`.
+
+diag(a::M)      # return the vector of diagonal elements, of type
+                # `Vector{eltype(M)}`.
+
+pdadd!(m, a, c)     # add `a * c` to a dense matrix `m` of the same size
+                    # inplace.
+
+* (a::M, c::Real)        # return a scaled version of `a`.
+
+* (a::M, x::DenseVecOrMat)  # transform `x`, i.e. compute `a * x`.
+
+\ (a::M, x::DenseVecOrMat)  # inverse transform `x`, i.e. compute `inv(a) * x`.
+
+inv(a::M)       # compute the inverse of `a`.
+
+logdet(a::M)    # compute the log-determinant of `a`.
+
+eigmax(a::M)    # compute the maximum eigenvalue of `a`.
+
+eigmin(a::M)    # compute the minimum eigenvalue of `a`.
+
+whiten!(r::DenseVecOrMat, a::M, x::DenseVecOrMat)  # whitening transform,
+                                                   # write result to `r`.
+
+unwhiten!(r::DenseVecOrMat, a::M, x::DenseVecOrMat)  # un-whitening transform,
+                                                     # write result to `r`.
+
+quad(a::M, x::DenseVector)      # compute `x&#39; * a * x`
+
+quad!(r::AbstractArray, a::M, x::DenseMatrix)   # compute `x&#39; * a * x` in
+                                                # a column-wise manner
+
+invquad(a::M, x::DenseVector)   # compute `x&#39; * inv(a) * x`
+
+invquad!(r::AbstractArray, a::M, x::DenseMatrix) # compute `x&#39; * inv(a) * x`
+                                                 # in a column-wise manner
+
+X_A_Xt(a::M, x::DenseMatrix)        # compute `x * a * x&#39;`
+
+Xt_A_X(a::M, x::DenseMatrix)        # compute `x&#39; * a * x`
+
+X_invA_Xt(a::M, x::DenseMatrix)     # compute `x * inv(a) * x&#39;`
+
+Xt_invA_X(a::M, x::DenseMatrix)     # compute `x&#39; * inv(a) * x`</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

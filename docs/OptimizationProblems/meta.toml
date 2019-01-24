@@ -1,2 +1,33 @@
-installs = true
+stargazers_count = 4
+license_url = ""
 doctype = "default"
+owner = "JuliaSmoothOptimizers"
+installs = true
+license = "Other"
+version = "0.1.0"
+description = "Optimization Problems for Julia"
+
+[[contributors]]
+name = "dpo"
+contributions = 30
+[[contributors]]
+name = "Xx-fractale-xX"
+contributions = 13
+[[contributors]]
+name = "Cebola94"
+contributions = 8
+[[contributors]]
+name = "abelsiqueira"
+contributions = 7
+[[contributors]]
+name = "vepiteski"
+contributions = 5
+[[contributors]]
+name = "nicoleantunes"
+contributions = 3
+[[contributors]]
+name = "DahitoMA"
+contributions = 2
+[[contributors]]
+name = "Goysa2"
+contributions = 1

@@ -1,73 +1,81 @@
 var documenterSearchIndex = {"docs": [
 
 {
-    "location": "#MathOptInterfaceMosek.MosekModel",
-    "page": "Home",
+    "location": "#",
+    "page": "Readme",
+    "title": "Readme",
+    "category": "page",
+    "text": "MathOptInterfaceMosek is the MathOptInterface.jl implementation for the MOSEK solver. The low-level solver API for MOSEK is found in the package Mosek.jl.The Mosek specific model object (used for example with JuMP) is created asusing MathOptInterfaceMosek\nmodel = MosekOptimizer()hence to use Mosek in a JuMP model, do, e.g.,using JuMP\nusing MathOptInterfaceMosek\nmodel = Model(with_optimizer(MosekOptimizer, QUIET=false, INTPNT_CO_TOL_DFEAS=1e-7))The parameter QUIET is a special parameter that when set to false disables all Mosek printing output. All other parameters can be found in the Mosek doc. Note that the prefix MSK_IPAR_ (for integer parameters), MSK_DPAR_ (for floating point parameters) or MSK_SPAR_ (for string parameters) are optional. If they are not given, they are inferred from the type of the value. For instance, in the example above, as 1e-7 is a floating point number, the parameters name used is MSK_DPAR_INTPNT_CO_TOL_DFEAS."
+},
+
+{
+    "location": "autodocs/#MathOptInterfaceMosek.MosekModel",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.MosekModel",
     "category": "type",
     "text": "MosekModel <: MathOptInterface.AbstractModel\n\nLinear variables and constraint can be deleted. For some reason MOSEK does not support deleting PSD variables.\n\nNote also that adding variables and constraints will permanently add some (currently between 1 and 3) Int64s that a delete! will not remove. This ensures that Indices (Variable and constraint) that are deleted are thereafter invalid.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.checkconsistency-Tuple{MathOptInterfaceMosek.LinkedInts}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.checkconsistency-Tuple{MathOptInterfaceMosek.LinkedInts}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.checkconsistency",
     "category": "method",
     "text": "Check consistency of the internal structures.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.deleteblock-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.deleteblock-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.deleteblock",
     "category": "method",
     "text": "Move a block to the free list.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.ensurefree-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.ensurefree-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.ensurefree",
     "category": "method",
     "text": "ensurefree(s::LinkedInts, N :: Int)\n\nEnsure that there are at least N elements free, and allocate as necessary.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.getfreeindexes-Tuple{MathOptInterfaceMosek.LinkedInts}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.getfreeindexes-Tuple{MathOptInterfaceMosek.LinkedInts}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.getfreeindexes",
     "category": "method",
     "text": "Get a list if the currently free elements.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.getindexes-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.getindexes-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.getindexes",
     "category": "method",
     "text": "getindexes(s::LinkedInts, id :: Int)\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.getusedindexes-Tuple{MathOptInterfaceMosek.LinkedInts}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.getusedindexes-Tuple{MathOptInterfaceMosek.LinkedInts}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.getusedindexes",
     "category": "method",
     "text": "Get a list if the currently used elements.\n\n\n\n\n\n"
 },
 
 {
-    "location": "#MathOptInterfaceMosek.newblock-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
-    "page": "Home",
+    "location": "autodocs/#MathOptInterfaceMosek.newblock-Tuple{MathOptInterfaceMosek.LinkedInts,Int64}",
+    "page": "Docstrings",
     "title": "MathOptInterfaceMosek.newblock",
     "category": "method",
     "text": "newblock(s::LinkedInts, N :: Int)\n\nAdd a new block in list idx\n\n\n\n\n\n"
 },
 
 {
-    "location": "#",
-    "page": "Home",
-    "title": "Home",
+    "location": "autodocs/#",
+    "page": "Docstrings",
+    "title": "Docstrings",
     "category": "page",
     "text": "Package doesn\'t contain Documenter docs.Docs automatically generated by juliadocs.orgModules = [MathOptInterfaceMosek]\nOrder = [:type, :function]"
 },

@@ -1,0 +1,45 @@
+stargazers_count = 30
+license_url = ""
+doctype = "default"
+owner = "JuliaArrays"
+installs = true
+license = "Other"
+version = "0.9.1"
+description = "Fortran-like arrays with arbitrary, zero or negative starting indices."
+
+[[contributors]]
+name = "alsam"
+contributions = 68
+[[contributors]]
+name = "timholy"
+contributions = 66
+[[contributors]]
+name = "mbauman"
+contributions = 7
+[[contributors]]
+name = "fredrikekre"
+contributions = 4
+[[contributors]]
+name = "tpapp"
+contributions = 2
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 2
+[[contributors]]
+name = "schmrlng"
+contributions = 1
+[[contributors]]
+name = "laborg"
+contributions = 1
+[[contributors]]
+name = "MasonProtter"
+contributions = 1
+[[contributors]]
+name = "pabloferz"
+contributions = 1
+[[contributors]]
+name = "vchuravy"
+contributions = 1
+[[contributors]]
+name = "yuyichao"
+contributions = 1

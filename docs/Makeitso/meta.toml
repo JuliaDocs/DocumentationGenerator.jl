@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = 3
 doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Make-like behaviour for Julia scripts"

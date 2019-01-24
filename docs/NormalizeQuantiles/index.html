@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · NormalizeQuantiles.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>NormalizeQuantiles.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Dependencies-1">Dependencies</a></li><li><a class="toctext" href="#Remarks-1">Remarks</a></li><li><a class="toctext" href="#Usage-examples-normalizeQuantiles-1">Usage examples <code>normalizeQuantiles</code></a></li><li><a class="toctext" href="#Behaviour-of-function-normalizeQuantiles-1">Behaviour of function <code>normalizeQuantiles</code></a></li><li><a class="toctext" href="#Data-prerequisites-1">Data prerequisites</a></li><li><a class="toctext" href="#Remarks-on-data-with-missing-values-1">Remarks on data with missing values</a></li><li><a class="toctext" href="#List-of-all-exported-definitions-for-normalizeQuantiles-1">List of all exported definitions for <code>normalizeQuantiles</code></a></li><li><a class="toctext" href="#Usage-examples-sampleRanks-1">Usage examples <code>sampleRanks</code></a></li><li><a class="toctext" href="#List-of-all-exported-definitions-for-sampleRanks-1">List of all exported definitions for <code>sampleRanks</code></a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="NormalizeQuantiles-1" href="#NormalizeQuantiles-1">NormalizeQuantiles</a></h1><p>For julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6</p><p>Linux: <a href="https://travis-ci.org/oheil/NormalizeQuantiles.jl"><img src="https://travis-ci.org/oheil/NormalizeQuantiles.jl.svg?branch=master" alt="Build Status"/></a> Windows: <a href="https://ci.appveyor.com/project/oheil/normalizequantiles-jl/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/oheil/normalizequantiles.jl?branch=master&amp;svg=true" alt="Build status"/></a></p><p><a href="https://coveralls.io/github/oheil/NormalizeQuantiles.jl?branch=master"><img src="https://coveralls.io/repos/github/oheil/NormalizeQuantiles.jl/badge.svg?branch=master" alt="Coverage Status"/></a></p><p>Package NormalizeQuantiles implements quantile normalization</p><pre><code class="language-julia">qn = normalizeQuantiles(array);</code></pre><p>and provides a function to calculate sample ranks</p><pre><code class="language-julia">(r,m) = sampleRanks(array);</code></pre><p>of a given vector or matrix.</p><p><strong>Table of Contents</strong></p><ul><li><a href="#dependencies">Dependencies</a></li><li><a href="#remarks">Remarks</a></li><li><a href="#usage-examples-normalizequantiles">Usage examples <code>normalizeQuantiles</code></a><ul><li><a href="#general-usage">General usage</a></li><li><a href="#missing-values">Missing Values</a></li><li><a href="#sharedarray-and-multicore-usage-examples">SharedArray and multicore usage examples</a></li></ul></li><li><a href="#behaviour-of-function-normalizequantiles">Behaviour of function <code>normalizeQuantiles</code></a></li><li><a href="#data-prerequisites">Data prerequisites</a></li><li><a href="#remarks-on-data-with-missing-values">Remarks on data with missing values</a></li><li><a href="#list-of-all-exported-definitions-for-normalizequantiles">List of all exported definitions for <code>normalizeQuantiles</code></a></li><li><a href="#usage-examples-sampleranks">Usage examples <code>sampleRanks</code></a></li><li><a href="#list-of-all-exported-definitions-for-sampleranks">List of all exported definitions for <code>sampleRanks</code></a></li></ul><h2><a class="nav-anchor" id="Dependencies-1" href="#Dependencies-1">Dependencies</a></h2><ul><li>Julia 0.7</li></ul><h2><a class="nav-anchor" id="Remarks-1" href="#Remarks-1">Remarks</a></h2><ul><li>for julia 0.4, 0.5, 0.6 see: https://github.com/oheil/NormalizeQuantiles.jl/tree/backport-0.6</li><li>Code examples and output on this page have been used on and copied from the julia 0.7 <a href="https://docs.julialang.org/en/latest/manual/interacting-with-julia/">REPL</a></li><li>Last commit with julia 0.3 support: <a href="https://github.com/oheil/NormalizeQuantiles.jl/tree/eb97d24ff77d470d0d121fabf83d59979ad0db36">Jan 20, 2017, eb97d24ff77d470d0d121fabf83d59979ad0db36</a><ul><li>git checkout eb97d24ff77d470d0d121fabf83d59979ad0db36</li></ul></li></ul><h2><a class="nav-anchor" id="Usage-examples-normalizeQuantiles-1" href="#Usage-examples-normalizeQuantiles-1">Usage examples <code>normalizeQuantiles</code></a></h2><h4><a class="nav-anchor" id="General-usage-1" href="#General-usage-1">General usage</a></h4><pre><code class="language-julia">Pkg.add(&quot;NormalizeQuantiles&quot;);
+using NormalizeQuantiles;</code></pre><p>The following <code>array</code> is interpreted as a matrix with 4 rows and 3 columns:</p><pre><code class="language-julia">array = [ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];
+qn = normalizeQuantiles(array)</code></pre><pre><code class="language-none">	julia&gt; qn
+	4�3 Array{Float64,2}:
+	 2.0  3.0  2.0
+	 4.0  6.0  4.0
+	 8.0  8.0  7.0
+	 6.0  3.0  7.0</code></pre><p>The columns in <code>qn</code> are now quantile normalized to each other.</p><p>The input array must not have dimension larger than 2.</p><p>Return type of function normalizeQuantiles is always Array{Float64,2}</p><h4><a class="nav-anchor" id="Missing-Values-1" href="#Missing-Values-1">Missing Values</a></h4><p>If your data contain some missing values like <code>NaN</code> (Not a Number) or something else, they will be changed to <code>NaN</code>:</p><pre><code class="language-julia">array = [ NaN 2.0 1.0 ; 4.0 &quot;empty&quot; 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ];</code></pre><pre><code class="language-none">	julia&gt; array
+	4�3 Array{Any,2}:
+	 NaN    2.0       1.0
+	4.0   &quot;empty&quot;  6.0
+	9.0  7.0       8.0
+	5.0  2.0       8.0</code></pre><pre><code class="language-julia">qn = normalizeQuantiles(array)</code></pre><pre><code class="language-none">	julia&gt; qn
+	4�3 Array{Float64,2}:
+	 NaN      3.25  1.5
+	   5.0  NaN     5.0
+	   8.0    8.0   6.5
+	   5.0    3.25  6.5</code></pre><p>NaN is of type Float64, so there is nothing similar for Int types.</p><pre><code class="language-none">	julia&gt; typeof(NaN)
+	Float64</code></pre><p>You can convert the result to <code>Array{Union{Missing, Float64},2}</code> with:</p><pre><code class="language-julia">qnMissing = convert(Array{Union{Missing,Float64}},qn)</code></pre><pre><code class="language-none">	julia&gt; qnMissing
+	4�3 Array{Union{Missing, Float64},2}:
+	 NaN      3.25  1.5
+	   5.0  NaN     5.0
+	   8.0    8.0   6.5
+	   5.0    3.25  6.5</code></pre><pre><code class="language-julia">qnMissing[isnan.(qnMissing)] = missing;</code></pre><pre><code class="language-none">	julia&gt; qnMissing
+	4�3 Array{Union{Missing, Float64},2}:
+	  missing  3.25      1.5
+	 5.0        missing  5.0
+	 8.0       8.0       6.5
+	 5.0       3.25      6.5</code></pre><h4><a class="nav-anchor" id="SharedArray-and-multicore-usage-examples-1" href="#SharedArray-and-multicore-usage-examples-1">SharedArray and multicore usage examples</a></h4><blockquote><p>Remark: restart julia now. <code>addprocs()</code> must be called before <code>using NormalizeQuantiles;</code>.</p></blockquote><p>To use multiple cores on a single machine you can use the standard packages <code>Distributed</code> and <code>SharedArrays</code>:</p><pre><code class="language-julia">using Distributed
+addprocs();
+@everywhere using SharedArrays
+@everywhere using NormalizeQuantiles
+
+sa = SharedArray{Float64}([ 3.0 2.0 1.0 ; 4.0 5.0 6.0 ; 9.0 7.0 8.0 ; 5.0 2.0 8.0 ])</code></pre><pre><code class="language-none">	julia&gt; sa
+	4�3 SharedArray{Float64,2}:
+	 3.0  2.0  1.0
+	 4.0  5.0  6.0
+	 9.0  7.0  8.0
+	 5.0  2.0  8.0</code></pre><pre><code class="language-julia">qn = normalizeQuantiles(sa)</code></pre><pre><code class="language-none">	julia&gt; qn
+	4�3 Array{Float64,2}:
+	 2.0  3.0  2.0
+	 4.0  6.0  4.0
+	 8.0  8.0  7.0
+	 6.0  3.0  7.0</code></pre><blockquote><p>Remark: restart julia again.</p></blockquote><p>For small data sets using <code>Distributed</code> and <code>SharedArrays</code> decreases performance:</p><pre><code class="language-julia">using NormalizeQuantiles
+la = randn((100,100));
+normalizeQuantiles(la); @time normalizeQuantiles(la);</code></pre><pre><code class="language-none">	julia&gt; @time normalizeQuantiles(la);
+	  0.003178 seconds (8.35 k allocations: 2.813 MiB)</code></pre><blockquote><p>Remark: restart julia.</p></blockquote><pre><code class="language-julia">using Distributed
+addprocs();
+@everywhere using SharedArrays
+@everywhere using NormalizeQuantiles
+sa = SharedArray{Float64}( randn((100,100)) );
+normalizeQuantiles(sa); @time normalizeQuantiles(sa);</code></pre><pre><code class="language-none">	julia&gt; @time normalizeQuantiles(sa);
+	  0.013014 seconds (12.10 k allocations: 432.146 KiB)</code></pre><blockquote><p>Remark: restart julia.</p></blockquote><p>For larger data sets performance increases with multicore processors:</p><pre><code class="language-julia">using NormalizeQuantiles
+la = randn((1000,10000));
+normalizeQuantiles(la); @time normalizeQuantiles(la);</code></pre><pre><code class="language-none">	julia&gt; @time normalizeQuantiles(la);
+	  2.959431 seconds (784.18 k allocations: 2.281 GiB, 12.13% gc time)</code></pre><blockquote><p>Remark: restart julia.</p></blockquote><pre><code class="language-julia">using Distributed
+addprocs();
+@everywhere using SharedArrays
+@everywhere using NormalizeQuantiles
+la = randn((1000,10000));
+sa = SharedArray{Float64}(la);
+normalizeQuantiles(sa); @time normalizeQuantiles(sa);</code></pre><pre><code class="language-none">	julia&gt; @time normalizeQuantiles(sa);
+	  1.030016 seconds (83.85 k allocations: 80.754 MiB, 5.77% gc time)</code></pre><p>Using non-SharedArrays in a multicore setup is slowest:</p><pre><code class="language-none">	julia&gt; normalizeQuantiles(la); @time normalizeQuantiles(la);
+	  5.776685 seconds (294.06 k allocations: 92.532 MiB, 0.28% gc time)</code></pre><h2><a class="nav-anchor" id="Behaviour-of-function-normalizeQuantiles-1" href="#Behaviour-of-function-normalizeQuantiles-1">Behaviour of function <code>normalizeQuantiles</code></a></h2><p>After quantile normalization the sets of values of each column have the same statistical properties. This is quantile normalization without a reference column.</p><p>The function <code>normalizeQuantiles</code> expects an array with dimension &lt;= 2 and always returns a matrix of equal size as the input matrix and of type <code>Array{Float64,2}</code>.</p><p><code>NaN</code> values of type <code>Float64</code> and any other non-numbers, like strings, are treated as random missing values and the result value will be <code>NaN</code>. See &quot;Remarks on data with missing values&quot; below.</p><h2><a class="nav-anchor" id="Data-prerequisites-1" href="#Data-prerequisites-1">Data prerequisites</a></h2><p>To use quantile normalization your data should have the following properties:</p><ul><li>the distribution of values in each column should be similar</li><li>number of values for each column should be large</li><li>number of missing values in the data should be small and of random nature</li></ul><h2><a class="nav-anchor" id="Remarks-on-data-with-missing-values-1" href="#Remarks-on-data-with-missing-values-1">Remarks on data with missing values</a></h2><p>Currently there seems to be no general agreement on how to deal with missing values during quantile normalization. Here we put any given missing value back into the sorted column at the original position before calculating the mean of the rows.</p><h2><a class="nav-anchor" id="List-of-all-exported-definitions-for-normalizeQuantiles-1" href="#List-of-all-exported-definitions-for-normalizeQuantiles-1">List of all exported definitions for <code>normalizeQuantiles</code></a></h2><p>| | normalizeQuantiles | | –––––––––––-: | –––––––––––- |  | <strong>Definition:</strong> | <code>Array{Float64,2} function normalizeQuantiles(matrix::AbstractArray)</code> | | Input type: | <code>matrix::AbstractArray</code> | | Return type: | <code>Array{Float64,2}</code> |</p><h2><a class="nav-anchor" id="Usage-examples-sampleRanks-1" href="#Usage-examples-sampleRanks-1">Usage examples <code>sampleRanks</code></a></h2><p><code>sampleRanks</code> of a given vector calculates for each element the rank, which is the position of the element in the sorted vector.</p><pre><code class="language-julia">using NormalizeQuantiles
+a = [ 5.0 2.0 4.0 3.0 1.0 ];
+(r,m) = sampleRanks(a);   # here only return value r is relevant, for m see below
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	5-element Array{Union{Missing, Int64},1}:
+	 5
+	 2
+	 4
+	 3
+	 1</code></pre><p>If you provide a matrix like</p><pre><code class="language-julia">array = [ 1.0 2.0 3.0 ; 4.0 5.0 6.0 ; 7.0 8.0 9.0 ; 10.0 11.0 12.0 ]</code></pre><pre><code class="language-none">	julia&gt; array
+	4�3 Array{Float64,2}:
+	  1.0   2.0   3.0
+	  4.0   5.0   6.0
+	  7.0   8.0   9.0
+	 10.0  11.0  12.0</code></pre><p>ranks are calculated column wise, or in other words, array is treated as <code>array[:]</code>:</p><pre><code class="language-julia">(r,m) = sampleRanks(array);
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	12-element Array{Union{Missing, Int64},1}:
+	  1
+	  4
+	  7
+	 10
+	  2
+	  5
+	  8
+	 11
+	  3
+	  6
+	  9
+	 12</code></pre><p>There are three optional keyword parameters <code>tiesMethod</code>, <code>naIncreasesRank</code> and <code>resultMatrix</code>:</p><pre><code class="language-julia">(r,m) = sampleRanks(a,tiesMethod=tmMin,naIncreasesRank=false,resultMatrix=true);
+(r,m) = sampleRanks(a,resultMatrix=true);</code></pre><p>Equal values in the vector are called ties. There are several methods available on how to treat ties:</p><ul><li>tmMin : the smallest rank for all ties (default)</li><li>tmMax : the largest rank</li><li>tmOrder : increasing ranks</li><li>tmReverse : decreasing ranks</li><li>tmRandom : the ranks are randomly distributed</li><li>tmAverage : the average rounded to the next integer</li></ul><p>These methods are defined and exported as</p><pre><code class="language-julia">	@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage</code></pre><p>Internally ties have increasing ranks. On these the chosen method is applied.</p><p>Examples:</p><pre><code class="language-julia">a = [ 7.0 2.0 4.0 2.0 1.0 ];
+(r,m) = sampleRanks(a); #which is the same as (r,m)=sampleRanks(a,tiesMethod=tmMin)
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	5-element Array{Union{Missing, Int64},1}:
+	 4
+	 2
+	 3
+	 2
+	 1</code></pre><pre><code class="language-julia">(r,m) = sampleRanks(a,tiesMethod=tmMax);
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	5-element Array{Union{Missing, Int64},1}:
+	 5
+	 3
+	 4
+	 3
+	 1</code></pre><pre><code class="language-julia">(r,m) = sampleRanks(a,tiesMethod=tmReverse);
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	5-element Array{Union{Missing, Int64},1}:
+	 5
+	 3
+	 4
+	 2
+	 1</code></pre><p>One or more missing values in the vector are never equal and remain on there position after sorting. The rank of each missing value is always missing::Missing. The default is that a missing value does not increase the rank for successive values. Giving true keyword parameter <code>naIncreasesRank</code> changes that behavior to increasing the rank by 1 for successive values:</p><pre><code class="language-julia">a = [ 7.0 2.0 4.0 2.0 1.0 ];
+a[1] = NaN;
+(r,m) = sampleRanks(a);
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	5-element Array{Union{Missing, Int64},1}:
+	  missing
+	 2
+	 3
+	 2
+	 1</code></pre><pre><code class="language-julia">(r,m) = sampleRanks(a,naIncreasesRank=true);
+r</code></pre><pre><code class="language-none">	julia&gt; r
+	5-element Array{Union{Missing, Int64},1}:
+	  missing
+	 3
+	 4
+	 3
+	 2</code></pre><p>The keyword parameter <code>resultMatrix</code> lets you generate a dictionary of rank indices to allow direct access to all values with a given rank. For large vectors this may have a large memory consumption therefor the default is to return an empty dictionary of type <code>Dict{Int64,Array{Int64,N}}</code>:</p><pre><code class="language-julia">a = [ 7.0 2.0 4.0 2.0 1.0 ];
+(r,m) = sampleRanks(a,resultMatrix=true);
+m</code></pre><pre><code class="language-none">	julia&gt; m
+	Dict{Int64,Array{Int64,N} where N} with 4 entries:
+	  4 =&gt; [1]
+	  2 =&gt; [2,4]
+	  3 =&gt; [3]
+	  1 =&gt; [5]</code></pre><pre><code class="language-julia">haskey(m,2)   #does rank 2 exist?</code></pre><pre><code class="language-none">	julia&gt; haskey(m,2)
+	true</code></pre><pre><code class="language-julia">a[m[2]]   #all values of rank 2</code></pre><pre><code class="language-none">	julia&gt; a[m[2]]
+	2-element Array{Float64,1}:
+	 2.0
+	 2.0</code></pre><h2><a class="nav-anchor" id="List-of-all-exported-definitions-for-sampleRanks-1" href="#List-of-all-exported-definitions-for-sampleRanks-1">List of all exported definitions for <code>sampleRanks</code></a></h2><p>| | sampleRanks | | –––––––––––-: | –––––––––––- |  | <strong>Definition:</strong> | <code>@enum qnTiesMethods tmMin tmMax tmOrder tmReverse tmRandom tmAverage</code> | | Description: || | tmMin | the smallest rank for all ties | | tmMax | the largest rank | | tmOrder | increasing ranks | | tmReverse | decreasing ranks | | tmRandom | the ranks are randomly distributed | | tmAverage | the average rounded to the next integer |</p><p>| | sampleRanks | | | –––––––––––-: | –––––––––––- | –––––––––––- |  | <strong>Definition:</strong> | <code>(Array{Union{Missing,Int},1},Dict{Int,Array{Int}}) sampleRanks(array::AbstractArray; tiesMethod::qnTiesMethods=tmMin, naIncreasesRank=false, resultMatrix=false)</code> | <strong>keyword arguments</strong> | | Input type: | <code>array::AbstractArray</code> | data | | Input type: | <code>tiesMethod::qnTiesMethods</code> | how to treat ties (default: <code>tmMin</code>) | | Input type: | <code>naIncreasesRank::bool</code> | increase rank by one if NA (default: <code>false</code>) | | Input type: | <code>resultMatrix::bool</code> | create rank dictionary (default: <code>false</code>) | | Return type: | <code>(Array{Union{Missing,Int},1},Dict{Int,Array{Int}})</code> ||</p><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

@@ -1,5 +1,33 @@
-stargazers_count = "58"
+stargazers_count = 58
+license_url = ""
 doctype = "default"
+owner = "JuliaPlots"
 installs = true
+license = "Other"
 version = "0.4.0"
 description = "Graph-related recipes to be used with Plots.jl"
+
+[[contributors]]
+name = "tbreloff"
+contributions = 64
+[[contributors]]
+name = "mkborregaard"
+contributions = 44
+[[contributors]]
+name = "diegozea"
+contributions = 13
+[[contributors]]
+name = "baggepinnen"
+contributions = 7
+[[contributors]]
+name = "sbromberger"
+contributions = 4
+[[contributors]]
+name = "jw3126"
+contributions = 2
+[[contributors]]
+name = "tk3369"
+contributions = 2
+[[contributors]]
+name = "staticfloat"
+contributions = 1

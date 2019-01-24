@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · MarkableIntegers.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>MarkableIntegers.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Purpose-1">Purpose</a></li><li><a class="toctext" href="#Techniques-(please-add-yours)-1">Techniques (please add yours)</a></li><li><a class="toctext" href="#Introduction-1">Introduction</a></li><li><a class="toctext" href="#Exports-1">Exports</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Markable-and-thinsp;Integers-1" href="#Markable-and-thinsp;Integers-1">Markable&amp;thinsp;Integers</a></h1><h3><a class="nav-anchor" id="Signed-and-Unsigned-Integers,-individually-[un]markable.-1" href="#Signed-and-Unsigned-Integers,-individually-[un]markable.-1">Signed and Unsigned Integers, individually [un]markable.</a></h3><h5><a class="nav-anchor" id="all-are-introduced-in-the-*unmarked*-state-1" href="#all-are-introduced-in-the-*unmarked*-state-1">- all are introduced in the <em>unmarked</em> state</a></h5><p>– elements are marked by attaching a <em>note</em> – elements are unmarked by removing that <em>note</em></p><h4><a class="nav-anchor" id="Two-state-Integers-(unmarked-state,-marked-state)-1" href="#Two-state-Integers-(unmarked-state,-marked-state)-1">Two-state Integers (unmarked state, marked state)</a></h4><h4><a class="nav-anchor" id="Released-under-the-MIT-License.-and-nbsp;-and-nbsp;-and-nbsp;-and-nbsp;Copyright-and-copy;-2018-by-Jeffrey-Sarnoff.-1" href="#Released-under-the-MIT-License.-and-nbsp;-and-nbsp;-and-nbsp;-and-nbsp;Copyright-and-copy;-2018-by-Jeffrey-Sarnoff.-1">Released under the MIT License. &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;Copyright &amp;copy; 2018 by Jeffrey Sarnoff.</a></h4><blockquote><p><em>this package requires Julia v0.7-</em></p></blockquote><hr/><h2><a class="nav-anchor" id="Purpose-1" href="#Purpose-1">Purpose</a></h2><p>MarkableIntegers allow elements (integer values) of a sequence, mesh, voxel image, or time series to be distinguished. Any one or more of the constituent numbers may be noted with a mark (a re-find-able tag).  Marking one value does not mean that all other occurances of that value become marked.  You may choose to mark some, all or none of the other occurances of that value.</p><p>You may be seeking to identify regions within the dataform or datastream that are of some greater interest.  Often this requires preliminary identification, contextual refinement, and revisiting.  There are well-know methods to manage this sort of incremental refinement.  All lean on ancillary data structures and dynamic update.</p><p>MarkableIntegers bring the ability to provide and refine algorithmic focus into the data per se.  For some applications, this suffices.  For others, intelligent use of ancillary data structures and dynamic update therewith in concert with markable integers is the right complement.</p><hr/><h2><a class="nav-anchor" id="Techniques-(please-add-yours)-1" href="#Techniques-(please-add-yours)-1">Techniques (please add yours)</a></h2><p>An easy way to find more lengthy runs of marked values is to run length encode the Bool sequence obtained with map(ismarked, seq).  A way to find more highly valued regions of marked values is to sum over each run.</p><p>One may mark values which are inconsistent with an underlying model or are otherwise suspect (e.g. values that appear to be &quot;drop outs&quot;).  The unmarked values could then provide a neater view with which to begin exploration. Or, the marked values may be used as targets for simple fitting to provide a more digestable version of the info.</p><p>With evolutionary or swarm intellegence approaches (simulated annealing, ant colony, tabu search, ...) better solution spaces develop through process.  There may be an opportunity for speedup by using local markers to influence aspects of the process.</p><hr/><h2><a class="nav-anchor" id="Introduction-1" href="#Introduction-1">Introduction</a></h2><p>There are <code>Markable</code> versions of each <code>Signed</code> (<code>Int8</code>, <code>Int16</code>, <code>Int32</code>, <code>Int64</code>, <code>Int128</code>) and each <code>Unsigned</code> (<code>UInt8</code>, <code>UInt16</code>, <code>UInt32</code> ,<code>UInt64</code>, <code>UInt128</code>) type.  The <code>Markable</code> types are prefixed with <code>Mark</code> (<code>MarkInt32</code>, <code>MarkUInt64</code>).</p><p>For most uses, you do not need to be that specific.  Variables that hold markable integers are initialized with (constructed from) some <code>Signed</code> or <code>Unsigned</code> value (or with e.g. <code>zero(MarkInt)</code>, <code>one(MarkInt16)</code>).</p><p>You can use <code>Unmarked</code> or <code>Marked</code> with any legitimate initializer and forget about the specific type names. <code>ismarked</code> and <code>isunmarked</code> are provided to ascertain markedness during computation.  <code>allmarked</code> and <code>allunmarked</code> let you collect over markedness.</p><pre><code class="language-julia">julia&gt; an_unmarked_value = Unmarked(10)
+10
+julia&gt; a_marked_value = Marked(16)
+16
+
+julia&gt; isunmarked(an_unmarked_value), ismarked(an_unmarked_value)
+true, false
+
+julia&gt; isunmarked(a_marked_value), ismarked(a_marked_value)
+false, true</code></pre><p>There are two ways of marking an unmarked value or unmarking a marked value. The first way uses the same form as is used with initialization. The result must be assigned to some value to be of use. The second uses macros to change values in place.  The macros reassign the variable given.</p><pre><code class="language-julia">julia&gt; ten = Unmarked(10)
+10
+julia&gt; sixteen = Marked(16)
+16
+
+julia&gt; isunmarked(ten)
+true
+julia&gt; ten = Marked(ten)
+10
+julia&gt; isunmarked(ten)
+false
+
+julia&gt; ismarked(sixteen)
+true
+julia&gt; sixteen = Unmarked(sixteen)
+16
+julia&gt; ismarked(sixteen)
+false</code></pre><pre><code class="language-julia">julia&gt; ten = Unmarked(10);
+julia&gt; sixteen = Marked(16);
+julia&gt; @mark!(ten)
+10
+julia&gt; @unmark!(sixteen)
+16
+julia&gt; ismarked(ten), isunmarked(sixteen)
+true, true
+
+julia&gt; @unmark!(ten);
+julia&gt; @mark!(sixteen);
+julia&gt; isunmarked(ten), ismarked(sixteen)
+true, true</code></pre><p>MarkableSigned integers readily convert to Signed and MarkableUnsigned integers readily convert to Unsigned.  <code>Signed</code> and <code>Unsigned</code> provide these conversions.</p><pre><code class="language-julia">
+julia&gt; markable_two = Unmarked(Int64(2));
+julia&gt; markable_three = Marked(UInt16(3));
+
+julia&gt; typeof(markable_two), typeof(markable_three)
+(MarkInt64, MarkUInt16)
+
+julia&gt; two = Signed(markable_two);
+julia&gt; three = Unsigned(markable_three);
+
+julia&gt; typeof(two), typeof(three)
+(Int64, UInt16)</code></pre><p>You can gather the marked values and the unmarked values.</p><pre><code class="language-julia">julia&gt; seq = [Marked(1), Unmarked(2), Unmarked(3), Marked(4), Unmarked(1)]
+julia&gt; allmarked(seq)
+julia&gt; allunmarked(seq)
+</code></pre><hr/><h2><a class="nav-anchor" id="Exports-1" href="#Exports-1">Exports</a></h2><h4><a class="nav-anchor" id="Constructors-1" href="#Constructors-1">Constructors</a></h4><ul><li>Unmarked, Marked</li><li>Signed, Unsigned</li></ul><h4><a class="nav-anchor" id="Abstract-and-Collective-Types-1" href="#Abstract-and-Collective-Types-1">Abstract and Collective Types</a></h4><ul><li><code>MarkableInteger</code>, <code>MarkableSigned</code>, <code>MarkableUnsigned</code></li></ul><h4><a class="nav-anchor" id="Concrete-Types-1" href="#Concrete-Types-1">Concrete Types</a></h4><ul><li><code>MarkInt</code>, <code>MarkInt8</code>, <code>MarkInt16</code>, <code>MarkInt32</code>, <code>MarkInt64</code>, <code>MarkInt128</code></li><li><code>MarkUInt</code>, <code>MarkUInt8</code>, <code>MarkUInt16</code>, <code>MarkUInt32</code>, <code>MarkUInt64</code>, <code>MarkUInt128</code></li></ul><h4><a class="nav-anchor" id="Predicates-1" href="#Predicates-1">Predicates</a></h4><ul><li><code>ismarked</code>, <code>isunmarked</code></li><li><code>allmarked</code>, <code>allunmarked</code></li></ul><h4><a class="nav-anchor" id="Comparatives-1" href="#Comparatives-1">Comparatives</a></h4><ul><li><code>==</code>, <code>!=</code>, <code>&lt;=</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&gt;</code></li><li><code>isless</code>, <code>isequal</code></li></ul><h4><a class="nav-anchor" id="Bitwise-Primitives-(wip)-1" href="#Bitwise-Primitives-(wip)-1">Bitwise Primitives (wip)</a></h4><ul><li><code>leading_zeros</code>, <code>trailing_zeros</code>, <code>leading_ones</code>, <code>trailing_ones</code></li><li><code>count_zeros</code>, <code>count_ones</code></li></ul><h4><a class="nav-anchor" id="Bitwise-Logic-1" href="#Bitwise-Logic-1">Bitwise Logic</a></h4><ul><li><code>~</code>, <code>&amp;</code>, <code>|</code>, <code>⊻</code></li></ul><h4><a class="nav-anchor" id="Math-1" href="#Math-1">Math</a></h4><ul><li><code>abs</code>, <code>signbit</code>, <code>sign</code></li><li><code>+</code>, <code>-</code>, <code>*</code>, <code>div</code>, <code>fld</code>, <code>cld</code>, <code>rem</code>, <code>mod</code></li><li><code>/</code></li></ul><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

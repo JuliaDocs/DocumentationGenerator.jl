@@ -1,5 +1,15 @@
-stargazers_count = "1"
+stargazers_count = 1
+license_url = "https://api.github.com/licenses/isc"
 doctype = "default"
+owner = "juliohm"
 installs = true
+license = "ISC License"
 version = "0.3.6"
 description = "Developer tools for the GeoStats.jl framework"
+
+[[contributors]]
+name = "juliohm"
+contributions = 156
+[[contributors]]
+name = "riyadm"
+contributions = 1

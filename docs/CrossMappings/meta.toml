@@ -1,0 +1,5 @@
+stargazers_count = 1
+doctype = "default"
+installs = true
+version = "0.2.3"
+description = "A Julia package for computing cross mapping causality measures between time series."

@@ -1,57 +1,105 @@
 var documenterSearchIndex = {"docs": [
 
 {
-    "location": "#DocumentFunction.documentfunction",
-    "page": "Home",
+    "location": "#",
+    "page": "Readme",
+    "title": "Readme",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "#DocumentFunction-1",
+    "page": "Readme",
+    "title": "DocumentFunction",
+    "category": "section",
+    "text": "(Image: DocumentFunction) (Image: DocumentFunction) (Image: DocumentFunction) (Image: Build Status) (Image: Coverage Status)DocumentFunction is a module of MADS (Model Analysis & Decision Support)."
+},
+
+{
+    "location": "#Installation:-1",
+    "page": "Readme",
+    "title": "Installation:",
+    "category": "section",
+    "text": "Pkg.add(\"DocumentFunction\")"
+},
+
+{
+    "location": "#Example:-1",
+    "page": "Readme",
+    "title": "Example:",
+    "category": "section",
+    "text": "import DocumentFunction\n\nfunction getfunctionarguments(f::Function)\n    m = methods(f)\n    getfunctionarguments(f, string.(collect(m.ms)))\nend\nfunction getfunctionarguments(f::Function, m::Vector{String})\n    l = length(m)\n    mp = Array{Symbol}(0)\n    for i in 1:l\n        r = match(r\"(.*)\\(([^;]*);(.*)\\)\", m[i])\n        if typeof(r) == Void\n            r = match(r\"(.*)\\((.*)\\)\", m[i])\n        end\n        if typeof(r) != Void && length(r.captures) > 1\n            fargs = strip.(split(r.captures[2], \", \"))\n            for j in 1:length(fargs)\n                if !contains(string(fargs[j]), \"...\") && fargs[j] != \"\"\n                    push!(mp, fargs[j])\n                end\n            end\n        end\n    end\n    return sort(unique(mp))\nend\n\n@doc \"\"\"\n$(DocumentFunction.documentfunction(getfunctionarguments;\nlocation=false,\nmaintext=\"Get function arguments\",\nargtext=Dict(\"f\"=>\"Function to be documented\",\n             \"m\"=>\"Function methods\")))\n\"\"\" getfunctionargumentsExecution of?getfunctionargumentsproduces the following output:  DocumentFunction.getfunctionarguments\n\n  Get function arguments\n\n  Methods\n\n    •    DocumentFunction.getfunctionarguments(f::Function)\n\n    •    DocumentFunction.getfunctionarguments(f::Function, m::Array{String,1})\n\n\n  Arguments\n\n    •    f::Function : Function to be documented\n\n    •    m::Array{String,1} : Function methods\n"
+},
+
+{
+    "location": "#Developers-1",
+    "page": "Readme",
+    "title": "Developers",
+    "category": "section",
+    "text": "Velimir (monty) Vesselinov (publications)\nDaniel O\'Malley (publications)\nsee also"
+},
+
+{
+    "location": "#Publications,-Presentations,-Projects-1",
+    "page": "Readme",
+    "title": "Publications, Presentations, Projects",
+    "category": "section",
+    "text": "mads.lanl.gov/\nees.lanl.gov/monty"
+},
+
+{
+    "location": "autodocs/#DocumentFunction.documentfunction",
+    "page": "Docstrings",
     "title": "DocumentFunction.documentfunction",
     "category": "function",
     "text": "Create function documentation\n\nArguments:\n\nf: function to be documented\"\n\nKeywords:\n\nmaintext: function description\nargtext: dictionary with text for each argument\nkeytext: dictionary with text for each keyword\nlocation: show/hide function location on the disk\n\n\n\n\n\n"
 },
 
 {
-    "location": "#DocumentFunction.getfunctionarguments",
-    "page": "Home",
+    "location": "autodocs/#DocumentFunction.getfunctionarguments",
+    "page": "Docstrings",
     "title": "DocumentFunction.getfunctionarguments",
     "category": "function",
     "text": "Get function arguments\n\nArguments:\n\nf: function to be documented\"\nm: function methods\n\n\n\n\n\n"
 },
 
 {
-    "location": "#DocumentFunction.getfunctionkeywords",
-    "page": "Home",
+    "location": "autodocs/#DocumentFunction.getfunctionkeywords",
+    "page": "Docstrings",
     "title": "DocumentFunction.getfunctionkeywords",
     "category": "function",
     "text": "Get function keywords\n\nArguments:\n\nf: function to be documented\nm: function methods\n\n\n\n\n\n"
 },
 
 {
-    "location": "#DocumentFunction.getfunctionmethods-Tuple{Function}",
-    "page": "Home",
+    "location": "autodocs/#DocumentFunction.getfunctionmethods-Tuple{Function}",
+    "page": "Docstrings",
     "title": "DocumentFunction.getfunctionmethods",
     "category": "method",
     "text": "Get function methods\n\nArguments:\n\nf: function to be documented\n\nReturn:\n\narray with function methods\n\n\n\n\n\n"
 },
 
 {
-    "location": "#DocumentFunction.stdoutcaptureoff-Tuple{}",
-    "page": "Home",
+    "location": "autodocs/#DocumentFunction.stdoutcaptureoff-Tuple{}",
+    "page": "Docstrings",
     "title": "DocumentFunction.stdoutcaptureoff",
     "category": "method",
     "text": "Restore STDOUT\n\n\n\n\n\n"
 },
 
 {
-    "location": "#DocumentFunction.stdoutcaptureon-Tuple{}",
-    "page": "Home",
+    "location": "autodocs/#DocumentFunction.stdoutcaptureon-Tuple{}",
+    "page": "Docstrings",
     "title": "DocumentFunction.stdoutcaptureon",
     "category": "method",
     "text": "Redirect STDOUT to a reader\n\n\n\n\n\n"
 },
 
 {
-    "location": "#",
-    "page": "Home",
-    "title": "Home",
+    "location": "autodocs/#",
+    "page": "Docstrings",
+    "title": "Docstrings",
     "category": "page",
     "text": "Package doesn\'t contain Documenter docs.Docs automatically generated by juliadocs.orgModules = [DocumentFunction]\nOrder = [:type, :function]"
 },

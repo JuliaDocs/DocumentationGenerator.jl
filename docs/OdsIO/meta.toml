@@ -1,0 +1,21 @@
+stargazers_count = 1
+license_url = ""
+doctype = "default"
+owner = "sylvaticus"
+installs = true
+license = "Other"
+version = "0.4.0"
+description = "ODS (LibreOffice, OpenOffice and many more..) I/O for Julia using the python ezodf module "
+
+[[contributors]]
+name = "sylvaticus"
+contributions = 60
+[[contributors]]
+name = "tkelman"
+contributions = 2
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1

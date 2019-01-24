@@ -1,5 +1,15 @@
-stargazers_count = "1"
+stargazers_count = 1
+license_url = "https://api.github.com/licenses/mit"
 doctype = "default"
+owner = "ma-laforge"
 installs = true
+license = "MIT License"
 version = "0.3.1"
 description = "Publication-quality plotting for julia using Grace/xmgrace"
+
+[[contributors]]
+name = "ma-laforge"
+contributions = 21
+[[contributors]]
+name = "tkelman"
+contributions = 1

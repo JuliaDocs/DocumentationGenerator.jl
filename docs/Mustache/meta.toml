@@ -1,0 +1,5 @@
+stargazers_count = 52
+doctype = "default"
+installs = true
+version = "0.5.10"
+description = "Port of mustache.js to julia"

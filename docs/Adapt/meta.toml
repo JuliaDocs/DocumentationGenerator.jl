@@ -1,5 +1,21 @@
-stargazers_count = "9"
+stargazers_count = 9
+license_url = ""
 doctype = "default"
+owner = "JuliaGPU"
 installs = true
+license = "Other"
 version = "0.4.2"
 description = ""
+
+[[contributors]]
+name = "maleadt"
+contributions = 18
+[[contributors]]
+name = "MikeInnes"
+contributions = 9
+[[contributors]]
+name = "robot-uprising"
+contributions = 3
+[[contributors]]
+name = "andreasnoack"
+contributions = 1

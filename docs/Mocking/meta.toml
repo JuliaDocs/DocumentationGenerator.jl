@@ -1,0 +1,5 @@
+stargazers_count = 18
+doctype = "default"
+installs = true
+version = "0.5.7"
+description = "Allows Julia function calls to be temporarily overloaded for purpose of testing"

@@ -1,5 +1,45 @@
-stargazers_count = "32"
+stargazers_count = 32
+license_url = ""
 doctype = "default"
+owner = "JuliaGeometry"
 installs = true
+license = "Other"
 version = "0.2.0"
 description = "Fast and robust 2D & 3D incircle/intriangle/etc. for Julia"
+
+[[contributors]]
+name = "skariel"
+contributions = 48
+[[contributors]]
+name = "dkarrasch"
+contributions = 7
+[[contributors]]
+name = "swt30"
+contributions = 6
+[[contributors]]
+name = "robertdj"
+contributions = 4
+[[contributors]]
+name = "rdeits"
+contributions = 3
+[[contributors]]
+name = "bjarthur"
+contributions = 1
+[[contributors]]
+name = "JoshChristie"
+contributions = 1
+[[contributors]]
+name = "juliohm"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1
+[[contributors]]
+name = "catawbasam"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1
+[[contributors]]
+name = "wookay"
+contributions = 1

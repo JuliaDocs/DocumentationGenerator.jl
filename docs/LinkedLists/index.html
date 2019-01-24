@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · LinkedLists.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>LinkedLists.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#LinkedList-1">LinkedList</a></li><li><a class="toctext" href="#SLinkedList-1">SLinkedList</a></li><li><a class="toctext" href="#Implementation-Notes-1">Implementation Notes</a></li><li><a class="toctext" href="#Credit-1">Credit</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="LinkedLists.jl-1" href="#LinkedLists.jl-1">LinkedLists.jl</a></h1><p><a href="https://travis-ci.org/ChrisRackauckas/LinkedLists.jl"><img src="https://travis-ci.org/ChrisRackauckas/LinkedLists.jl.svg?branch=master" alt="Build Status"/></a> <a href="https://ci.appveyor.com/project/ChrisRackauckas/linkedlists-jl"><img src="https://ci.appveyor.com/api/projects/status/ivikwb1d8xngrvyo?svg=true" alt="Build status"/></a> <a href="https://coveralls.io/github/ChrisRackauckas/LinkedLists.jl?branch=master"><img src="https://coveralls.io/repos/github/ChrisRackauckas/LinkedLists.jl/badge.svg?branch=master" alt="Coverage Status"/></a></p><p><strong>LinkedList collections for Julia</strong></p><p>This package provides a singly linked list and a doubly linked list implementation, as Julia collections. Singly linked lists are supported with <code>cons</code>, <code>car</code>, and <code>cdr</code>, but not as a standard collection. Doubly linked lists are included in the samples but, again, not as a collection. This doesn&#39;t do anything fancy like create an array of nodes. Maybe it should.</p><h2><a class="nav-anchor" id="LinkedList-1" href="#LinkedList-1">LinkedList</a></h2><p><code>LinkedList</code> is a doubly linked list. Deletions happen in constant time. If code contains an index to an item in the list, then removing other items in the list won&#39;t invalidate that index.</p><p>Usage:</p><pre><code class="language-julia">a = LinkedList{Int}()    # Create a list of the given type.
+isempty(l)         # Test whether there are any items.
+empty!(l)          # Remove all items.
+length(l)          # The number of entries. An O(n) operation.
+2 in l             # Test whether the given item is an entry in the list. returns Bool or missing. O(n).
+eltype(l)          # Returns the item type, here Int.
+indexin(a, l)      # Highest index in list for each value of a that is member.
+first(l)           # First item in the list.
+last(l)            # Last item in the list, the item value.
+push!(l, d)        # Add item d to end of list. Returns index of item.
+pop!(l, d)         # Remove and return item at end of list.
+pushfirst!(l, d)   # Add item to start of list. Return index of item.
+popfirst!(l)       # Remove first item and return value.
+append!(l, items)  # Add items to end of list.
+prepend!(l, items) # Add items to start of list.</code></pre><p>There can be an index into the list. It is a reference to a list node but can be treated as an opaque index. Two wrapper functions are provided to convert from nodes to integer positions.</p><pre><code class="language-julia">getindex(l, index)          # Returns value of item at this index.
+setindex!(l, index, d)      # Sets item value at this index.
+lastindex(l)                # Returns index of last node. An O(n) operation.
+insert!(l, index, d)        # Insert item at index, pushing values back. Return index.
+deleteat!(l, index)         # Delete item at index. Return list.
+splice!(l, index)           # Remove value at index, returning data value.
+splice!(l, index, d)        # Replace item at index with data value.
+findfirst(predicate, l)     # find the index of the first element of l for which predicate returns true
+indextoposition(index , l)  # Returns the position of a Node in l
+indextoposition(indexes,l)  # Returns a vector of positions of Nodes in l
+positiontoindex(p, l)       # Returns the node in a list at a position p
+positiontoindex(ps, l)      # Returns a vector of the nodes in a list at a positions given by the elements of ps</code></pre><p>There are two kinds of iterators for <code>LinkedList</code>. One access items. The other loops over indices.</p><pre><code class="language-julia">l = LinkedList{Int}()
+prepend!(l, [2, 4, 6])
+for item::Int in l
+    println(item)
+end
+
+for index in keys(l)
+    item=getindex(l, index)
+    println(item)
+end
+</code></pre><h2><a class="nav-anchor" id="SLinkedList-1" href="#SLinkedList-1">SLinkedList</a></h2><p><code>SLinkedList</code> is a singly linked list over items of a given type. Appending to the end of this list takes an order of the number of the items in the list.</p><p>Usage:</p><pre><code class="language-julia">a = SLinkedList{Int}()    # Create a list of the given type.
+isempty(l)         # Test whether there are any items.
+empty!(l)          # Remove all items.
+eltype(l)          # Returns the item type, here Int.
+first(l)           # First item in the list.
+unshift!(l, d)     # Add item to start of list. Return index of item.
+shift!(l)          # Remove first item and return value.
+prepend!(l, items) # Add items to start of list.</code></pre><p>There can be an index into the list. It is a reference to a list node but can be treated as an opaque index. Two wrapper functions are provided to convert from nodes to integer positions.</p><pre><code class="language-julia">getindex(l, index)          # Returns value of item at this index.
+setindex!(l, index, d)      # Sets item value at this index.
+insert!(l, index, d)        # Inserts *after* the given index. Returns index.
+indextoposition(index , l)  # Returns the position of a Node in l
+indextoposition(indexes,l)  # Returns a vector of positions of Nodes in l
+positiontoindex(p, l)       # Returns the node in a list at a position p
+positiontoindex(ps, l)      # Returns a vector of the nodes in a list at a positions given by the elements of ps</code></pre><p>The following methods are O(n) for singly linked lists. They are included for completeness, but needing these is an indication that using a doubly linked list, or Vector, might be a better choice.</p><pre><code class="language-julia">length(l)                 # The number of entries.
+2 in l                    # Test whether the given item is an entry in the list. Returns Bool or missing
+indexin(a, l)             # Highest index in list for each value of a that is member.
+last(l)                   # Last item in the list, the item value.
+push!(l, d)               # Add item d to end of list. Returns index of item.
+pop!(l, d)                # Remove and return item at end of list.
+append!(l, items)         # Add items to end of list.
+lastindex(l)              # Returns index of last node.
+deleteat!(l, index)       # Delete item at index. Return list.
+splice!(l, index)         # Remove value at index, returning data value.
+splice!(l, index, d)      # Replace item at index with data value.
+findfirst(predicate, l)   # find the index of the first element of l for which predicate returns true</code></pre><p>As with <code>LinkedList</code>, there are two kinds of iterators for <code>SLinkedList</code>. One access items. The other loops over indices.</p><pre><code class="language-julia">l = SLinkedList{Int}()
+prepend!(l, [2, 4, 6])
+for item::Int in l
+    println(item)
+end
+
+for index in keys(l)
+    item=getindex(l, index)
+    println(item)
+end
+</code></pre><h2><a class="nav-anchor" id="Implementation-Notes-1" href="#Implementation-Notes-1">Implementation Notes</a></h2><p>The code comments each time a method for these classes differs from interfaces described for collections in the manual. All differences stem from an assumption that the index to a collection will be an integer.</p><p>If you have comments, or especially if I have the wrong idea about how to write good code in Julia, please send me an email.</p><h2><a class="nav-anchor" id="Credit-1" href="#Credit-1">Credit</a></h2><p>Lots of credit goes to @adolgert as this library was adapted from his code.</p><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

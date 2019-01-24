@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = 0
 doctype = "default"
+installs = true
+version = "0.3.0"
+description = "Multi-Dimensional Datasets for Parametric Analysis"

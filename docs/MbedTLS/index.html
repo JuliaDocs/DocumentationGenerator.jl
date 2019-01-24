@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · MbedTLS.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>MbedTLS.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="MbedTLS-1" href="#MbedTLS-1">MbedTLS</a></h1><p><a href="https://travis-ci.org/JuliaWeb/MbedTLS.jl"><img src="https://travis-ci.org/JuliaWeb/MbedTLS.jl.svg?branch=master" alt="Build Status"/></a> <a href="http://codecov.io/github/JuliaWeb/MbedTLS.jl?branch=master"><img src="http://codecov.io/github/JuliaWeb/MbedTLS.jl/coverage.svg?branch=master" alt="codecov.io"/></a> <a href="http://pkg.julialang.org/?pkg=MbedTLS&amp;ver=0.4"><img src="http://pkg.julialang.org/badges/MbedTLS_0.4.svg" alt="MbedTLS"/></a></p><p>A wrapper around the <a href="https://tls.mbed.org/">mbed</a> TLS and cryptography C libary.</p><p>Current supported mbedtls version: 2.13.1</p><p>Usage:</p><pre><code class="language-julia">using Sockets
+sock = connect(&quot;httpbin.org&quot;, 443)
+entropy = MbedTLS.Entropy()
+rng = MbedTLS.CtrDrbg()
+MbedTLS.seed!(rng, entropy)
+
+ctx = MbedTLS.SSLContext()
+conf = MbedTLS.SSLConfig()
+
+MbedTLS.config_defaults!(conf)
+MbedTLS.authmode!(conf, MbedTLS.MBEDTLS_SSL_VERIFY_REQUIRED)
+MbedTLS.rng!(conf, rng)
+
+function show_debug(level, filename, number, msg)
+    @show level, filename, number, msg
+end
+
+MbedTLS.dbg!(conf, show_debug)
+
+MbedTLS.ca_chain!(conf)
+
+MbedTLS.setup!(ctx, conf)
+MbedTLS.set_bio!(ctx, sock)
+
+MbedTLS.handshake(ctx)
+
+write(ctx, &quot;GET / HTTP/1.1\r\nHost: httpbin.org\r\n\r\n&quot;)
+buf = String(read(ctx, 100))
+@test ismatch(r&quot;^HTTP/1.1 200 OK&quot;, buf)</code></pre><p>Debugging with Wireshark.</p><p>MbedTLS.jl can optionally log TLS session keys in <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format">NSS Key Log Format</a>.</p><p>e.g.</p><pre><code class="language-julia">using HTTP
+using MbedTLS
+c = MbedTLS.SSLConfig(true, log_secrets=&quot;/Users/sam/stuff/secret_key_log&quot;)
+HTTP.get(&quot;https://httpbin.org/ip&quot;, sslconfig=c)</code></pre><p>Wireshark can be configrued to decrypt SSL traffic by setting the location of the key log file under:</p><pre><code class="language-none">Wireshark Preferences -&gt; Protocols -&gt; SSL; (Pre-)Master Secret log filename.</code></pre><p>See: https://sharkfesteurope.wireshark.org/assets/presentations17eu/15.pdf</p><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

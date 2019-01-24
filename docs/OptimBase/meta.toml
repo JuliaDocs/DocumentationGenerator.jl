@@ -1,0 +1,18 @@
+stargazers_count = 0
+license_url = ""
+doctype = "default"
+owner = "JuliaNLSolvers"
+installs = true
+license = "Other"
+version = "2.0.0"
+description = "Base functionality for Optim.jl and related packages"
+
+[[contributors]]
+name = "pkofod"
+contributions = 15
+[[contributors]]
+name = "tkelman"
+contributions = 1
+[[contributors]]
+name = "yuyichao"
+contributions = 1

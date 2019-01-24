@@ -1,2 +1,30 @@
-installs = true
+stargazers_count = 10
+license_url = ""
 doctype = "default"
+owner = "JuliaPOMDP"
+installs = true
+license = "Other"
+version = "0.3.0"
+description = "Support tools for solving POMDPs"
+
+[[contributors]]
+name = "zsunberg"
+contributions = 198
+[[contributors]]
+name = "etotheipluspi"
+contributions = 66
+[[contributors]]
+name = "dressel"
+contributions = 23
+[[contributors]]
+name = "MaximeBouton"
+contributions = 23
+[[contributors]]
+name = "tawheeler"
+contributions = 6
+[[contributors]]
+name = "ebalaban"
+contributions = 2
+[[contributors]]
+name = "cho3"
+contributions = 1

@@ -1,0 +1,5 @@
+stargazers_count = 8
+doctype = "default"
+installs = true
+version = "0.3.0"
+description = "Markov Chain Monte Carlo convergence diagnostics in Julia"

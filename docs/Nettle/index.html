@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · Nettle.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Nettle.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li class="toplevel"><a class="toctext" href="#HMAC-Functionality-1">HMAC Functionality</a></li><li class="toplevel"><a class="toctext" href="#Encryption/Decryption-Functionality-1">Encryption/Decryption Functionality</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Nettle.jl-1" href="#Nettle.jl-1">Nettle.jl</a></h1><p><a href="https://travis-ci.org/staticfloat/Nettle.jl"><img src="https://travis-ci.org/staticfloat/Nettle.jl.svg?branch=master" alt="Build Status"/></a> <a href="https://ci.appveyor.com/project/staticfloat/nettle-jl"><img src="https://ci.appveyor.com/api/projects/status/auhjpg59nw3a3aij?svg=true" alt="Build status"/></a></p><p><code>libnettle</code> supports a wide array of hashing algorithms.  This package interrogates <code>libnettle</code> to determine the available hash types, which are then available from <code>Nettle.get_hash_types()</code>.  Typically these include <code>SHA1</code>, <code>SHA224</code>, <code>SHA256</code>, <code>SHA384</code>, <code>SHA512</code>, <code>MD2</code>, <code>MD5</code> and <code>RIPEMD160</code>.</p><p>Typical usage of these hash algorithms is to create a <code>Hasher</code>, <code>update!</code> it, and finally get a <code>digest</code>:</p><pre><code class="language-julia">h = Hasher(&quot;sha256&quot;)
+update!(h, &quot;this is a test&quot;)
+hexdigest!(h)
+
+#or...
+hexdigest(&quot;sha256&quot;, &quot;this is a test&quot;)</code></pre><p>Outputs:</p><pre><code class="language-none">2e99758548972a8e8822ad47fa1017ff72f06f3ff6a016851f45c398732bc50c</code></pre><p>A <code>digest!</code> function is also available to return the digest as an <code>Array(UInt8,1)</code>.  Note that both the <code>digest!</code> function and the <code>hexdigest!</code> function reset the internal <code>Hasher</code> object to a pristine state, ready for further <code>update!</code> calls.</p><h1><a class="nav-anchor" id="HMAC-Functionality-1" href="#HMAC-Functionality-1">HMAC Functionality</a></h1><p><a href="http://en.wikipedia.org/wiki/Hash-based_message_authentication_code">HMAC</a> functionality revolves around the <code>HMACState</code> type, created by the function of the same name.  Arguments to this constructor are the desired hash type, and the desired key used to authenticate the hashing:</p><pre><code class="language-julia">h = HMACState(&quot;sha256&quot;, &quot;mykey&quot;)
+update!(h, &quot;this is a test&quot;)
+hexdigest!(h)
+
+#or...
+hexdigest(&quot;sha256&quot;, &quot;mykey&quot;, &quot;this is a test&quot;)</code></pre><p>Outputs:</p><pre><code class="language-none">&quot;ca1dcafe1b5fb329256248196c0f92a95fbe3788db6c5cb0775b4106db437ba2&quot;</code></pre><p>A <code>digest!</code> function is also available to return the digest as an <code>Array(UInt8,1)</code>.  Note that both the <code>digest!</code> function and the <code>hexdigest!</code> function reset the internal <code>HMACState</code> object to a pristine state, ready for further <code>update!</code> calls.</p><h1><a class="nav-anchor" id="Encryption/Decryption-Functionality-1" href="#Encryption/Decryption-Functionality-1">Encryption/Decryption Functionality</a></h1><p>Nettle also provides encryption and decryption functionality, using the <code>Encryptor</code> and <code>Decryptor</code> objects.  Cipher types are available through <code>get_cipher_types()</code>.  Create a pair of objects with a shared key, and <code>encrypt()</code>/<code>decrypt()</code> to your heart&#39;s content:</p><pre><code class="language-julia">key = &quot;this key&#39;s exactly 32 bytes long&quot;
+enc = Encryptor(&quot;AES256&quot;, key)
+plaintext = &quot;this is 16 chars&quot;
+ciphertext = encrypt(enc, plaintext)
+
+dec = Decryptor(&quot;AES256&quot;, key)
+deciphertext = decrypt(dec, ciphertext)
+Vector{UInt8}(plaintext) == deciphertext # no bytestring
+
+# or...
+decrypt(&quot;AES256&quot;, key, encrypt(&quot;AES256&quot;, key, plaintext)) == Vector{UInt8}(plaintext)</code></pre><p>For AES256CBC encrypt/decrypt, generate a pair of key32 and iv16 with salt.</p><p>(And add or trim padding yourself.)</p><pre><code class="language-julia">passwd = &quot;Secret Passphrase&quot;
+salt = hex2bytes(&quot;a3e550e89e70996c&quot;) # use random 8 bytes
+(key32, iv16) = gen_key32_iv16(Vector{UInt8}(passwd), salt)
+
+enc = Encryptor(&quot;AES256&quot;, key32)
+plaintext = &quot;Message&quot;
+ciphertext = encrypt(enc, :CBC, iv16, add_padding_PKCS5(Vector{UInt8}(plaintext), 16))
+
+dec = Decryptor(&quot;AES256&quot;, key32)
+deciphertext = decrypt(dec, :CBC, iv16, ciphertext)
+Vector{UInt8}(plaintext) == trim_padding_PKCS5(deciphertext) # no bytestring
+
+# or...
+plainbytes = hex2bytes(&quot;414155aa5541416162&quot;)
+cipherbytes = encrypt(&quot;AES256&quot;, :CBC, iv16, key32, add_padding_PKCS5(plainbytes, 16))
+decipherbytes = decrypt(&quot;AES256&quot;, :CBC, iv16, key32, cipherbytes)
+plainbytes == trim_padding_PKCS5(decipherbytes) # no bytestring</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

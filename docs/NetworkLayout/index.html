@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · NetworkLayout.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>NetworkLayout.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li><a class="toctext" href="#Algorithms-1">Algorithms</a></li><li><a class="toctext" href="#Benchmarks-1">Benchmarks</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="NetworkLayout.jl-1" href="#NetworkLayout.jl-1">NetworkLayout.jl</a></h1><p>Layout algorithms for graphs and trees in pure Julia.</p><p><a href="https://coveralls.io/github/JuliaGraphs/NetworkLayout.jl?branch=master"><img src="https://coveralls.io/repos/github/JuliaGraphs/NetworkLayout.jl/badge.svg?branch=master" alt="Coverage Status"/></a></p><p>Linux, OSX : <a href="https://travis-ci.org/JuliaGraphs/NetworkLayout.jl"><img src="https://travis-ci.org/JuliaGraphs/NetworkLayout.jl.svg?branch=master" alt="Build Status"/></a></p><p>Windows : <a href="https://ci.appveyor.com/project/abhijithanilkumar/networklayout-jl-b6gcd/branch/master"><img src="https://ci.appveyor.com/api/projects/status/328ph0ct3t8fc91u/branch/master?svg=true" alt="Build status"/></a></p><h2><a class="nav-anchor" id="Algorithms-1" href="#Algorithms-1">Algorithms</a></h2><h3><a class="nav-anchor" id="Scalable-Force-Directed-Placement-1" href="#Scalable-Force-Directed-Placement-1">Scalable Force Directed Placement</a></h3><p>Spring-Electric Force Directed Placement algorithm as explained in <a href="http://yifanhu.net/PUB/graph_draw_small.pdf">Efficient and High Quality Force-Directed Graph Drawing</a> by Yifan Hu.</p><p>Module Name : <code>SFDP</code></p><h4><a class="nav-anchor" id="Usage-1" href="#Usage-1">Usage</a></h4><pre><code class="language-julia">layout(adjacency_matrix,dimension;startpostitions,tol,C,K,iterations)</code></pre><h5><a class="nav-anchor" id="arguments-1" href="#arguments-1">arguments</a></h5><ul><li><code>adjacency_matrix</code> - sparse/full adjacency matrix that represents the graph</li><li><code>dimension</code> - dimension in which the layouting code has to be generated. <code>dimension</code> can be an integer specifying               the dimension or a <code>Point</code> type, eg. <code>Point3f0</code> which denotes 3D.</li><li><code>startpositions</code> - co-ordinates of the layout to start with. By default, a random layout is used (kwarg)</li><li><code>tol</code> - permitted distance between current and calculated co-ordinate. Lower the tolerance, more the number of iterations (kwarg)</li><li><code>C, K</code> - used to scale the layout (kwarg)</li><li><code>iterations</code> - Number of iterations we apply the forces (kwarg)</li></ul><h5><a class="nav-anchor" id="returns-1" href="#returns-1">returns</a></h5><p><code>positions</code> - co-ordinates of nodes in the layout</p><h5><a class="nav-anchor" id="iterator-1" href="#iterator-1">iterator</a></h5><p>A user can move between iterations using a <code>Layout</code> object.</p><h4><a class="nav-anchor" id="Example-1" href="#Example-1">Example</a></h4><pre><code class="language-julia">using LightGraphs
+using NetworkLayout:SFDP
+g = WheelGraph(10)
+a = adjacency_matrix(g) # generates a sparse adjacency matrix
+network = layout(a,Point2f0,tol=0.1,C=1,K=1,iterations=10) # generate 2D layout</code></pre><p>Using Iterator :</p><pre><code class="language-julia">g = WheelGraph(10)
+a = adjacency_matrix(g)
+tol = 0.1
+C = 0.2
+K = 1
+iterations = 100
+network = Layout(a,locs,tol,C,K,iterations)
+state = start(network)
+while !done(network,state)
+  network, state = next(network,state)
+end
+return network.positions</code></pre><p><img src="https://cloud.githubusercontent.com/assets/8404278/17638280/a9671850-6106-11e6-912f-be94477f5ecd.png" alt="sfdp"/></p><p>The image shows a <code>LightGraphs.WheelGraph(10)</code> object layout generated by SFDP Algorithm.</p><h3><a class="nav-anchor" id="Buchheim-Tree-Drawing-1" href="#Buchheim-Tree-Drawing-1">Buchheim Tree Drawing</a></h3><p>Buchheim Tree Drawing as explained in <a href="http://dirk.jivas.de/papers/buchheim02improving.pdf">Improving Walker&#39;s Algorithm to Run in Linear Time</a> by Christoph Buchheim, Michael Junger and Sebastian Leipert.</p><p>Module Name : <code>Buchheim</code></p><h4><a class="nav-anchor" id="Usage-2" href="#Usage-2">Usage</a></h4><pre><code class="language-julia">layout(adjacency_list; nodesize)</code></pre><h5><a class="nav-anchor" id="arguments-2" href="#arguments-2">arguments</a></h5><ul><li><code>adjacency_list</code> - adjacency list that represents the tree</li><li><code>nodesize</code> - sizes of nodes (used to position the nodes) (kwarg)</li></ul><h5><a class="nav-anchor" id="returns-2" href="#returns-2">returns</a></h5><ul><li><code>positions</code> - co-ordinates of the layout</li></ul><h4><a class="nav-anchor" id="Example-2" href="#Example-2">Example</a></h4><pre><code class="language-julia">using NetworkLayout:Buchheim
+adj_list = Vector{Int}[   # adjacency list
+        [2,3,4],
+        [5,6],
+        [7],
+        [],
+        [],
+        [],
+        []
+      ]
+ nodesize = [1,2.3,1.2,2,3,1.4,0.8]
+ locs = layout(adj_list,nodesize=nodesize) # generating the layout for the tree
+ ```
+ ![tree](https://cloud.githubusercontent.com/assets/8404278/17638844/afd280a4-610a-11e6-8fea-5c99808bd740.png)
+
+The image shows a `LightGraphs.BinaryTree(4)` object layout by Buchheim Algorithm.
+
+### Spring/Repulsion Model
+
+Spring/Repulsion model of Fruchterman and Reingold (1991). Original code taken from [GraphLayout.jl](https://github.com/IainNZ/GraphLayout.jl)
+
+Module Name : `Spring`
+
+#### Usage
+</code></pre><p>julia layout(adjacency_matrix,dimension;startpositions,C,iterations,initialtemp)</p><pre><code class="language-none">##### arguments
+ * `adjacency_matrix` - sparse/full adjacency matrix that represents the graph
+ * `dimension` - dimension in which the layouting code has to be generated. `dimension` can be an integer specifying
+                  the dimension or a `Point` type, eg. `Point3f0` which denotes 3D.
+ * `startpositions` - co-ordinates of the layout to start with. By default, a random layout is used (kwarg)
+ * `iterations` - Number of iterations we apply the forces (kwarg)
+ * `C` - Constant to fiddle with density of resulting layout (kwarg)
+ * `initialtemp` - Initial &quot;temperature&quot;, controls movement per iteration (kwarg)
+
+##### returns
+ `positions` - co-ordinates of nodes in the layout
+
+##### iterator
+
+A user can move between iterations using a `Layout` object.
+
+
+#### Example
+</code></pre><p>julia using LightGraphs using NetworkLayout:Spring g = WheelGraph(30) a = adjacency_matrix(g) # generates a sparse adjacency matrix network = layout(a,Point2f0,C=2.0,iterations=100,K=2.0) # generate 2D layout</p><pre><code class="language-none">Using Iterator :
+</code></pre><p>julia g = WheelGraph(30) a = adjacency_matrix(g) iterations = 200 C = 2.0 initialtemp = 2.0 network = Layout(a,locs,C,iterations,initialtemp) state = start(network) while !done(network,state)  network, state = next(network,state) end return network.positions</p><pre><code class="language-none">![spring](https://cloud.githubusercontent.com/assets/8404278/17638354/1c20cc56-6107-11e6-82ed-8873431d8d33.png)
+
+The image shows a `LightGraphs.WheelGraph(10)` object layout generated by Spring Algorithm.
+
+### Stress Majorization
+
+Based on the algorithm explained in &quot;Graph Drawing by Stress Majorization&quot; by Emden R Gansner, Yehuda Koren and Stephen North. Original code taken from [GraphLayout.jl](https://github.com/IainNZ/GraphLayout.jl)
+
+Module Name : `Stress`
+
+#### Usage
+</code></pre><p>julia layout(δ,dimension;startpositions,weights,iterations,abstols,reltols,abstolx)</p><pre><code class="language-none">##### arguments
+ * `δ` - Matrix of pairwise distances (Adjacency Matrix can be used)
+ * `dimension` - dimension in which the layouting code has to be generated. `dimension` can be an integer specifying
+                  the dimension or a `Point` type, eg. `Point3f0` which denotes 3D.
+ * `weights` - Matrix of weights (kwarg)
+ * `startpositions` - co-ordinates of the layout to start with. By default, a random layout is used (kwarg)
+ * `iterations` - Number of iterations we apply the forces (kwarg)
+ * `abstols` - Absolute tolerance for convergence of stress (kwarg)
+ * `reltols` - Relative tolerance for convergence of stress (kwarg)
+ * `abstolx` - Absolute tolerance for convergence of layout (kwarg)
+
+##### returns
+ `positions` - co-ordinates of nodes in the layout
+
+##### iterator
+
+A user can move between iterations using a `Layout` object.
+
+
+#### Example
+</code></pre><p>julia using LightGraphs using NetworkLayout:Stress g = CompleteGraph(10) a = adjacency_matrix(g) # generates a sparse adjacency matrix network = layout(a,2) # generate 2D layout</p><pre><code class="language-none">Using Iterator :
+</code></pre><p>julia g = CompleteGraph(10) δ = adjacency_matrix(g) startpositions=rand(Point{3, Float64}, size(δ,1)) iter = Layout(δ, Point{3,Float64}; startpositions=startpositions) state = start(iter) while !done(iter, state)     iter, state = next(iter, state) end iter.positions</p><pre><code class="language-none">
+![stress](https://cloud.githubusercontent.com/assets/8404278/17638554/5e65e26c-6108-11e6-9522-30e6fa044d26.png)
+
+The image shows a `LightGraphs.CompleteGraph(10)` object layout using Stress Algorithm.
+
+### Spectral Layout Algorithm
+
+Uses the technique of Spectral Graph Drawing, which is an under-appreciated method of graph layouts; easier, simpler, and faster than the more common spring-based methods. Original code taken from [PlotRecipes.jl](https://github.com/JuliaPlots/PlotRecipes.jl)
+
+Module Name : `Spectral`
+
+#### Usage
+</code></pre><p>julia layout(adjacency<em>matrix; node</em>weights, kw...)</p><pre><code class="language-none">##### arguments
+ * `adjacency_matrix` - Adjacency Matrix in dense/sparse format
+ * `node_weights` - weights for different nodes (kwarg)
+
+##### returns
+ `positions` - co-ordinates of nodes in the layout
+
+#### Example
+</code></pre><p>julia using LightGraphs using NetworkLayout:Spectral g = CompleteGraph(10) a = adjacency_matrix(g) # generates a sparse adjacency matrix network = layout(a) # generate 3D layout</p><pre><code class="language-none">![spectral](https://cloud.githubusercontent.com/assets/8404278/17638718/a0b451ca-6109-11e6-9a66-fd22332b8541.png)
+
+The image shows a `LightGraphs.CompleteGraph(10)` object layout by Spectral Algorithm.
+
+### Circular Layout Algorithm
+
+Position nodes on a circle. Original code taken from [GraphPlot.jl](https://github.com/afternone/GraphPlot.jl)
+
+Module Name : `Circular`
+
+#### Usage
+</code></pre><p>julia layout(adjacency_matrix)</p><pre><code class="language-none">##### arguments
+ * `adjacency_matrix` - Adjacency Matrix in dense/sparse format
+
+##### returns
+ `positions` - co-ordinates of nodes in the layout
+
+#### Example
+</code></pre><p>julia using LightGraphs using NetworkLayout:Circular g = CompleteGraph(30) a = adjacency_matrix(g) # generates a sparse adjacency matrix network = layout(a) # generate 2D layout</p><pre><code class="language-none">
+![circular](https://cloud.githubusercontent.com/assets/8404278/17638609/d8eb4428-6108-11e6-934b-f326f07cf044.png)
+
+The image shows a `LightGraphs.CompleteGraph(10)` object layout using Circular Algorithm.
+
+### Shell Layout Algorithm
+
+Position nodes in concentric circles. Original code taken from [GraphPlot.jl](https://github.com/afternone/GraphPlot.jl)
+
+Module Name : `Shell`
+
+#### Usage
+</code></pre><p>julia layout(adjacency_matrix;nlist)</p><pre><code class="language-none">##### arguments
+ * `adjacency_matrix` - Adjacency Matrix in dense/sparse format
+ * `nlist` - Shell-wise separation of nodes (kwarg)
+
+##### returns
+ `positions` - co-ordinates of nodes in the layout
+
+#### Example
+</code></pre><p>julia using LightGraphs using NetworkLayout:Shell g = CompleteGraph(30) n = Array(Vector{Int},2) n[1] = [1:15] n[2] = [16:30] a = adjacency_matrix(g) # generates a sparse adjacency matrix network = layout(a,nlist=n) # generate 2D layout ``` <img src="https://cloud.githubusercontent.com/assets/8404278/17638171/efac921e-6105-11e6-9e48-33471bf3b27e.png" alt="shell"/></p><p>This figure shows a <code>LightGraphs.CompleteGraph(30)</code> object in 2 shells.</p><h2><a class="nav-anchor" id="Benchmarks-1" href="#Benchmarks-1">Benchmarks</a></h2><p>The iterative algorithms have been benchmarked using 3 different graphs: <code>LightGraphs.WheelGraph(10)</code>, <code>LightGraphs.WheelGraph(100)</code> and <code>jagmesh1</code>. The number of iterations is fixed on 100. The following graph is obtained which shows SFDP to be the fastest in a general scenario, but Stress Algorithm is faster when the number of edges per graph is comparatively less, as in <code>jagmesh1</code>.</p><p><img src="https://cloud.githubusercontent.com/assets/8404278/17642254/fd6f1718-615b-11e6-9a30-8c1a362aead7.png" alt="bench"/></p><p><em>NOTE</em> : All screenshots are generated using <a href="https://github.com/abhijithanilkumar/NetworkViz.jl">NetworkViz.jl</a>, <a href="https://github.com/rohitvarkey/ThreeJS.jl">ThreeJS.jl</a> and <a href="https://github.com/shashi/Escher.jlhttps://github.com/rohitvarkey/ThreeJS.jl">Escher.jl</a>. The plot used is generated using <a href="https://github.com/dcjones/Gadfly.jl">Gadfly.jl</a></p><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

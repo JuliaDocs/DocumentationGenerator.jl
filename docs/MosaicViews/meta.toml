@@ -1,0 +1,5 @@
+stargazers_count = 3
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "Julia package for lazily viewing a 3D or 4D array as an expanded 2D array in the form of a mosaic of matrix slices"

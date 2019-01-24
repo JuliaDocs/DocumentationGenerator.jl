@@ -1,5 +1,54 @@
-stargazers_count = "45"
+stargazers_count = 45
+license_url = ""
 doctype = "default"
+owner = "JuliaMath"
 installs = true
+license = "Other"
 version = "0.4.0"
 description = "Julia interface to the GNU Scientific Library (GSL)"
+
+[[contributors]]
+name = "jiahao"
+contributions = 161
+[[contributors]]
+name = "ludvigak"
+contributions = 44
+[[contributors]]
+name = "AndyGreenwell"
+contributions = 13
+[[contributors]]
+name = "simonbyrne"
+contributions = 9
+[[contributors]]
+name = "yuyichao"
+contributions = 9
+[[contributors]]
+name = "ranjanan"
+contributions = 8
+[[contributors]]
+name = "giordano"
+contributions = 5
+[[contributors]]
+name = "jagot"
+contributions = 4
+[[contributors]]
+name = "tkelman"
+contributions = 3
+[[contributors]]
+name = "slangangular"
+contributions = 2
+[[contributors]]
+name = "stevengj"
+contributions = 2
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "ivarne"
+contributions = 1
+[[contributors]]
+name = "PallHaraldsson"
+contributions = 1
+[[contributors]]
+name = "alanedelman"
+contributions = 1

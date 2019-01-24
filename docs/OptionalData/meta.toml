@@ -1,0 +1,18 @@
+stargazers_count = 1
+license_url = ""
+doctype = "default"
+owner = "helgee"
+installs = true
+license = "Other"
+version = "0.2.1"
+description = "Work with global data that might not be available"
+
+[[contributors]]
+name = "helgee"
+contributions = 20
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1

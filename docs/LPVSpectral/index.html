@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · LPVSpectral.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>LPVSpectral.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li class="toplevel"><a class="toctext" href="#Installation-1">Installation</a></li><li class="toplevel"><a class="toctext" href="#Usage-1">Usage</a></li><li><a class="toctext" href="#Signal-generation-1">Signal generation</a></li><li><a class="toctext" href="#Signal-analysis-1">Signal analysis</a></li><li class="toplevel"><a class="toctext" href="#Sparse-spectral-estimation-1">Sparse spectral estimation</a></li><li><a class="toctext" href="#L-regularized-spectral-estimation-1">L₁ regularized spectral estimation</a></li><li><a class="toctext" href="#L-regularized-spectral-estimation-2">L₀ regularized spectral estimation</a></li><li><a class="toctext" href="#L-constrained-spectral-estimation-1">L₀ constrained spectral estimation</a></li><li><a class="toctext" href="#Sparse-LPV-spectral-estimation-1">Sparse LPV spectral estimation</a></li><li class="toplevel"><a class="toctext" href="#List-of-functions-1">List of functions</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="LPVSpectral-1" href="#LPVSpectral-1">LPVSpectral</a></h1><p><a href="https://travis-ci.org/baggepinnen/LPVSpectral.jl"><img src="https://travis-ci.org/baggepinnen/LPVSpectral.jl.svg?branch=master" alt="Build Status"/></a></p><p>A toolbox for least-squares spectral estimation, sparse spectral estimation and Linear Parameter-Varying (LPV) spectral estimation. Contains an implementation of the spectral estimation method presented in <a href="http://lup.lub.lu.se/record/ac32368e-e199-44ff-b76a-36668ac7d595">Bagge Carlson et al. &quot;Linear Parameter-Varying Spectral Decomposition.&quot; 2017 American Control Conference.</a></p><pre><code class="language-bibtex">@inproceedings{bagge2017spectral,
+  title        = {Linear Parameter-Varying Spectral Decomposition},
+  author       = {Bagge Carlson, Fredrik and Robertsson, Anders and Johansson, Rolf},
+  booktitle    = {2017 American Control Conference (ACC)},
+  year         = {2017},
+}</code></pre><h1><a class="nav-anchor" id="Installation-1" href="#Installation-1">Installation</a></h1><p><code>Pkg.add(&quot;LPVSpectral&quot;)</code></p><p>For the latest changes, <code>Pkg.checkout(&quot;LPVSpectral&quot;)</code></p><h1><a class="nav-anchor" id="Usage-1" href="#Usage-1">Usage</a></h1><p>We demonstrate the usage of the package with a simple example using simulated data, details can be found in the paper.</p><h2><a class="nav-anchor" id="Signal-generation-1" href="#Signal-generation-1">Signal generation</a></h2><pre><code class="language-julia">using LPVSpectral, Plots, LaTeXStrings, DSP
+
+&quot;&quot;&quot;
+`y,v,x = generate_signal(f,w,N)`
+
+`f` is a vector of functions `f(v)` that determine the functional dependence of the spectrum upon the velocity, one function for each frequency in `w`  both the amplitude and the phase are determined from these functions
+
+`w` is a vector of frequencies for which to estimate the spectrum
+
+`y,v,x` are output signal, sample points and scheduling variable respectively
+&quot;&quot;&quot;
+function generate_signal(f,w,N, modphase=false)
+    x = sort(10rand(N)) # Sample points
+    v = range(0, stop=1, length=N) # Scheduling variable
+
+    # generate output signal
+    dependence_matrix = Float64[f[(i-1)%length(f)+1](v) for v in v, i in eachindex(w)] # N x nw
+    frequency_matrix  = [cos(w*x -0.5modphase*(dependence_matrix[i,j])) for (i,x) in enumerate(x), (j,w) in enumerate(w)] # N x nw
+    y = sum(dependence_matrix.*frequency_matrix,dims=2)[:] # Sum over all frequencies
+    y += 0.1randn(size(y))
+    y,v,x,frequency_matrix, dependence_matrix
+end
+
+N      = 500 # Number of training data points
+f      = [v-&gt;2v^2, v-&gt;2/(5v+1), v-&gt;3exp(-10*(v-0.5)^2),] # Functional dependences on the scheduling variable
+w      = 2π.*[2,10,20] # Frequency vector
+w_test = 2π.*(2:2:25) # Test Frequency vector, set w_test = w for a nice function visualization
+
+Y,V,X,frequency_matrix, dependence_matrix = generate_signal(f,w,N, true)</code></pre><h2><a class="nav-anchor" id="Signal-analysis-1" href="#Signal-analysis-1">Signal analysis</a></h2><p>We now make use of the spectral estimation method presented in the paper:</p><pre><code class="language-julia"># Options for spectral estimation
+λ      = 0.02 # Regularization parameter
+λs     = 1    # Regularization parameter group-lasso
+normal = true # Use normalized basis functions
+Nv     = 50   # Number of basis functions
+
+se  = ls_spectral_lpv(Y,X,V,w_test,Nv; λ = λ, normalize = normal) # Perform LPV spectral estimation
+ses = ls_sparse_spectral_lpv(Y,X,V,w_test,Nv; λ = λs, normalize = normal, tol=1e-8, printerval=100, iters=6000) # Same as above but with a group-lasso penalty on frequencies, promoting a solution with a sparse set of frequencies. Can be used to identify a sparse spectrum, i.e. to find w among w_test.</code></pre><p>All that remains now is to visualize the result, along with the result of standard spectral estimation methods.</p><pre><code class="language-julia">plot(X,[Y V], linewidth=[1 2], lab=[&quot;\$y_t\$&quot; &quot;\$v_t\$&quot;], xlabel=L&quot;$x$ (sampling points)&quot;, title=L&quot;Test signal $y_t$ and scheduling signal $v_t$&quot;, legend=true, xlims=(0,10), grid=false, c=[:cyan :blue])
+plot(se; normalization=:none, dims=2, l=:solid, c = [:red :green :blue], fillalpha=0.5, nMC = 5000, fillcolor=[RGBA(1,.5,.5,.5) RGBA(.5,1,.5,.5) RGBA(.5,.5,1,.5)], linewidth=2, bounds=true, lab=reshape([&quot;Est. \$\\omega = $(round(w/π))\\pi \$&quot; for w in w_test],1,:), phase = false)
+plot!(V,dependence_matrix, title=L&quot;Functional dependencies $A(\omega,v)$&quot;, xlabel=L&quot;$v$&quot;, ylabel=L&quot;$A(\omega,v)$&quot;, c = [:red :green :blue], l=:dot, linewidth=2,lab=reshape([&quot;True \$\\omega = $(round(w/π))\\pi\$&quot; for w in w],1,:), grid=false)
+
+# Plot regular spectrum
+spectrum_lpv   = psd(se) # Calculate power spectral density
+spectrum_lpvs  = psd(ses) # Calculate sparse power spectral density
+fs             = N/(X[end]-X[1]) # This is the (approximate) sampling freqency of the generated signal
+spectrum_per   = DSP.periodogram(Y, fs=fs)
+spectrum_welch = DSP.welch_pgram(Y, fs=fs)
+plot(2π*collect(spectrum_per.freq), spectrum_per.power, lab=&quot;Periodogram&quot;, l=:path, m=:none, yscale=:log10, c=:cyan)
+plot!(2π*collect(spectrum_welch.freq), spectrum_welch.power, lab=&quot;Welch&quot;, l=:path, m=:none, yscale=:log10, linewidth=2, c=:blue)
+plot!(w_test,spectrum_lpv/fs, xlabel=L&quot;$\omega$ [rad/s]&quot;, ylabel=&quot;Spectral density&quot;, ylims=(-Inf,Inf), grid=false, lab=&quot;LPV&quot;, l=:scatter, m=:o, yscale=:log10, c=:orange)
+plot!(w_test,spectrum_lpvs/fs, lab=&quot;Sparse LPV&quot;, l=:scatter, m=:o, c=:green)</code></pre><p><img src="figs/gen_sig.png" alt="window"/> <img src="figs/func_est.png" alt="window"/> <img src="figs/spectrum.png" alt="window"/></p><p>When the three frequencies in w have been identified, <code>w_test</code> can be replaced by <code>w</code> for a nicer plot. As indicated by the last figure, the sparse estimate using group-lasso is better at identifying the three frequency components present (with a small bias in the estimation of the true frequencies).</p><h1><a class="nav-anchor" id="Sparse-spectral-estimation-1" href="#Sparse-spectral-estimation-1">Sparse spectral estimation</a></h1><h2><a class="nav-anchor" id="L-regularized-spectral-estimation-1" href="#L-regularized-spectral-estimation-1">L₁ regularized spectral estimation</a></h2><p>Minimize ||y-Ax||₂² + λ||x||₁ where x are the Fourier coefficients. Promotes a sparse spectrum <code>x = ls_sparse_spectral(y,t,ω; proxg=NormL1(λ), tol=1e-9, printerval=100, iters=30000, μ=0.000001)</code></p><h2><a class="nav-anchor" id="L-regularized-spectral-estimation-2" href="#L-regularized-spectral-estimation-2">L₀ regularized spectral estimation</a></h2><p>Minimize ||y-Ax||₂² + λ||x||₀ where x are the Fourier coefficients. Promotes a sparse spectrum <code>x = ls_sparse_spectral(y,t,ω; tol=1e-9, printerval=100, iters=30000, μ=0.000001)</code></p><h2><a class="nav-anchor" id="L-constrained-spectral-estimation-1" href="#L-constrained-spectral-estimation-1">L₀ constrained spectral estimation</a></h2><p>Minimize ||y-Ax||₂² s.t. ||x||₀ ≦ r where x are the Fourier coefficients. Promotes a sparse spectrum <code>x = ls_sparse_spectral(y,t,ω; proxg=IndBallL0(r), tol=1e-9, printerval=100, iters=30000, μ=0.000001)</code></p><h2><a class="nav-anchor" id="Sparse-LPV-spectral-estimation-1" href="#Sparse-LPV-spectral-estimation-1">Sparse LPV spectral estimation</a></h2><p>See example above <code>se = ls_sparse_spectral_lpv(Y,X,V,ω_test,Nv; λ = 0.1, normalize = normal, tol=1e-8, printerval=10, iters=6000)</code></p><h1><a class="nav-anchor" id="List-of-functions-1" href="#List-of-functions-1">List of functions</a></h1><p>This package also provides tools for general least-squares spectral analysis, check out the functions</p><pre><code class="language-none">ls_spectral             # Least-squares spectral analysis
+ls_sparse_spectral      # Least-squares sparse (L0) spectral analysis (uses ADMM)
+tls_spectral            # Total Least-squares spectral analysis
+ls_windowpsd            # Windowed Least-squares spectral analysis (sparse estimates available, see kwarg `estimator`)
+ls_windowcsd            # Windowed Least-squares cross-spectral density estimation (sparse estimates available, see kwarg `estimator`)
+ls_cohere               # Least-squares cross coherence estimation (sparse estimates available, see kwarg `estimator`)
+ls_spectral_lpv         # LPV spectral decomposition
+ls_sparse_spectral_lpv  # LPV spectral decomposition with group-lasso penalty on frequencies (uses ADMM)
+ls_windowpsd_lpv        # Windowed power spectral density estimation with LPV method</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

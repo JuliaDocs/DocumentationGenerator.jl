@@ -1,0 +1,18 @@
+stargazers_count = 2
+license_url = ""
+doctype = "default"
+owner = "panlanfeng"
+installs = true
+license = "Other"
+version = "0.1.0"
+description = "Implement the Kasahara-Shimotsu Test to decide number of components in Gaussian Mixture Model."
+
+[[contributors]]
+name = "panlanfeng"
+contributions = 45
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1

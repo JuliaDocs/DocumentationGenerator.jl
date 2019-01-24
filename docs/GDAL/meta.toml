@@ -1,5 +1,30 @@
-stargazers_count = "15"
+stargazers_count = 15
+license_url = ""
 doctype = "default"
+owner = "JuliaGeo"
 installs = true
+license = "Other"
 version = "0.2.0"
 description = "Thin Julia wrapper for GDAL - Geospatial Data Abstraction Library"
+
+[[contributors]]
+name = "visr"
+contributions = 125
+[[contributors]]
+name = "yeesian"
+contributions = 6
+[[contributors]]
+name = "evetion"
+contributions = 3
+[[contributors]]
+name = "meggart"
+contributions = 1
+[[contributors]]
+name = "SimonDanisch"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1
+[[contributors]]
+name = "joa-quim"
+contributions = 1

@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = 7
 doctype = "default"
+installs = true
+version = "0.1.0"
+description = "A simulator for N-body problems, including astrophysical and molecular dynamics"

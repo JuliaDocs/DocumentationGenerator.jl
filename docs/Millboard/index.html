@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Readme · Millboard.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Millboard.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Readme</a><ul class="internal"><li class="toplevel"><a class="toctext" href="#Install-1">Install</a></li><li class="toplevel"><a class="toctext" href="#Example-numbers-1">Example - numbers</a></li><li class="toplevel"><a class="toctext" href="#Example-strings-1">Example - strings</a></li><li class="toplevel"><a class="toctext" href="#Example-Dict-1">Example - Dict</a></li></ul></li><li><a class="toctext" href="autodocs/">Docstrings</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Readme</a></li></ul></nav><hr/><div id="topbar"><span>Readme</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Millboard-1" href="#Millboard-1">Millboard</a></h1><p>Linux, OSX: <a href="https://travis-ci.org/wookay/Millboard.jl"><img src="https://api.travis-ci.org/wookay/Millboard.jl.svg?branch=master" alt="Build Status"/></a> Windows: <a href="https://ci.appveyor.com/project/wookay/Millboard.jl"><img src="https://ci.appveyor.com/api/projects/status/3hjdk20juucb3kiw?svg=true" alt="Build status"/></a> <a href="https://coveralls.io/github/wookay/Millboard.jl?branch=master"><img src="https://coveralls.io/repos/wookay/Millboard.jl/badge.svg?branch=master&amp;service=github" alt="Coverage Status"/></a></p><h1><a class="nav-anchor" id="Install-1" href="#Install-1">Install</a></h1><pre><code class="language-julia">λ ~$ julia
+               _
+   _       _ _(_)_     |  A fresh approach to technical computing
+  (_)     | (_) (_)    |  Documentation: https://docs.julialang.org
+   _ _   _| |_  __ _   |  Type &quot;?help&quot; for help.
+  | | | | | | |/ _` |  |
+  | | |_| | | | (_| |  |  Version 0.6.0 (2017-06-19 13:05 UTC)
+ _/ |\__&#39;_|_|_|\__&#39;_|  |  Official http://julialang.org/ release
+|__/                   |  x86_64-apple-darwin13.4.0
+
+julia&gt; Pkg.add(&quot;Millboard&quot;)
+INFO: Installing Millboard v0.1.0
+
+julia&gt; Pkg.checkout(&quot;Millboard&quot;, &quot;master&quot;)</code></pre><h1><a class="nav-anchor" id="Example-numbers-1" href="#Example-numbers-1">Example - numbers</a></h1><pre><code class="language-julia">julia&gt; using Millboard
+
+julia&gt; board = [11 12 13; 21 22 23]
+2×3 Array{Int64,2}:
+ 11  12  13
+ 21  22  23
+
+julia&gt; table(board)
+|   |  1 |  2 |  3 |
+|---|----|----|----|
+| 1 | 11 | 12 | 13 |
+| 2 | 21 | 22 | 23 |
+
+julia&gt; table(board, colnames=[&quot;x&quot; &quot;y&quot; &quot;z&quot;])
+|   |  x |  y |  z |
+|---|----|----|----|
+| 1 | 11 | 12 | 13 |
+| 2 | 21 | 22 | 23 |
+
+julia&gt; table(board, rownames=[&quot;A&quot; &quot;B&quot;])
+|   |  1 |  2 |  3 |
+|---|----|----|----|
+| A | 11 | 12 | 13 |
+| B | 21 | 22 | 23 |
+
+julia&gt; table(board, colnames=[&quot;x&quot; &quot;y&quot; &quot;z&quot;], rownames=[&quot;A&quot; &quot;B&quot;])
+|   |  x |  y |  z |
+|---|----|----|----|
+| A | 11 | 12 | 13 |
+| B | 21 | 22 | 23 |</code></pre><ul><li><code>set_table_mode</code> : to change display mode<ul><li><code>:markdown</code> (default)</li><li><code>:grid_tables</code></li></ul></li></ul><pre><code class="language-julia">julia&gt; set_table_mode(:grid_tables)
+Millboard.TableMode(:grid_tables, &#39;+&#39;, &#39;=&#39;)
+
+julia&gt; board = ([1 2], [5 6; 7 8], [9 10; 11 12])
+([1 2], [5 6; 7 8], [9 10; 11 12])
+
+julia&gt; table(board, colnames=[&quot;result&quot;], rownames=[&quot;x&quot; &quot;y&quot; &quot;z&quot;])
++---+--------+
+|   | result |
++===+========+
+| x |    1 2 |
++---+--------+
+|   |    5 6 |
+| y |    7 8 |
++---+--------+
+|   |   9 10 |
+| z |  11 12 |
++---+--------+</code></pre><h1><a class="nav-anchor" id="Example-strings-1" href="#Example-strings-1">Example - strings</a></h1><pre><code class="language-julia">julia&gt; board = [&quot;Lorem ipsum\ndolor sit amet&quot; 42]
+1×2 Array{Any,2}:
+ &quot;Lorem ipsum\ndolor sit amet&quot;  42
+
+julia&gt; set_table_mode(:markdown)
+Millboard.TableMode(:markdown, &#39;|&#39;, &#39;-&#39;)
+
+julia&gt; table(board, colnames=[&quot;first column&quot;], rownames=[&quot;first row&quot;])
+|           |   first column |  2 |
+|-----------|----------------|----|
+|           |    Lorem ipsum | 42 |
+| first row | dolor sit amet |    |</code></pre><h1><a class="nav-anchor" id="Example-Dict-1" href="#Example-Dict-1">Example - Dict</a></h1><pre><code class="language-julia">julia&gt; set_table_mode(:grid_tables)
+Millboard.TableMode(:grid_tables, &#39;+&#39;, &#39;=&#39;)
+
+julia&gt; board = Dict(&quot;1x3&quot;=&gt;[1 2 3], &quot;2x3&quot;=&gt;[1 2 3; 4 5 6], &quot;3x1&quot;=&gt; [1; 2; 3])
+Dict{String,Array{Int64,N} where N} with 3 entries:
+  &quot;3x1&quot; =&gt; [1, 2, 3]
+  &quot;2x3&quot; =&gt; [1 2 3; 4 5 6]
+  &quot;1x3&quot; =&gt; [1 2 3]
+
+julia&gt; table(board)
++-----+-------+
+| KEY | VALUE |
++=====+=======+
+| 1x3 | 1 2 3 |
++-----+-------+
+|     | 1 2 3 |
+| 2x3 | 4 5 6 |
++-----+-------+
+|     |     1 |
+|     |     2 |
+| 3x1 |     3 |
++-----+-------+</code></pre><footer><hr/><a class="next" href="autodocs/"><span class="direction">Next</span><span class="title">Docstrings</span></a></footer></article></body></html>

@@ -1,0 +1,5 @@
+stargazers_count = 5
+doctype = "default"
+installs = true
+version = "0.1.5"
+description = "Julia package that handles gridded earth variables in generic fashion."

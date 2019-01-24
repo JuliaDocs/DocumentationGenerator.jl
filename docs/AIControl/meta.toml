@@ -1,12 +1,5 @@
 stargazers_count = 2
-license_url = "https://api.github.com/licenses/mit"
 doctype = "default"
-owner = "hiranumn"
 installs = true
-license = "MIT License"
 version = "0.0.1"
 description = "Implementation of the AIControl paper in Julia 1.0"
-
-[[contributors]]
-name = "hiranumn"
-contributions = 222

@@ -1,0 +1,51 @@
+stargazers_count = 10
+license_url = ""
+doctype = "default"
+owner = "JuliaPOMDP"
+installs = true
+license = "Other"
+version = "0.3.5"
+description = "Problem models for testing POMDPs.jl"
+
+[[contributors]]
+name = "zsunberg"
+contributions = 157
+[[contributors]]
+name = "etotheipluspi"
+contributions = 87
+[[contributors]]
+name = "MaximeBouton"
+contributions = 33
+[[contributors]]
+name = "rejuvyesh"
+contributions = 12
+[[contributors]]
+name = "cho3"
+contributions = 3
+[[contributors]]
+name = "ptoman"
+contributions = 3
+[[contributors]]
+name = "tawheeler"
+contributions = 2
+[[contributors]]
+name = "tkelman"
+contributions = 2
+[[contributors]]
+name = "dressel"
+contributions = 2
+[[contributors]]
+name = "jbrea"
+contributions = 2
+[[contributors]]
+name = "Divide-By-0"
+contributions = 1
+[[contributors]]
+name = "Shushman"
+contributions = 1
+[[contributors]]
+name = "chsin"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1

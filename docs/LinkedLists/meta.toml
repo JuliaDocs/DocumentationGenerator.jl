@@ -1,0 +1,5 @@
+stargazers_count = 1
+doctype = "default"
+installs = true
+version = "0.1.0"
+description = "A repository for singly and doubly linked lists in Julia"

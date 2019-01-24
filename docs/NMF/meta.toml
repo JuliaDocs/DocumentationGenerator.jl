@@ -1,0 +1,5 @@
+stargazers_count = 47
+doctype = "default"
+installs = true
+version = "0.4.0"
+description = "A Julia package for non-negative matrix factorization"

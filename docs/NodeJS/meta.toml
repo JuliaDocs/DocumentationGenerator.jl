@@ -1,0 +1,5 @@
+stargazers_count = 5
+doctype = "default"
+installs = true
+version = "0.6.0"
+description = "Node.js installation for julia"

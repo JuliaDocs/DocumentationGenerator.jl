@@ -1,0 +1,12 @@
+stargazers_count = 3
+license_url = "https://api.github.com/licenses/mit"
+doctype = "default"
+owner = "felipenoris"
+installs = true
+license = "MIT License"
+version = "0.0.2"
+description = "Oracle driver for the Julia language."
+
+[[contributors]]
+name = "felipenoris"
+contributions = 62

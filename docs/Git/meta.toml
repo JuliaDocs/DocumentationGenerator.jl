@@ -1,5 +1,99 @@
-stargazers_count = "3"
+stargazers_count = 3
+license_url = ""
 doctype = "default"
+owner = "JuliaPackaging"
 installs = true
+license = "Other"
 version = "0.3.0"
 description = "Julia wrapper for command-line Git"
+
+[[contributors]]
+name = "StefanKarpinski"
+contributions = 175
+[[contributors]]
+name = "JeffBezanson"
+contributions = 28
+[[contributors]]
+name = "tkelman"
+contributions = 17
+[[contributors]]
+name = "ararslan"
+contributions = 13
+[[contributors]]
+name = "wildart"
+contributions = 11
+[[contributors]]
+name = "pao"
+contributions = 8
+[[contributors]]
+name = "timholy"
+contributions = 7
+[[contributors]]
+name = "carlobaldassi"
+contributions = 5
+[[contributors]]
+name = "vtjnash"
+contributions = 5
+[[contributors]]
+name = "Keno"
+contributions = 4
+[[contributors]]
+name = "kmsquire"
+contributions = 4
+[[contributors]]
+name = "crstnbr"
+contributions = 3
+[[contributors]]
+name = "ihnorton"
+contributions = 3
+[[contributors]]
+name = "MichaelHatherly"
+contributions = 3
+[[contributors]]
+name = "WestleyArgentum"
+contributions = 3
+[[contributors]]
+name = "jakebolewski"
+contributions = 3
+[[contributors]]
+name = "staticfloat"
+contributions = 2
+[[contributors]]
+name = "LachlanGunn"
+contributions = 2
+[[contributors]]
+name = "burrowsa"
+contributions = 1
+[[contributors]]
+name = "hayd"
+contributions = 1
+[[contributors]]
+name = "compressed"
+contributions = 1
+[[contributors]]
+name = "johnmyleswhite"
+contributions = 1
+[[contributors]]
+name = "nolta"
+contributions = 1
+[[contributors]]
+name = "nalimilan"
+contributions = 1
+[[contributors]]
+name = "ncnc"
+contributions = 1
+[[contributors]]
+name = "samoconnor"
+contributions = 1
+[[contributors]]
+name = "stevengj"
+contributions = 1
+[[contributors]]
+name = "testurser"
+contributions = 1
+[[contributors]]
+name = "ivarne"
+contributions = 1
+[[contributors]]
+name = "tomasaschan"
+contributions = 1

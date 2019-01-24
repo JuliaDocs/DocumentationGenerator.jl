@@ -1,0 +1,5 @@
+stargazers_count = 1
+doctype = "default"
+installs = true
+version = "0.0.3"
+description = "Slow down Julia for loops and while loops to a desired maximum rate using a macro"

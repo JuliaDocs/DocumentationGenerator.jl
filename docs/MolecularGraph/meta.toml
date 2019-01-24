@@ -1,0 +1,5 @@
+stargazers_count = 4
+doctype = "default"
+installs = true
+version = "0.1.1"
+description = "Graph-based molecule modeling toolkit for cheminformatics"

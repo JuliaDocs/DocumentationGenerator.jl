@@ -1,5 +1,12 @@
-stargazers_count = "1"
+stargazers_count = 1
+license_url = ""
 doctype = "default"
+owner = "geophystech"
 installs = true
+license = "Other"
 version = "0.3.0"
 description = "The ground motion evaluation module (earthquake seismology)"
+
+[[contributors]]
+name = "jamm1985"
+contributions = 89

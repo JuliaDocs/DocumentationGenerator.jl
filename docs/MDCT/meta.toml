@@ -1,0 +1,5 @@
+stargazers_count = 3
+doctype = "default"
+installs = true
+version = "1.1.2"
+description = "fast modified discrete cosine transform (MDCT and IMDCT) for the Julia language"

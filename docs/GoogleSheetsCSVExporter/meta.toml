@@ -1,5 +1,12 @@
-stargazers_count = "0"
+stargazers_count = 0
+license_url = "https://api.github.com/licenses/mit"
 doctype = "default"
+owner = "eiel"
 installs = true
+license = "MIT License"
 version = "0.1.1"
 description = "Export Google Sheets via CSV"
+
+[[contributors]]
+name = "eiel"
+contributions = 17

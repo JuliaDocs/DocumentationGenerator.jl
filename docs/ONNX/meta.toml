@@ -1,0 +1,18 @@
+stargazers_count = 21
+license_url = ""
+doctype = "default"
+owner = "FluxML"
+installs = true
+license = "Other"
+version = "0.1.0"
+description = "Read ONNX graphs in Julia"
+
+[[contributors]]
+name = "ayush1999"
+contributions = 117
+[[contributors]]
+name = "MikeInnes"
+contributions = 15
+[[contributors]]
+name = "philtomson"
+contributions = 11

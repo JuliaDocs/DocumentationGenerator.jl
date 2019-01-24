@@ -1,0 +1,5 @@
+stargazers_count = 34
+doctype = "default"
+installs = true
+version = "0.8.0"
+description = "A light-weight Julia package for XML based on libxml2."

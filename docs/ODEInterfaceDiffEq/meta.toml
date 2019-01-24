@@ -1,0 +1,33 @@
+stargazers_count = 5
+license_url = ""
+doctype = "default"
+owner = "JuliaDiffEq"
+installs = true
+license = "Other"
+version = "2.8.0"
+description = "Adds the common API onto ODEInterface"
+
+[[contributors]]
+name = "ChrisRackauckas"
+contributions = 92
+[[contributors]]
+name = "YingboMa"
+contributions = 9
+[[contributors]]
+name = "ScottPJones"
+contributions = 4
+[[contributors]]
+name = "devmotion"
+contributions = 1
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "Vaibhavdixit02"
+contributions = 1
+[[contributors]]
+name = "MSeeker1340"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1

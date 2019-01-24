@@ -1,5 +1,39 @@
-stargazers_count = "34"
+stargazers_count = 34
+license_url = ""
 doctype = "default"
+owner = "JuliaGeo"
 installs = true
+license = "Other"
 version = "0.5.0"
 description = "Work with points defined in various coordinate systems."
+
+[[contributors]]
+name = "c42f"
+contributions = 38
+[[contributors]]
+name = "andyferris"
+contributions = 27
+[[contributors]]
+name = "garborg"
+contributions = 18
+[[contributors]]
+name = "omus"
+contributions = 6
+[[contributors]]
+name = "visr"
+contributions = 6
+[[contributors]]
+name = "anowacki"
+contributions = 2
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 2
+[[contributors]]
+name = "kshyatt"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1
+[[contributors]]
+name = "yeesian"
+contributions = 1

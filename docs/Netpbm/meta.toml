@@ -1,2 +1,5 @@
-installs = true
+stargazers_count = 2
 doctype = "default"
+installs = true
+version = "0.3.1"
+description = "Load and save Netpbm images in Julia"

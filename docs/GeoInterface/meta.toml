@@ -1,5 +1,21 @@
-stargazers_count = "7"
+stargazers_count = 7
+license_url = ""
 doctype = "default"
+owner = "JuliaGeo"
 installs = true
+license = "Other"
 version = "0.4.0"
 description = "A Julia Protocol for Geospatial Data"
+
+[[contributors]]
+name = "yeesian"
+contributions = 11
+[[contributors]]
+name = "visr"
+contributions = 10
+[[contributors]]
+name = "cchderrick"
+contributions = 1
+[[contributors]]
+name = "femtocleaner[bot]"
+contributions = 1

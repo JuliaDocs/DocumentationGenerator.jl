@@ -1,5 +1,27 @@
-stargazers_count = "29"
+stargazers_count = 29
+license_url = ""
 doctype = "default"
+owner = "JuliaLinearAlgebra"
 installs = true
+license = "Other"
 version = "0.2.1"
 description = "Singular Value Decomposition for generic number types"
+
+[[contributors]]
+name = "simonbyrne"
+contributions = 26
+[[contributors]]
+name = "RalphAS"
+contributions = 3
+[[contributors]]
+name = "andreasnoack"
+contributions = 1
+[[contributors]]
+name = "staticfloat"
+contributions = 1
+[[contributors]]
+name = "stevengj"
+contributions = 1
+[[contributors]]
+name = "tkelman"
+contributions = 1
