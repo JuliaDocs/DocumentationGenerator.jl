@@ -1,7 +1,3 @@
-using Pkg
-using Pkg.TOML
-using Pkg.Types
-
 using DocumentationGenerator
 
 # gets all installable packages for julia 1.0

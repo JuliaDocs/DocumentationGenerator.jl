@@ -1,3 +1,6 @@
+name = "AbbrvKW"
+uuid = "90071601-1111-0000-1111-1a4f6628b2b5"
+repo = "https://github.com/pfitzseb/DocumentationGenerator.jl.git"
+
 [deps]
-Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"

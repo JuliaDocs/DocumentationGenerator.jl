@@ -1,4 +1,9 @@
 module DocumentationGenerator
+
+using Pkg
+using Pkg.TOML
+using Pkg.Types
+
 """
 Generates a default documentation for a package without Documenter.jl docs.
 """
