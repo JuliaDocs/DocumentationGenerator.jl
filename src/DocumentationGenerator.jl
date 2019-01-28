@@ -3,6 +3,7 @@ module DocumentationGenerator
 using Pkg
 using Pkg.TOML
 using Pkg.Types
+using Documenter
 
 """
 Generates a default documentation for a package without Documenter.jl docs.
@@ -181,7 +182,7 @@ function run_with_timeout(
         catch err
             @error "Error while running $(name) with timeout." error=err
         finally
-            if log isa String && logfallback
+            if log isa String && !logfallback
                 close(io)
             end
         end
@@ -244,7 +245,7 @@ function build_documentation(name, url, version; basepath=joinpath(@__DIR__, "..
 
     builddir = joinpath(buildpath, name, string(version))
     logfile = joinpath(logpath, "$name $version.log")
-    cmd = `$(first(Base.julia_cmd())) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $buildpath`
+    cmd = `$(first(Base.julia_cmd())) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
     return process

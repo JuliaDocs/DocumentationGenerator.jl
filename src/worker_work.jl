@@ -1,15 +1,17 @@
 using Serialization, GitHub, Pkg
 using Pkg: TOML
-include("util.jl")
+
+include("DocumentationGenerator.jl")
+
 function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
-    _module, rootdir = install_and_use(pspec)
+    _module, rootdir = DocumentationGenerator.install_and_use(pspec)
     pkgname = pspec.name
     # actual Documenter docs
     for docdir in joinpath.(rootdir, ("docs", "doc"))
         if isdir(docdir)
             makefile = joinpath(docdir, "make.jl")
             # create customized makefile with removed deploydocs + modified makedocs
-            make_expr, builddir = rewrite_makefile(makefile)
+            make_expr, builddir = DocumentationGenerator.rewrite_makefile(makefile)
             cd(docdir) do
                 eval(make_expr)
             end
@@ -20,7 +22,7 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
 
     # our default docs
     mktempdir() do root
-        default_docs(pkgname, root, rootdir)
+        DocumentationGenerator.default_docs(pkgname, root, rootdir)
         cp(joinpath(root, "build"), buildpath, force = true)
         return :default
     end
