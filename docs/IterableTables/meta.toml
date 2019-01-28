@@ -1,5 +1,0 @@
-stargazers_count = "47"
-doctype = "real"
-installs = true
-version = "0.10.0"
-description = "Implementations of the TableTraits.jl interface for various packages"

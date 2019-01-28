@@ -1,5 +1,0 @@
-stargazers_count = 0
-doctype = "default"
-installs = true
-version = "0.1.3"
-description = "A difference list implementation for Julia. These are a highly efficient and simple way to build up lists from parts: appending, prepending, and concatenation are all very fast (constant time). They're also immutable, so you can reuse the parts."

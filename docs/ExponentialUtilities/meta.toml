@@ -1,5 +1,0 @@
-stargazers_count = 3
-doctype = "default"
-installs = true
-version = "1.3.0"
-description = "Utility functions for exponential integrators"

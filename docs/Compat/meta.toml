@@ -1,5 +1,0 @@
-stargazers_count = 60
-doctype = "default"
-installs = true
-version = "1.4.0"
-description = "Compatibility across Julia versions"

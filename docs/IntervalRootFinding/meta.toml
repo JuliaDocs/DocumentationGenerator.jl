@@ -1,5 +1,0 @@
-stargazers_count = "30"
-doctype = "real"
-installs = true
-version = "0.4.0"
-description = "Find all roots of a function in a guaranteed way with Julia"

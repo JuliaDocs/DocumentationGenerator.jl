@@ -1,5 +1,0 @@
-stargazers_count = 8
-doctype = "default"
-installs = true
-version = "0.2.1"
-description = "Julia package for reading and writing the LAS lidar format."

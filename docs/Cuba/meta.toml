@@ -1,5 +1,0 @@
-stargazers_count = "25"
-doctype = "real"
-installs = true
-version = "1.0.0"
-description = "Library for multidimensional numerical integration with four independent algorithms: Vegas, Suave, Divonne, and Cuhre."

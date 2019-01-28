@@ -1,5 +1,0 @@
-stargazers_count = 12
-doctype = "default"
-installs = true
-version = "0.9.3"
-description = "An abstract interface for plotting libraries"

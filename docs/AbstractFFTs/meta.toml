@@ -1,5 +1,0 @@
-stargazers_count = "10"
-doctype = "real"
-installs = true
-version = "0.3.2"
-description = "A Julia framework for implementing FFTs"

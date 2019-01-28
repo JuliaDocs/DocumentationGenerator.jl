@@ -1,5 +1,0 @@
-stargazers_count = 15
-doctype = "default"
-installs = true
-version = "1.0.0"
-description = "Fast, flexible zlib bindings."

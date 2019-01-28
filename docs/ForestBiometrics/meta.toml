@@ -1,5 +1,0 @@
-stargazers_count = "2"
-doctype = "real"
-installs = true
-version = "0.2.0"
-description = "A library for various forest mensuration and biometrics functions in Julia"

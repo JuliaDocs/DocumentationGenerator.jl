@@ -1,5 +1,0 @@
-stargazers_count = 22
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "MultiJuMP enables the user to easily run multiobjective optimisation problems and generate Pareto fronts."

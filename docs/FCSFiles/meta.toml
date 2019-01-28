@@ -1,5 +1,0 @@
-stargazers_count = 4
-doctype = "default"
-installs = true
-version = "0.1.0"
-description = "Read Flow Cytometry Standard (FCS) files in Julia"

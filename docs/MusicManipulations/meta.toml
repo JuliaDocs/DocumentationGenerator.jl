@@ -1,5 +1,0 @@
-stargazers_count = 11
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Manipulate music data, humanize, quantize and enhance performances with Julia"

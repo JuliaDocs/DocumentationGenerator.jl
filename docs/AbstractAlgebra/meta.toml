@@ -1,5 +1,0 @@
-stargazers_count = "17"
-doctype = "real"
-installs = true
-version = "0.3.3"
-description = "Generic abstract algebra functionality in pure Julia (no C dependencies)"

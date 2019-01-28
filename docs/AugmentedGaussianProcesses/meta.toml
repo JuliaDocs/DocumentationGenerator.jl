@@ -1,5 +1,0 @@
-stargazers_count = "12"
-doctype = "real"
-installs = true
-version = "0.3.5"
-description = "Gaussian Process package based on data augmentation, sparsity and natural gradients"

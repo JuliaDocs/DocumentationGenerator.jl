@@ -1,5 +1,0 @@
-stargazers_count = "8"
-doctype = "real"
-installs = true
-version = "0.1.1"
-description = "Imputation methods for missing data in julia"

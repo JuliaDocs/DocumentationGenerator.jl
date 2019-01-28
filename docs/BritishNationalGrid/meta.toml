@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.2.4"
-description = "Convert between British National Grid coordinates and WGS84 longitude and latitude, in Julia"

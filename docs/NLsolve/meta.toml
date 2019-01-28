@@ -1,5 +1,0 @@
-stargazers_count = 85
-doctype = "default"
-installs = true
-version = "3.0.1"
-description = "Julia solvers for systems of nonlinear equations and mixed complementarity problems"

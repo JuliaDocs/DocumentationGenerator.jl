@@ -1,5 +1,0 @@
-stargazers_count = 13
-doctype = "default"
-installs = true
-version = "0.7.1"
-description = "Geometric transformations on images for Julia"

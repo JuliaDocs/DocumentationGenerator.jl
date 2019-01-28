@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.2.2"
-description = "Implementation of basic hyperbolic geometry (Poincare disc model)"

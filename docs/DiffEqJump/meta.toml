@@ -1,5 +1,0 @@
-stargazers_count = 12
-doctype = "default"
-installs = true
-version = "5.7.0"
-description = "Build and simulate jump equations like Gillespie simulations and jump diffusions with constant and state-dependent rates"

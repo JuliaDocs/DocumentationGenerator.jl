@@ -1,5 +1,0 @@
-stargazers_count = 26
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Pull data from Federal Reserve Economic Data (FRED) directly into Julia"

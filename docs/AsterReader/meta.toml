@@ -1,5 +1,0 @@
-stargazers_count = "3"
-doctype = "real"
-installs = true
-version = "0.2.1"
-description = "AsterReader.jl is a Julia package to read Code Aster binary mesh and result files. Code Aster meshes can be done using another open source software SALOME Platform. Reading results from .rmed files is also partially supported, so it's possible to verify calculations of JuliaFEM.jl against Code Aster solutions."

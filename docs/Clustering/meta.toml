@@ -1,5 +1,0 @@
-stargazers_count = "125"
-doctype = "default"
-installs = true
-version = "0.12.1"
-description = "A Julia package for data clustering"

@@ -1,5 +1,0 @@
-stargazers_count = 96
-doctype = "default"
-installs = true
-version = "0.4.3"
-description = "High performance nearest neighbor data structures and algorithms for Julia."

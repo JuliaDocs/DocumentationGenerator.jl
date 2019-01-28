@@ -1,5 +1,0 @@
-stargazers_count = 61
-doctype = "default"
-installs = true
-version = "0.0.2"
-description = "A toolkit for modeling and creating DSLs for Scientific Computing in Julia"

@@ -1,5 +1,0 @@
-stargazers_count = "31"
-doctype = "real"
-installs = true
-version = "0.6.1"
-description = "A Julia wrapper for libpq"

@@ -1,5 +1,0 @@
-stargazers_count = 18
-doctype = "default"
-installs = true
-version = "0.6.0"
-description = "Routines for constructing BasisMatrices of different types (Chebyshev polynomials, B-Splines, piecewise linear, complete monomials, Smolyak...)"

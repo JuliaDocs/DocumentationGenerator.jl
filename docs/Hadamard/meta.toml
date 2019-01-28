@@ -1,5 +1,0 @@
-stargazers_count = 14
-doctype = "default"
-installs = true
-version = "1.1.0"
-description = "Fast Walsh-Hadamard transforms for the Julia language"

@@ -1,5 +1,0 @@
-stargazers_count = 9
-doctype = "default"
-installs = true
-version = "7.1.2"
-description = "Base package for optimization and equation solver software in JuliaNLSolvers"

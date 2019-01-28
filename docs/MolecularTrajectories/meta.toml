@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "2.0.1"
-description = "A Julia package for reading molecular dynamics simulation trajectories."

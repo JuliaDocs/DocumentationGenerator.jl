@@ -1,5 +1,0 @@
-stargazers_count = "5"
-doctype = "real"
-installs = true
-version = "0.4.1"
-description = "Calculate Earth orientation parameters from IERS tables in Julia"

@@ -1,5 +1,0 @@
-stargazers_count = 2
-doctype = "default"
-installs = true
-version = "0.1.0"
-description = "A common suite of test functions for stressing the robustness of differentiation tools."

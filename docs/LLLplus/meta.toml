@@ -1,5 +1,0 @@
-stargazers_count = 11
-doctype = "default"
-installs = true
-version = "1.0.0"
-description = "LLL lattice reduction, sphere decoder, and related lattice tools"

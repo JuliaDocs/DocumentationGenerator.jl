@@ -1,5 +1,0 @@
-stargazers_count = 21
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Julia package for displaying images in the terminal using ANSI colors and Unicode characters"

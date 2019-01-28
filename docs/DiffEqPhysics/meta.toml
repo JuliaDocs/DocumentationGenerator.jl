@@ -1,5 +1,0 @@
-stargazers_count = 22
-doctype = "default"
-installs = true
-version = "3.1.0"
-description = "A library for building differential equations arising from physical problems"

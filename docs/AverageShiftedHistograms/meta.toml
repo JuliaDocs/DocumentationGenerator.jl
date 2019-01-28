@@ -1,5 +1,0 @@
-stargazers_count = "29"
-doctype = "real"
-installs = true
-version = "0.7.1"
-description = "ASH density estimation in pure Julia"

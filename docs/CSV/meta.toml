@@ -1,5 +1,0 @@
-stargazers_count = "80"
-doctype = "real"
-installs = true
-version = "0.4.3"
-description = "Utility library for working with CSV and other delimited files in the Julia programming language"

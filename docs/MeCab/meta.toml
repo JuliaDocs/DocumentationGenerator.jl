@@ -1,5 +1,0 @@
-stargazers_count = 15
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "Julia binding of Japanese morphological analyzer MeCab"

@@ -1,5 +1,0 @@
-stargazers_count = 65
-doctype = "default"
-installs = true
-version = "0.7.0"
-description = "Take Julia code coverage and memory allocation results, do useful things with them"

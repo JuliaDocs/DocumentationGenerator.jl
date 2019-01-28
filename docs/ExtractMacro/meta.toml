@@ -1,5 +1,0 @@
-stargazers_count = "8"
-doctype = "real"
-installs = true
-version = "0.3.0"
-description = "Provides a convenience Julia macro to extract fields from composite types"

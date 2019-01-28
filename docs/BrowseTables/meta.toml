@@ -1,5 +1,0 @@
-stargazers_count = "7"
-doctype = "real"
-installs = true
-version = "0.2.0"
-description = "Julia package for browsing tables that that implement the Tables.jl interface as HTML."

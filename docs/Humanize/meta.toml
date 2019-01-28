@@ -1,5 +1,0 @@
-stargazers_count = 25
-doctype = "default"
-installs = true
-version = "1.0.0"
-description = "Humanize numbers: data sizes, datetime deltas, digit separators"

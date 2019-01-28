@@ -1,5 +1,0 @@
-stargazers_count = 9
-doctype = "default"
-installs = true
-version = "0.1.3"
-description = "Julia package for opening a file with the default application determined by the OS."

@@ -1,5 +1,0 @@
-stargazers_count = 9
-doctype = "default"
-installs = true
-version = "0.2.2"
-description = "Chain types and utility functions for MCMC simulations"

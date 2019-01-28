@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.0.1"
-description = "Float80 and Float128 types provided by LLVM"

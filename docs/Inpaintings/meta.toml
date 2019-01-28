@@ -1,5 +1,0 @@
-stargazers_count = "1"
-doctype = "real"
-installs = true
-version = "0.3.0"
-description = "Inpaint `missing`, `NaN`, or other values in arrays with different methods"

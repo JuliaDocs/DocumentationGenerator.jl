@@ -1,5 +1,0 @@
-stargazers_count = 122
-doctype = "default"
-installs = true
-version = "0.8.1"
-description = "Package to make C++ libraries available in Julia"

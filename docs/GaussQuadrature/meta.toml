@@ -1,5 +1,0 @@
-stargazers_count = "7"
-doctype = "default"
-installs = true
-version = "0.5.0"
-description = "Julia package to compute weights and points for the classical Gauss quadrature rules"

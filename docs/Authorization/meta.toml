@@ -1,5 +1,0 @@
-stargazers_count = 0
-doctype = "default"
-installs = true
-version = "0.1.0"
-description = "A small but flexible Julialang API for controlling an authenticated client's access to resources."

@@ -1,5 +1,0 @@
-stargazers_count = "25"
-doctype = "real"
-installs = true
-version = "0.4.3"
-description = "A Julia package for solving systems of polynomials via homotopy continuation."

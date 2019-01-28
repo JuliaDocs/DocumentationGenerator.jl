@@ -1,5 +1,0 @@
-stargazers_count = 25
-doctype = "default"
-installs = true
-version = "0.2.1"
-description = "Lazy in-place transformations of arrays"

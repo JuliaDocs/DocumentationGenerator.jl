@@ -1,5 +1,0 @@
-stargazers_count = "9"
-doctype = "real"
-installs = true
-version = "0.3.0"
-description = "A Julia interface for retrieving data from the Bureau of Economic Analysis (BEA)."

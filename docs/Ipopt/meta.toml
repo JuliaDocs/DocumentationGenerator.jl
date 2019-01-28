@@ -1,5 +1,0 @@
-stargazers_count = "39"
-doctype = "default"
-installs = true
-version = "0.5.1"
-description = "Julia interface to the Ipopt nonlinear solver"

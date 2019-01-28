@@ -1,5 +1,0 @@
-stargazers_count = 12
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Arrays which also have a label for each element"

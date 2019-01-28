@@ -1,5 +1,0 @@
-stargazers_count = 6
-doctype = "default"
-installs = true
-version = "0.3.2"
-description = "Julia math built-ins which return NaN and accumulator functions which ignore NaN"

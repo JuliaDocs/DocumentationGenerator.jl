@@ -1,5 +1,0 @@
-stargazers_count = 35
-doctype = "default"
-installs = true
-version = "0.3.1"
-description = "Julia wrapper for the Voyager data exploration tool"

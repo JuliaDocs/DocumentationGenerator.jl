@@ -1,5 +1,0 @@
-stargazers_count = "16"
-doctype = "real"
-installs = true
-version = "0.5.0"
-description = "Julia support for reading/writing Fortran unformatted files"

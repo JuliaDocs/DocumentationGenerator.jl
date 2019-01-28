@@ -1,5 +1,0 @@
-stargazers_count = 43
-doctype = "default"
-installs = true
-version = "0.5.1"
-description = "Julia wrapper around Google's gumbo C library for parsing HTML"

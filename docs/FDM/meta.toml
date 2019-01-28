@@ -1,5 +1,0 @@
-stargazers_count = "5"
-doctype = "real"
-installs = true
-version = "0.3.0"
-description = "Estimate derivatives with finite differences"

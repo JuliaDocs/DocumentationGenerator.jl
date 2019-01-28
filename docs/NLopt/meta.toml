@@ -1,5 +1,0 @@
-stargazers_count = 90
-doctype = "default"
-installs = true
-version = "0.5.1"
-description = "Package to call the NLopt nonlinear-optimization library from the Julia language"

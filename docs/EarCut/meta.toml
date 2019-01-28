@@ -1,5 +1,0 @@
-stargazers_count = 0
-doctype = "default"
-installs = true
-version = "1.1.0"
-description = "Wrapper for Mapbox's earcut.hpp for polygon triangulation"

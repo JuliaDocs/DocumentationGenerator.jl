@@ -1,5 +1,0 @@
-stargazers_count = "4"
-doctype = "real"
-installs = true
-version = "1.0.0"
-description = "Hurdle Distributed Multiple Regression (HDMR) implemented in Julia"

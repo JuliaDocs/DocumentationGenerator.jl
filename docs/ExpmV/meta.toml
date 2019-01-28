@@ -1,5 +1,0 @@
-stargazers_count = 4
-doctype = "default"
-installs = true
-version = "0.1.2"
-description = "Julia package to compute the result of expm(t*A)*v when A is a sparse matrix, without computing expm(t*A)."

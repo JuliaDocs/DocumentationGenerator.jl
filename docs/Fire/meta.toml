@@ -1,5 +1,0 @@
-stargazers_count = 22
-doctype = "default"
-installs = true
-version = "0.1.0"
-description = "Fire.jl is a library for automatically generating command line interfaces (CLIs) for julia functions."

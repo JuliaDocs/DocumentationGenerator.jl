@@ -1,5 +1,0 @@
-stargazers_count = 46
-doctype = "default"
-installs = true
-version = "0.5.1"
-description = "Kernel density estimators for Julia"

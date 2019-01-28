@@ -1,5 +1,0 @@
-stargazers_count = 21
-doctype = "default"
-installs = true
-version = "0.7.1"
-description = "OSX Binary dependency provider for Julia"

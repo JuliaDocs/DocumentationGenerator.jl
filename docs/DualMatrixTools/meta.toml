@@ -1,5 +1,0 @@
-stargazers_count = "0"
-doctype = "real"
-installs = true
-version = "0.1.1"
-description = "A little Julia module to allow factorization and backslash to work with dual-valued arrays and sparse arrays."

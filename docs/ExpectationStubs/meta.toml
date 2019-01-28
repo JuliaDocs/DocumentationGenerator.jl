@@ -1,5 +1,0 @@
-stargazers_count = 3
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Mocks on which you can set expectations of how they are called. And check those expectations were true."

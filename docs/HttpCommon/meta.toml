@@ -1,5 +1,0 @@
-stargazers_count = 23
-doctype = "default"
-installs = true
-version = "0.5.0"
-description = "Types and helper functions for dealing with the HTTP in Julia"

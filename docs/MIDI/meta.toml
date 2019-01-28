@@ -1,5 +1,0 @@
-stargazers_count = 14
-doctype = "default"
-installs = true
-version = "1.0.0"
-description = "A Julia library for handling MIDI files"

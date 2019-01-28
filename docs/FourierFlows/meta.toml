@@ -1,5 +1,0 @@
-stargazers_count = "23"
-doctype = "real"
-installs = true
-version = "0.3.0"
-description = "Tools for solving partial differential equations on periodic domains using Fourier-based pseudospectral methods."

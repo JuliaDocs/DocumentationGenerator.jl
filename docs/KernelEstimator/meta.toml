@@ -1,5 +1,0 @@
-stargazers_count = 18
-doctype = "default"
-installs = true
-version = "0.3.3"
-description = "The julia package for nonparametric density estimate and regression"

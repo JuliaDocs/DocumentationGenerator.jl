@@ -1,5 +1,0 @@
-stargazers_count = "46"
-doctype = "default"
-installs = true
-version = "2.3.0"
-description = "Julia interface to GLFW, a multi-platform library for creating windows with OpenGL contexts and managing input and events."

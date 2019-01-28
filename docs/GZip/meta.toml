@@ -1,5 +1,0 @@
-stargazers_count = "9"
-doctype = "default"
-installs = true
-version = "0.5.0"
-description = "A Julia interface for gzip functions in zlib"

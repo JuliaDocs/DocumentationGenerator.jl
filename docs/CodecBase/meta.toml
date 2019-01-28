@@ -1,5 +1,0 @@
-stargazers_count = 3
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "Base 16/32/64 codecs for TranscodingStreams.jl"

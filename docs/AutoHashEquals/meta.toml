@@ -1,5 +1,0 @@
-stargazers_count = 18
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "A Julia macro to add == and hash() to composite types."

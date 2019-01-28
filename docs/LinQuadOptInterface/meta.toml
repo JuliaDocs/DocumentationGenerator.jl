@@ -1,5 +1,0 @@
-stargazers_count = 14
-doctype = "default"
-installs = true
-version = "0.6.0"
-description = "Intermediate wrapper of MOI for some linear quadratic solvers"

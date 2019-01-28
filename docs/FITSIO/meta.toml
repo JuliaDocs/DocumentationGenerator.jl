@@ -1,5 +1,0 @@
-stargazers_count = "23"
-doctype = "real"
-installs = true
-version = "0.13.0"
-description = "Flexible Image Transport System (FITS) file support for Julia"

@@ -1,5 +1,0 @@
-stargazers_count = 16
-doctype = "default"
-installs = true
-version = "2.2.0"
-description = "Solves stiff differential algebraic equations (DAE) using variable stepsize backwards finite difference formula (BDF)"

@@ -1,5 +1,0 @@
-stargazers_count = 16
-doctype = "default"
-installs = true
-version = "0.9.4"
-description = "Julia wrapper for the ECOS conic optimization solver"

@@ -1,5 +1,0 @@
-stargazers_count = 9
-doctype = "default"
-installs = true
-version = "0.8.0"
-description = "FileIO.jl integration for Excel files"

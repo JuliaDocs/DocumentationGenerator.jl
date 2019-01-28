@@ -1,5 +1,0 @@
-stargazers_count = "3"
-doctype = "real"
-installs = true
-version = "0.2.0"
-description = "FEMQuad.jl package contains various of integration schemes for cartesian and tetrahedral domains. The most common integration rules are tabulated and focus is on speed. Each rule has own \"label\" so we can easily implement several rules with same degree. API is very simple making is easy to utilize package in different FEM projects."

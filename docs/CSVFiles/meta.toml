@@ -1,5 +1,0 @@
-stargazers_count = 16
-doctype = "default"
-installs = true
-version = "0.13.0"
-description = "FileIO.jl integration for CSV files"

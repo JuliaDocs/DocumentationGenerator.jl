@@ -1,5 +1,0 @@
-stargazers_count = 7
-doctype = "default"
-installs = true
-version = "0.0.3"
-description = "A Julia package for representing infinite-dimensional arrays"

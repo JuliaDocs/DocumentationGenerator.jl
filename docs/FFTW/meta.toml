@@ -1,5 +1,0 @@
-stargazers_count = "33"
-doctype = "real"
-installs = true
-version = "0.2.4"
-description = "Julia bindings to the FFTW library for fast Fourier transforms"

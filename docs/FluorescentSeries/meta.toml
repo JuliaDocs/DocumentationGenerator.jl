@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.1.0"
-description = "Utilities to deal with fluorescence time series"

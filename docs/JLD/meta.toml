@@ -1,5 +1,0 @@
-stargazers_count = "125"
-doctype = "default"
-installs = true
-version = "0.9.1"
-description = "Saving and loading julia variables while preserving native types"

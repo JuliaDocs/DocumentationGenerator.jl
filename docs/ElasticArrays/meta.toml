@@ -1,5 +1,0 @@
-stargazers_count = 11
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Resizeable multi-dimensional arrays for Julia"

@@ -1,5 +1,0 @@
-stargazers_count = 10
-doctype = "default"
-installs = true
-version = "0.6.2"
-description = "Treat colors as if they are n-vectors for the purposes of arithmetic"

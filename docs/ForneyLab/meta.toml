@@ -1,5 +1,0 @@
-stargazers_count = 22
-doctype = "default"
-installs = true
-version = "0.9.1"
-description = "Julia package for automatically generating Bayesian inference algorithms through message passing on Forney-style factor graphs."

@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.8.0"
-description = "storing and accessing large Julia array locally or in cloud storage."

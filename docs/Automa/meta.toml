@@ -1,5 +1,0 @@
-stargazers_count = "51"
-doctype = "real"
-installs = true
-version = "0.7.0"
-description = "A julia code generator for regular expressions"

@@ -1,5 +1,0 @@
-stargazers_count = 5
-doctype = "default"
-installs = true
-version = "1.1.1"
-description = "Julia package to provide access to CMake"

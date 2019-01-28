@@ -1,5 +1,0 @@
-stargazers_count = "21"
-doctype = "real"
-installs = true
-version = "0.5.3"
-description = "Combining Reactive.jl with the Gtk toolkit"

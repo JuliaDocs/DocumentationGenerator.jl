@@ -1,5 +1,0 @@
-stargazers_count = "25"
-doctype = "real"
-installs = true
-version = "0.2.3"
-description = "A JuMP-based Nonlinear Integer Program Solver"

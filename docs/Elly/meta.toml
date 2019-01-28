@@ -1,5 +1,0 @@
-stargazers_count = 29
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "Hadoop HDFS and Yarn client"

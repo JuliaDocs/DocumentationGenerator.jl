@@ -1,5 +1,0 @@
-stargazers_count = "1"
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "Julia package for providing frequency-stability test functions. Implemented so far in overlapping as well as consecutive form for phase or frequency datasets are: allan deviation, modified allan deviation, hadamard deviation and time deviation."

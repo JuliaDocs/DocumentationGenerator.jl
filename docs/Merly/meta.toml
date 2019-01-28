@@ -1,5 +1,0 @@
-stargazers_count = 24
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "Micro framework for web programming in Julia"

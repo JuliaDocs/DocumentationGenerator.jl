@@ -1,5 +1,0 @@
-stargazers_count = 3
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "High dimensional numbers and reductions recipes for Plots.jl"

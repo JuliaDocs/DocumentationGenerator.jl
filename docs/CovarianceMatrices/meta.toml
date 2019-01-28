@@ -1,5 +1,0 @@
-stargazers_count = 17
-doctype = "default"
-installs = true
-version = "0.9.0"
-description = "Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation for Julia."

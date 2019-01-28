@@ -1,5 +1,0 @@
-stargazers_count = 2
-doctype = "default"
-installs = true
-version = "0.3.2"
-description = "A pure Julia package for working with C3D files"

@@ -1,5 +1,0 @@
-stargazers_count = 92
-doctype = "default"
-installs = true
-version = "0.5.1"
-description = "Julia package for deploying APIs"

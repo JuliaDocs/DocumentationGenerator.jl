@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.2.6"
-description = "Support for using LaTeX entities to map to/from Unicode characters"

@@ -1,5 +1,0 @@
-stargazers_count = 7
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "Hive, Spark SQL, Impala client. Based on Thrift and HiveServer2 protocol."

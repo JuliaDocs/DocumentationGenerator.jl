@@ -1,5 +1,0 @@
-stargazers_count = "17"
-doctype = "real"
-installs = true
-version = "0.3.0"
-description = "Functions and data dependencies for loading various word embeddings (Word2Vec, FastText, GLoVE)"

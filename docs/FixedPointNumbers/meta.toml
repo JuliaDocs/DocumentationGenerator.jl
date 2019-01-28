@@ -1,5 +1,0 @@
-stargazers_count = 13
-doctype = "default"
-installs = true
-version = "0.5.3"
-description = "fixed point types for julia"

@@ -1,5 +1,0 @@
-stargazers_count = 0
-doctype = "default"
-installs = true
-version = "0.1.0"
-description = "Interfacing with Beckman-Coulter Multisizer/Z2 Coulter Counter files (.#=Z2, etc) in Julia"

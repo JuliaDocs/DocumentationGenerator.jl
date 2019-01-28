@@ -1,5 +1,0 @@
-stargazers_count = 13
-doctype = "default"
-installs = true
-version = "2.2.1"
-description = "Boundary value problem (BVP) solvers for the DifferentialEquations.jl ecosystem"

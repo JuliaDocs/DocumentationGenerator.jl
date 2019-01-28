@@ -1,5 +1,0 @@
-stargazers_count = 15
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "A Julia package that provides support for reading and writing Numpy .npy and .npz files"

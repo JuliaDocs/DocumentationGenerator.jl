@@ -1,5 +1,0 @@
-stargazers_count = "1"
-doctype = "real"
-installs = true
-version = "0.5.0"
-description = "Julia package for giving \"meaning\" to the axes of an image"

@@ -1,5 +1,0 @@
-stargazers_count = 40
-doctype = "default"
-installs = true
-version = "0.3.0"
-description = "＠memoize macro for Julia"

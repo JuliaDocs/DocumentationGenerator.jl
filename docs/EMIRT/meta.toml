@@ -1,5 +1,0 @@
-stargazers_count = 1
-doctype = "default"
-installs = true
-version = "0.7.0"
-description = "Electronic Microscopy Image Reconstruction Toolbox using julia language"

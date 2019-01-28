@@ -1,5 +1,0 @@
-stargazers_count = 135
-doctype = "default"
-installs = true
-version = "0.8.1"
-description = "Julia implementation of Decision Tree (CART) and Random Forest algorithms"

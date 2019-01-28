@@ -1,5 +1,0 @@
-stargazers_count = 8
-doctype = "default"
-installs = true
-version = "0.2.0"
-description = "Levenshtein distance between two strings in julia"
