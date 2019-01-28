@@ -5,7 +5,7 @@ using Pkg.Types
 using DocumentationGenerator
 
 # gets all installable packages for julia 1.0
-packages = installable_on_version()
+packages = DocumentationGenerator.installable_on_version()
 
 tstart = time()
 process_queue = []
@@ -20,7 +20,7 @@ for (name, url, versions) in packages[1:2]
         filter!(process_running, process_queue)
         sleep(0.5)
     end
-    push!(process_queue, build_documentation(name, url, last(versions)))
+    push!(process_queue, DocumentationGenerator.build_documentation(name, url, last(versions)))
 end
 
 for proc in process_queue

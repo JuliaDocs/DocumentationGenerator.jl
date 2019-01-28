@@ -1,3 +1,4 @@
+module DocumentationGenerator
 """
 Generates a default documentation for a package without Documenter.jl docs.
 """
@@ -242,4 +243,5 @@ function build_documentation(name, url, version; basepath=joinpath(@__DIR__, "..
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
     return process
+end
 end
