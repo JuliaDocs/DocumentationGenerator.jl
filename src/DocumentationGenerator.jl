@@ -191,16 +191,15 @@ function run_with_timeout(
 end
 
 """
-    installable_on_version(version = VERSION)
+    installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
 
-Returns a vector of named tuples `(name, url, versions)` of packages compatible
-with Julia version `version`.
+Returns a vector of named tuples `(name, url, versions)` of packages in `registry`
+compatible with Julia version `version`.
 """
-function installable_on_version(version = VERSION)
+function installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
     allpkgs = []
-    dir = joinpath(homedir(), ".julia/registries/General")
-    for initial in filter!(isdir, joinpath.(dir, readdir(dir)))
-        for pkg in filter!(isdir, joinpath.(dir, initial, readdir(initial)))
+    for initial in filter!(isdir, joinpath.(registry, readdir(registry)))
+        for pkg in filter!(isdir, joinpath.(registry, initial, readdir(initial)))
             "Compat.toml" in readdir(pkg) || continue
             pkgtoml = Pkg.TOML.parsefile(joinpath(pkg, "Package.toml"))
             versions = Pkg.TOML.parsefile(joinpath(pkg, "Versions.toml"))
