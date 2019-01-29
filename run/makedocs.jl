@@ -10,7 +10,7 @@ max_packages = if isempty(ARGS)
 else
     parse(Int, ARGS[1])
 end
-for (name, url, versions) in packages[1:8]
+for (name, url, versions) in packages[1:max_packages]
     #those somehow get stuck - might be random
     while length(process_queue) >= parse(Int, get(ENV, "NUM_PKG_PROCESSES", "8"))
         filter!(process_running, process_queue)
