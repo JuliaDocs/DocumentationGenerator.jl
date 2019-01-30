@@ -39,6 +39,7 @@ function default_docs(package, root, pkgroot)
     end
 end
 
+
 function parseall(str)
     pos = firstindex(str)
     exs = []
@@ -234,7 +235,7 @@ save the HTML docs to `\$basepath/build` with logs in `\$basepath/logs`.
 
 Note that this will overwrite previous builds/logs.
 """
-function build_documentation(name, url, version; basepath=joinpath(@__DIR__, ".."))
+function build_documentation(name, url, version; basepath = joinpath(@__DIR__, ".."))
     workerfile = joinpath(@__DIR__, "worker_work.jl")
     buildpath = joinpath(basepath, "build")
     logpath = joinpath(basepath, "logs")
@@ -243,10 +244,36 @@ function build_documentation(name, url, version; basepath=joinpath(@__DIR__, "..
     isdir(logpath) || mkpath(logpath)
 
     builddir = joinpath(buildpath, name, string(version))
+    isdir(builddir) || mkpath(builddir)
     logfile = joinpath(logpath, "$name $version.log")
     cmd = `$(first(Base.julia_cmd())) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
     return process
 end
+
+
+
+function build_documentations(
+        packages;
+        processes::Int = 8, sleeptime = 0.5, basepath = joinpath(@__DIR__, ".."),
+        filter_versions = last
+    )
+    process_queue = []
+    for (name, url, versions) in packages
+        #those somehow get stuck - might be random
+        while length(process_queue) >= processes
+            filter!(process_running, process_queue)
+            sleep(sleeptime)
+        end
+        for version in vcat(filter_versions(versions))
+            process = build_documentation(name, url, version, basepath = basepath)
+            push!(process_queue, process)
+        end
+    end
+    for proc in process_queue
+        wait(proc)
+    end
+end
+
 end

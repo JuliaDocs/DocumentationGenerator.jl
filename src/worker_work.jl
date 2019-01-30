@@ -1,4 +1,4 @@
-using Serialization, GitHub, Pkg
+using GitHub, Pkg
 using Pkg: TOML
 
 include("DocumentationGenerator.jl")

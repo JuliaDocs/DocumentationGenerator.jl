@@ -1,18 +1,19 @@
 name = "DocumentationGenerator"
 uuid = "8f0d3306-d70b-5309-b898-24bb6ab47850"
-repo = "https://github.com/pfitzseb/DocumentationGenerator.jl.git"
 authors = ["Sebastian Pfitzner <pfitzseb@physik.hu-berlin.de>"]
+repo = "https://github.com/pfitzseb/DocumentationGenerator.jl.git"
 version = "0.0.0"
 
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GitHub = "bc5e4493-9b4d-5f90-b8aa-2b2bcaad7a26"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+
+[compat]
+julia = "1.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test"]
-
-[compat]
-julia = "1.1"
