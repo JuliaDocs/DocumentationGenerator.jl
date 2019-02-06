@@ -39,7 +39,6 @@ function default_docs(package, root, pkgroot)
     end
 end
 
-
 function parseall(str)
     pos = firstindex(str)
     exs = []
