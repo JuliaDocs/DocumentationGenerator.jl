@@ -16,7 +16,7 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
                 eval(make_expr)
             end
             cp(builddir, buildpath, force=true)
-            return :real
+            return :real, rootdir
         end
     end
 
@@ -24,7 +24,7 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     mktempdir() do root
         DocumentationGenerator.default_docs(pkgname, root, rootdir)
         cp(joinpath(root, "build"), buildpath, force = true)
-        return :default
+        return :default, rootdir
     end
 end
 
@@ -42,28 +42,43 @@ end
 
 function package_docs(name, url, version, buildpath)
     pspec = PackageSpec(name = name, url = url, rev = string('v', version))
-    # buildpath = joinpath(@__DIR__, "..", "build")
+
     @info("Generating docs for $name")
     doctype = :default
     meta = Dict()
     meta["version"] = version
     meta["installs"] = false
     try
-        # I'm not sure how and why, but lots of packages get stuck. So we need
-        # to spawn processes and interrupt them after certain time outs.
-        # sadly, we won't be able to make the time out low, since some packages
-        # take really long building.
         @info("building: $name")
         mktempdir() do envdir
             Pkg.activate(envdir)
-            meta["doctype"] = string(create_docs(pspec, buildpath))
+            doctype, rootdir = create_docs(pspec, buildpath)
+            meta["doctype"] = string(doctype)
             meta["installs"] = true
             @info("Done generating docs for $name")
+            package_source(name, rootdir, buildpath)
         end
     catch e
         @error("Package $name didn't build", error = e)
         meta["installs"] = false
     end
+
+    return meta
+end
+
+function package_metadata(name, url, version, buildpath)
+    meta = Dict()
+    authpath = joinpath(@__DIR__, "gh_auth.txt")
+    if !isfile(authpath)
+        @warn("No GitHub token found. Skipping metadata retrieval.")
+        return meta
+    end
+    if !occursin("github.com", url)
+        @warn("Can't retrieve metadata for $name (not hosted on github)")
+        return meta
+    end
+
+    @info("Querying metadata for $name")
     try
         gh_auth = authenticate(readchomp(joinpath(@__DIR__, "gh_auth.txt")))
         matches = match(r".*/(.*)/(.*\.jl)(?:.git)?$", url)
@@ -79,12 +94,31 @@ function package_docs(name, url, version, buildpath)
         meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
     catch err
         @error(string("Couldn't get info for ", url), error = err)
-        nothing
     end
+    @info("Done querying metadata for $name")
+
+    return meta
+end
+
+function package_source(name, rootdir, buildpath)
+    srcpath = joinpath(rootdir, "src")
+    @info("Copying source code for $name")
+    if isdir(srcpath)
+        cp(srcpath, joinpath(buildpath, "_packagesource"); force=true)
+    end
+    @info("Done copying source code for $name")
+end
+
+function build(name, url, version, buildpath)
+    meta = package_docs(name, url, version, buildpath)
+    merge!(meta, package_metadata(name, url, version, buildpath))
+    @info "making buildpath"
     isdir(buildpath) || mkpath(joinpath(buildpath))
+    @info "opening meta.toml"
     open(joinpath(buildpath, "meta.toml"), "w") do io
+        @info "writing meta.toml"
         TOML.print(io, meta)
     end
 end
 
-package_docs(ARGS...)
+build(ARGS...)
