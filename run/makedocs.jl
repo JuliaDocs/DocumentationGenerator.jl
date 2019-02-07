@@ -1,14 +1,12 @@
-using DocumentationGenerator
+using DocumentationGenerator, DataStructures
 
 packages = DocumentationGenerator.installable_on_version(VERSION)
 
-# max_packages = if isempty(ARGS)
-#     length(packages)
-# else
-#     parse(Int, ARGS[1])
-# end
-
-max_packages = 100
+max_packages = if isempty(ARGS)
+    length(packages)
+else
+    parse(Int, ARGS[1])
+end
 
 processes = parse(Int, get(ENV, "NUM_PKG_PROCESSES", "8"))
 
@@ -28,11 +26,24 @@ function printlink(io::IO, name, link)
     print(io, "[", name, "](", link, ")")
 end
 
+built_packages = SortedDict{String, Vector{String}}()
+for pkg in readdir(joinpath(docspath, "build"))
+    pkgpath = joinpath(docspath, "build", pkg)
+    isdir(pkgpath) || continue
+
+    vers = readdir(pkgpath)
+    for ver in vers
+        isdir(joinpath(pkgpath, ver)) || continue
+        push!(get!(built_packages, pkg, String[]), ver)
+    end
+end
+
 indexmd = joinpath(docspath, "build", "index.md")
 open(indexmd, "w") do io
     lastchar = '0'
     println(io, "# Package Documentation")
-    for pkg in readdir(joinpath(docspath, "build"))
+
+    for (pkg, versions) in built_packages
         pkgpath = joinpath(docspath, "build", pkg)
         isdir(pkgpath) || continue
 
@@ -41,10 +52,9 @@ open(indexmd, "w") do io
             printheader(io, startchar, level=2)
             println(io)
         end
-        print(io, pkg)
+        print(io, "`", pkg, "`")
         print(io, " - ")
-        vers = readdir(pkgpath)
-        for (i, ver) in enumerate(vers)
+        for (i, ver) in enumerate(versions)
             isdir(joinpath(pkgpath, ver)) || continue
             pkgindexfile = joinpath(pkgpath, ver, "index.html")
             if isfile(pkgindexfile)
@@ -52,12 +62,13 @@ open(indexmd, "w") do io
             else
                 print(io, ver)
             end
-            i ≠ length(vers) && print(io, ", ")
+            i ≠ length(versions) && print(io, ", ")
         end
         println(io)
         println(io)
         lastchar = startchar
     end
+
 end
 
 distpath = joinpath(docspath, "dist")

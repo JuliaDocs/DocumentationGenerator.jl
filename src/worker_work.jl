@@ -7,18 +7,23 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     _module, rootdir = DocumentationGenerator.install_and_use(pspec)
     pkgname = pspec.name
     # actual Documenter docs
-    for docdir in joinpath.(rootdir, ("docs", "doc"))
-        if isdir(docdir)
-            makefile = joinpath(docdir, "make.jl")
-            # create customized makefile with removed deploydocs + modified makedocs
-            make_expr, builddir = DocumentationGenerator.rewrite_makefile(makefile)
-            cd(docdir) do
-                eval(make_expr)
+    try
+        for docdir in joinpath.(rootdir, ("docs", "doc"))
+            if isdir(docdir)
+                makefile = joinpath(docdir, "make.jl")
+                # create customized makefile with removed deploydocs + modified makedocs
+                make_expr, builddir = DocumentationGenerator.rewrite_makefile(makefile)
+                cd(docdir) do
+                    eval(make_expr)
+                end
+                cp(builddir, buildpath, force=true)
+                return :real, rootdir
             end
-            cp(builddir, buildpath, force=true)
-            return :real, rootdir
         end
+    catch err
+        @error("Tried building Documenter.jl docs but failed.", error=err)
     end
+    @info("Building default docs.")
 
     # our default docs
     mktempdir() do root
@@ -61,6 +66,7 @@ function package_docs(name, url, version, buildpath)
     catch e
         @error("Package $name didn't build", error = e)
         meta["installs"] = false
+        readme_docs(pspec, buildpath)
     end
 
     return meta

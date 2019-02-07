@@ -39,6 +39,28 @@ function default_docs(package, root, pkgroot)
     end
 end
 
+function readme_docs(package, root, pkgroot)
+    doc_source = joinpath(root, "src")
+    mkpath(doc_source)
+    pages = []
+    readme = joinpath(pkgroot, "README.md")
+    if isfile(readme)
+        cp(readme, joinpath(doc_source, "index.md"))
+        push!(pages, "Readme" => "index.md")
+    end
+    pkg_sym = Symbol(package)
+    @eval Module() begin
+        using Documenter
+        makedocs(
+            format = Documenter.HTML(),
+            sitename = "$($package).jl",
+            modules = [Module()],
+            root = $root,
+            pages = $(reverse(pages))
+        )
+    end
+end
+
 function parseall(str)
     pos = firstindex(str)
     exs = []
@@ -113,6 +135,7 @@ function install_and_use(pspec)
         throw(PkgNoWork(pspec.name))
     end
     pkg_sym = Symbol(pspec.name)
+
     # needs to be main, because documenter wants to have the symbol in main -.-
     pkg_module = try
         @eval(Main, (using $pkg_sym; $pkg_sym))
@@ -265,7 +288,7 @@ function build_documentations(
             filter!(process_running, process_queue)
             sleep(sleeptime)
         end
-        for version in vcat(filter_versions(versions))
+        for version in vcat(filter_versions(sort(versions)))
             process = build_documentation(name, url, version, basepath = basepath)
             push!(process_queue, process)
         end
