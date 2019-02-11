@@ -83,7 +83,7 @@ end
         (
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
-            versions = [v"0.2.2", v"0.7.2"],
+            versions = [v"0.2.2", v"0.7.3"],
             installs = [false, true],
             doctype = [nothing, "real"],
         ),

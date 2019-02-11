@@ -204,6 +204,11 @@ function run_with_timeout(
         catch err
             @error "Error while running $(name) with timeout." error=err
         finally
+            errstr, outstr = String.(take!.((err_io, out_io)))
+            isempty(outstr) || println(io, outstr)
+            isempty(errstr) || println(io, errstr)
+
+            flush(io)
             if log isa String && !logfallback
                 close(io)
             end
@@ -272,8 +277,6 @@ function build_documentation(name, url, version; basepath = joinpath(@__DIR__, "
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
     return process
 end
-
-
 
 function build_documentations(
         packages;

@@ -1,4 +1,4 @@
-using DocumentationGenerator, DataStructures
+using DocumentationGenerator, DataStructures, Pkg
 
 packages = DocumentationGenerator.installable_on_version(VERSION)
 
@@ -41,7 +41,7 @@ for pkg in sort!(readdir(joinpath(docspath, "build")), by=x->lowercase(x))
     cp(pkgpath, joinpath(distdocpath, pkg); force=true)
     open(joinpath(distdocpath, pkg, "versions.js"), "w") do io
         println(io, "var DOC_VERSIONS = [")
-        vers = sort!(readdir(pkgpath), by=x->lowercase(x))
+        vers = sort!(readdir(pkgpath), by=x->VersionNumber(x))
         for ver in vers
             isdir(joinpath(pkgpath, ver)) || continue
             push!(get!(built_packages, pkg, String[]), ver)
@@ -81,8 +81,14 @@ open(indexmd, "w") do io
         if isfile(pkgindexfile)
             printlink(io, pkg, string("file://", pkgindexfile))
         else
-            print(io, pkg, " (Documentation build failed)")
+            print(io, pkg)
         end
+        metatomlpath = joinpath(pkgpath, last(versions), "meta.toml")
+        if isfile(metatomlpath)
+            meta = Pkg.TOML.parsefile(metatomlpath)
+            print(io, " - ", meta["stargazers_count"], "★")
+        end
+
         println(io)
         println(io)
         lastchar = startchar

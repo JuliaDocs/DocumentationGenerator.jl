@@ -76,7 +76,6 @@ function package_docs(name, url, version, buildpath)
     catch e
         @error("Package $name didn't build", error = e)
         meta["installs"] = false
-        readme_docs(pspec, buildpath)
     end
 
     return meta
