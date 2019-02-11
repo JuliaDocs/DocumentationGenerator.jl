@@ -6,6 +6,16 @@ include("DocumentationGenerator.jl")
 function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     _module, rootdir = DocumentationGenerator.install_and_use(pspec)
     pkgname = pspec.name
+
+    # package doesn't load, so let's only use the README
+    if _module === nothing
+        return mktempdir() do root
+            DocumentationGenerator.readme_docs(pkgname, root, rootdir)
+            cp(joinpath(root, "build"), buildpath, force = true)
+            return :default, rootdir
+        end
+    end
+
     # actual Documenter docs
     try
         for docdir in joinpath.(rootdir, ("docs", "doc"))
@@ -25,7 +35,7 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     end
     @info("Building default docs.")
 
-    # our default docs
+    # default docs
     mktempdir() do root
         DocumentationGenerator.default_docs(pkgname, root, rootdir)
         cp(joinpath(root, "build"), buildpath, force = true)

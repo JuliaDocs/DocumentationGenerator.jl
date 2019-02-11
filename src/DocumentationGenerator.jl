@@ -140,10 +140,9 @@ function install_and_use(pspec)
     pkg_module = try
         @eval(Main, (using $pkg_sym; $pkg_sym))
     catch e
-        throw(PkgNoWork(pspec.name))
+        nothing
     end
-    pkg_root = normpath(joinpath(dirname(pathof(pkg_module)), ".."))
-    pkg_module, pkg_root
+    pkg_module, normpath(joinpath(dirname(Base.find_package(pspec.name)), ".."))
 end
 
 
