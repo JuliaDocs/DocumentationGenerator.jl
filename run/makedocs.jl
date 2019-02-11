@@ -17,8 +17,14 @@ DocumentationGenerator.build_documentations(packages[1:max_packages], processes 
 @info("DONE in $(round(time() - tstart, digits=1)) seconds")
 
 ##
-
 @info("Building Website...")
+
+distpath = joinpath(@__DIR__, "..", "dist")
+distdocpath = joinpath(@__DIR__, "..", "dist", "packages")
+
+rm(distpath, recursive=true, force=true)
+isdir(distpath) || mkpath(distpath)
+isdir(distdocpath) || mkdir(distdocpath)
 
 printheader(io::IO, name; level = 1) = print(io, "#"^level, " ", name)
 
@@ -26,15 +32,34 @@ function printlink(io::IO, name, link)
     print(io, "[", name, "](", link, ")")
 end
 
-built_packages = SortedDict{String, Vector{String}}()
-for pkg in readdir(joinpath(docspath, "build"))
+## get packages and versions
+built_packages = OrderedDict{String, Vector{String}}()
+for pkg in sort!(readdir(joinpath(docspath, "build")), by=x->lowercase(x))
     pkgpath = joinpath(docspath, "build", pkg)
     isdir(pkgpath) || continue
 
-    vers = readdir(pkgpath)
-    for ver in vers
-        isdir(joinpath(pkgpath, ver)) || continue
-        push!(get!(built_packages, pkg, String[]), ver)
+    cp(pkgpath, joinpath(distdocpath, pkg); force=true)
+    open(joinpath(distdocpath, pkg, "versions.js"), "w") do io
+        println(io, "var DOC_VERSIONS = [")
+        vers = sort!(readdir(pkgpath), by=x->lowercase(x))
+        for ver in vers
+            isdir(joinpath(pkgpath, ver)) || continue
+            push!(get!(built_packages, pkg, String[]), ver)
+            println(io, "\"", ver, "\",")
+            open(joinpath(distdocpath, pkg, ver, "siteinfo.js"), "w") do io
+                println(io, """
+                var DOCUMENTER_CURRENT_VERSION = "$(ver)";
+                """)
+            end
+        end
+        print(io, "];")
+    end
+    open(joinpath(distdocpath, pkg, "index.html"), "w") do io
+        println(io, """
+        <head>
+        <meta http-equiv="refresh" content="0; url=$(last(built_packages[pkg]))" />
+        </head>
+        """)
     end
 end
 
@@ -44,7 +69,7 @@ open(indexmd, "w") do io
     println(io, "# Package Documentation")
 
     for (pkg, versions) in built_packages
-        pkgpath = joinpath(docspath, "build", pkg)
+        pkgpath = joinpath(distdocpath, pkg)
         isdir(pkgpath) || continue
 
         startchar = uppercase(first(pkg))
@@ -52,41 +77,31 @@ open(indexmd, "w") do io
             printheader(io, startchar, level=2)
             println(io)
         end
-        print(io, "`", pkg, "`")
-        print(io, " - ")
-        for (i, ver) in enumerate(versions)
-            isdir(joinpath(pkgpath, ver)) || continue
-            pkgindexfile = joinpath(pkgpath, ver, "index.html")
-            if isfile(pkgindexfile)
-                printlink(io, ver, string("file://", pkgindexfile))
-            else
-                print(io, ver)
-            end
-            i ≠ length(versions) && print(io, ", ")
+        pkgindexfile = joinpath(pkgpath, "index.html")
+        if isfile(pkgindexfile)
+            printlink(io, pkg, string("file://", pkgindexfile))
+        else
+            print(io, pkg, " (Documentation build failed)")
         end
         println(io)
         println(io)
         lastchar = startchar
     end
-
 end
 
 distpath = joinpath(docspath, "dist")
-mktempdir() do tmpdir
-    mkdir(joinpath(tmpdir, "src"))
-    cp(indexmd, joinpath(tmpdir, "src", "index.md"))
-    pages = ["Documentation" => "index.md"]
-    @eval Module() begin
-        using Documenter
-        makedocs(
-            format = Documenter.HTML(),
-            sitename = "Documentation",
-            modules = [Main],
-            root = $tmpdir,
-            pages = $(reverse(pages))
-        )
-    end
-    cp(tmpdir, distpath; force=true)
+isdir(joinpath(distpath, "src")) || mkdir(joinpath(distpath, "src"))
+cp(indexmd, joinpath(distpath, "src", "index.md"); force=true)
+pages = ["Documentation" => "index.md"]
+@eval Module() begin
+    using Documenter
+    makedocs(
+        format = Documenter.HTML(),
+        sitename = "Documentation",
+        modules = [Module()],
+        root = $distpath,
+        pages = $(reverse(pages))
+    )
 end
 
 @info("Done building website in $(distpath)")
