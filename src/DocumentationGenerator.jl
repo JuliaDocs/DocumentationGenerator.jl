@@ -85,6 +85,7 @@ while disabling deploy + putting the right args into makedocs
 function rewrite_makefile(makefile)
     ast = parseall(read(makefile, String))
     make_expr = Expr(:block)
+    push!(make_expr.args, :(using Pkg))
     buildpath = joinpath(dirname(makefile), "build")
     for elem in ast.args
         # skip deply(...) - we don't want to deploy
@@ -118,6 +119,17 @@ function rewrite_makefile(makefile)
             )
             elem = Expr(:call, new_args...)
         end
+        # Pkg.add packages required by package build script
+        if Meta.isexpr(elem, :using)
+            pkgs = Symbol[]
+            for arg in elem.args
+                if Meta.isexpr(arg, :.) && length(arg.args) == 1
+                    push!(pkgs, arg.args[1])
+                end
+            end
+            push!(make_expr.args, Expr(:call, :(Pkg.add), [string.(pkgs)...]))
+        end
+
         push!(make_expr.args, elem)
     end
     return make_expr, buildpath
