@@ -274,6 +274,7 @@ save the HTML docs to `\$basepath/build` with logs in `\$basepath/logs`.
 Note that this will overwrite previous builds/logs.
 """
 function build_documentation(name, url, version; basepath = joinpath(@__DIR__, ".."))
+    envpath = normpath(joinpath(@__DIR__, ".."))
     workerfile = joinpath(@__DIR__, "worker_work.jl")
     buildpath = joinpath(basepath, "build")
     logpath = joinpath(basepath, "logs")
@@ -284,7 +285,7 @@ function build_documentation(name, url, version; basepath = joinpath(@__DIR__, "
     builddir = joinpath(buildpath, name, string(version))
     isdir(builddir) || mkpath(builddir)
     logfile = joinpath(logpath, "$name $version.log")
-    cmd = `$(first(Base.julia_cmd())) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
+    cmd = `$(first(Base.julia_cmd())) --project=$(envpath) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
     return process
