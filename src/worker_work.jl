@@ -116,10 +116,9 @@ function package_metadata(name, url, version, buildpath)
 end
 
 function package_source(name, rootdir, buildpath)
-    srcpath = joinpath(rootdir, "src")
     @info("Copying source code for $name")
-    if isdir(srcpath)
-        cp(srcpath, joinpath(buildpath, "_packagesource"); force=true)
+    if isdir(rootdir)
+        cp(rootdir, joinpath(buildpath, "_packagesource"); force=true)
     end
     @info("Done copying source code for $name")
 end
