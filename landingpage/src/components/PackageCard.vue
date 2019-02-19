@@ -23,8 +23,14 @@
         {{details.tagline}}
       </v-card-text>
       <v-card-text>
-        <v-chip small v-for="tag in details.tags.slice(0, 8)">
-          {{tag}}
+        <v-chip
+          label
+          small
+          v-on:click="clickedTag(tag)"
+          v-for="tag in styledTags"
+          :outline="tag.selected"
+          :key="tag.name">
+          {{tag.name}}
         </v-chip>
       </v-card-text>
 
@@ -35,7 +41,7 @@
         <span class="pl-2">{{details.lastversion}}</span>
         <span class="pl-2">⋅</span>
         <span class="pl-2">3 weeks ago</span>
-        <v-spacer/>
+        <v-spacer></v-spacer>
         <v-btn flat color="grey">Documentation</v-btn>
         <v-btn flat color="grey">Source</v-btn>
         <v-btn flat color="grey">Github</v-btn>
@@ -48,7 +54,26 @@
 export default {
   name: 'PackageCard',
   props: {
-    details: Object
+    details: Object,
+    selectedTags: Array
+  },
+  methods: {
+    clickedTag (tag) {
+      this.$emit('tag-click', tag.name)
+    }
+  },
+  computed: {
+    styledTags () {
+      let pkgtags = this.$props.details.tags
+      let tags = []
+      for (const tag of pkgtags.sort()) {
+        tags.push({
+          name: tag,
+          selected: this.$props.selectedTags.indexOf(tag) === -1
+        })
+      }
+      return tags
+    }
   }
 }
 </script>
