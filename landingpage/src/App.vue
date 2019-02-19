@@ -73,7 +73,11 @@
 
     <v-content>
       <!-- FIXME: should maybe use something else here for performance -->
-      <v-container fluid v-for="pkg in filteredPackages" :key="pkg.id">
+      <v-container
+        fluid
+        v-for="pkg in filteredPackages"
+        :key="pkg.id"
+        v-show="!(pkg.hidden)">
         <v-layout align-center justify-center>
           <v-flex xs10 >
             <PackageCard
@@ -99,10 +103,16 @@
 import PackageCard from './components/PackageCard.vue'
 import { go as fuzzysort } from 'fuzzysort'
 
-let pkgs = require('./pkgs')
+const pkgobj = require('./pkgs')
+// pkgs = pkgs.slice(0,100)
+let pkgs = []
 let i = 0
-for (let pkg of pkgs) {
+for (const pkgname in pkgobj) {
+  let pkg = pkgobj[pkgname]
+  pkg.name = pkgname
   pkg.id = i
+  pkg.tags = []
+  pkgs.push(pkg)
   i += 1
 }
 console.log(pkgs);
@@ -150,14 +160,21 @@ export default {
       let pkgs = this.$data.pkgs
       const selectedTags = this.$data.primaryDrawer.pkgtagmodel
       if (selectedTags && selectedTags.length > 0) {
-        pkgs = pkgs.filter(pkg => {
+        pkgs = pkgs.map(pkg => {
           const pkgtags = pkg.tags.map(tag => tag.toLowerCase())
           for (const tag of selectedTags) {
             if (pkgtags.indexOf(tag) === -1) {
-              return false
+              pkg.hidden = true
+              return pkg
             }
           }
-          return true
+          pkg.hidden = false
+          return pkg
+        })
+      } else {
+        pkgs = pkgs.map(pkg => {
+          pkg.hidden = false
+          return pkg
         })
       }
 
@@ -165,8 +182,9 @@ export default {
       if (filterText && filterText.length > 0) {
         pkgs = fuzzysort(filterText, pkgs, {
           key: 'name',
-          limit: 20,
-          thresholt: -10000
+          limit: Infinity,
+          threshold: -Infinity
+
         })
         pkgs = pkgs.map(pkg => pkg.obj)
       }

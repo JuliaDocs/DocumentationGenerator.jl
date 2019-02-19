@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <div :class="'package-card ' + details.cistatus">
+    <div :class="'package-card ' + cistatus">
       <v-card-title primary-title>
         <div>
           <span>
@@ -20,7 +20,7 @@
       </v-card-title>
 
       <v-card-text>
-        {{details.tagline}}
+        {{details.description}}
       </v-card-text>
       <v-card-text>
         <v-chip
@@ -35,12 +35,12 @@
       </v-card-text>
 
       <v-card-actions>
-        <span class="pl-2">{{details.stars}}</span>
+        <span class="pl-2">{{details.stargazers_count}}</span>
         <v-icon small>star</v-icon>
         <span class="pl-2">⋅</span>
-        <span class="pl-2">{{details.lastversion}}</span>
+        <span class="pl-2">{{details.version}}</span>
         <span class="pl-2">⋅</span>
-        <span class="pl-2">3 weeks ago</span>
+        <span class="pl-2">{{details.license}}</span>
         <v-spacer></v-spacer>
         <v-btn flat color="grey">Documentation</v-btn>
         <v-btn flat color="grey">Source</v-btn>
@@ -74,6 +74,14 @@ export default {
         })
       }
       return tags
+    },
+    cistatus () {
+      let badges = this.$props.details.batches
+      if (badges && badges.travis && badges.travis[0]) {
+        return badges["travis"][0].value
+      } else {
+        return ""
+      }
     }
   }
 }
@@ -83,7 +91,7 @@ export default {
 <style scoped lang="scss">
 .package-card {
   border-left: 0.8em solid grey;
-  &.passing {
+  &.passes {
     border-left-color: green;
   }
   &.failing {
