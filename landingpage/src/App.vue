@@ -72,13 +72,12 @@
     </v-toolbar>
 
     <v-content>
-      <v-container fluid v-for="pkg in filteredPackages">
+      <!-- FIXME: should maybe use something else here for performance -->
+      <v-container fluid v-for="pkg in filteredPackages" :key="pkg.id">
         <v-layout align-center justify-center>
           <v-flex xs10 >
             <PackageCard
               v-on:tag-click="addTagFromPackageCard"
-              :selectedTags="primaryDrawer.pkgtagmodel"
-              :key="pkg.owner+pkg.name"
               :details="pkg">
             </PackageCard>
           </v-flex>
@@ -100,164 +99,13 @@
 import PackageCard from './components/PackageCard.vue'
 import { go as fuzzysort } from 'fuzzysort'
 
-let pkgs = [
-  {
-    name: "DifferentialEquations.jl",
-    owner: "JuliaDiffEq",
-    cistatus: "passing",
-    stars: 707,
-    lastversion: "v6.3.0",
-    tagline: "Julia suite for high-performance solvers of differential equations.",
-    tags: [
-      "differential-equations",
-      "differentialequations",
-      "julia",
-      "ode",
-      "sde",
-      "pde",
-      "dae",
-      "stochastic",
-      "dde",
-      "spde",
-      "delay",
-      "monte-carlo-simulation",
-      "stochastic-processes",
-      "stochastic-differential-equations",
-      "delay-differential-equations",
-      "partial-differential-equations",
-      "differential-algebraic-equations",
-      "simulation",
-      "numerical-integration",
-      "dynamical-systems ",
-    ]
-  },
-  {
-    name: "Atom.jl",
-    owner: "JunoLab",
-    cistatus: "failing",
-    stars: 201,
-    lastversion: "v0.7.14",
-    tagline: "Julia Client for Atom.",
-    tags: ["atom", "ide"]
-  },
-  {
-    name: "DifferentialEquations.jl",
-    owner: "JuliaDiffEq",
-    cistatus: "passing",
-    stars: 707,
-    lastversion: "v6.3.0",
-    tagline: "Julia suite for high-performance solvers of differential equations.",
-    tags: [
-      "differential-equations",
-      "differentialequations",
-      "julia",
-      "ode",
-      "sde",
-      "pde",
-      "dae",
-      "stochastic",
-      "dde",
-      "spde",
-      "delay",
-      "monte-carlo-simulation",
-      "stochastic-processes",
-      "stochastic-differential-equations",
-      "delay-differential-equations",
-      "partial-differential-equations",
-      "differential-algebraic-equations",
-      "simulation",
-      "numerical-integration",
-      "dynamical-systems ",
-    ]
-  },
-  {
-    name: "Atom.jl",
-    owner: "JunoLab",
-    cistatus: "failing",
-    stars: 201,
-    lastversion: "v0.7.14",
-    tagline: "Julia Client for Atom.",
-    tags: ["atom", "ide"]
-  },
-  {
-    name: "DifferentialEquations.jl",
-    owner: "JuliaDiffEq",
-    cistatus: "passing",
-    stars: 707,
-    lastversion: "v6.3.0",
-    tagline: "Julia suite for high-performance solvers of differential equations.",
-    tags: [
-      "differential-equations",
-      "differentialequations",
-      "julia",
-      "ode",
-      "sde",
-      "pde",
-      "dae",
-      "stochastic",
-      "dde",
-      "spde",
-      "delay",
-      "monte-carlo-simulation",
-      "stochastic-processes",
-      "stochastic-differential-equations",
-      "delay-differential-equations",
-      "partial-differential-equations",
-      "differential-algebraic-equations",
-      "simulation",
-      "numerical-integration",
-      "dynamical-systems ",
-    ]
-  },
-  {
-    name: "Atom.jl",
-    owner: "JunoLab",
-    cistatus: "failing",
-    stars: 201,
-    lastversion: "v0.7.14",
-    tagline: "Julia Client for Atom.",
-    tags: ["atom", "ide"]
-  },
-  {
-    name: "DifferentialEquations.jl",
-    owner: "JuliaDiffEq",
-    cistatus: "passing",
-    stars: 707,
-    lastversion: "v6.3.0",
-    tagline: "Julia suite for high-performance solvers of differential equations.",
-    tags: [
-      "differential-equations",
-      "differentialequations",
-      "julia",
-      "ode",
-      "sde",
-      "pde",
-      "dae",
-      "stochastic",
-      "dde",
-      "spde",
-      "delay",
-      "monte-carlo-simulation",
-      "stochastic-processes",
-      "stochastic-differential-equations",
-      "delay-differential-equations",
-      "partial-differential-equations",
-      "differential-algebraic-equations",
-      "simulation",
-      "numerical-integration",
-      "dynamical-systems ",
-    ]
-  },
-  {
-    name: "Atom.jl",
-    owner: "JunoLab",
-    cistatus: "failing",
-    stars: 201,
-    lastversion: "v0.7.14",
-    tagline: "Julia Client for Atom.",
-    tags: ["atom", "ide"]
-  },
-]
+let pkgs = require('./pkgs')
+let i = 0
+for (let pkg of pkgs) {
+  pkg.id = i
+  i += 1
+}
+console.log(pkgs);
 
 export default {
   name: 'app',
@@ -337,5 +185,8 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.scroller {
+  height: 100%;
 }
 </style>

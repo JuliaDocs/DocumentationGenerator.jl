@@ -55,7 +55,7 @@ export default {
   name: 'PackageCard',
   props: {
     details: Object,
-    selectedTags: Array
+    // selectedTags: Array
   },
   methods: {
     clickedTag (tag) {
@@ -64,12 +64,13 @@ export default {
   },
   computed: {
     styledTags () {
+      // return this.$props.details.tags
       let pkgtags = this.$props.details.tags
       let tags = []
       for (const tag of pkgtags.sort()) {
         tags.push({
           name: tag,
-          selected: this.$props.selectedTags.indexOf(tag) === -1
+          selected: false //this.$props.selectedTags.indexOf(tag) === -1
         })
       }
       return tags
