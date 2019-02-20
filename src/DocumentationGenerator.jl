@@ -157,6 +157,13 @@ function install_and_use(pspec)
     pkg_module, normpath(joinpath(dirname(Base.find_package(pspec.name)), ".."))
 end
 
+function readstr_buffer(x::IOStream)
+    return read(x, String)
+end
+
+function readstr_buffer(x::Base.GenericIOBuffer{Array{UInt8,1}})
+    return String(take!(x))
+end
 
 """
     run_with_timeout(
@@ -171,14 +178,22 @@ and `verbose` determines whether meta-logs ("process started" etc.) will be prin
 function run_with_timeout(
         command; log=stdout, timeout = 5*60, name = "",
         wait_time = 1, verbose = true
-    )
+)
 
     out_io = IOBuffer()
     err_io = IOBuffer()
+    out_file, err_file = "", ""
+    if VERSION < v"1.1"
+        out_file, out_io = mktemp()
+        err_file, err_io = mktemp()
+    end
     pipe = pipeline(command, stdout = out_io, stderr = err_io)
     process = run(pipe, wait = false)
+    if VERSION < v"1.1"
+        out_io = open(out_file)
+        err_io = open(err_file)
+    end
     timeout_start = time()
-
     task = @async begin
         logfallback = false
         io = try
@@ -198,8 +213,7 @@ function run_with_timeout(
                     kill(process)
                     break
                 end
-
-                errstr, outstr = String.(take!.((err_io, out_io)))
+                errstr, outstr = readstr_buffer.((out_io, err_io))
                 is_silent = length(errstr) == 0 && length(outstr) == 0
                 isempty(outstr) || println(io, outstr)
                 isempty(errstr) || println(io, errstr)
@@ -216,7 +230,7 @@ function run_with_timeout(
         catch err
             @error "Error while running $(name) with timeout." error=err
         finally
-            errstr, outstr = String.(take!.((err_io, out_io)))
+            errstr, outstr = readstr_buffer.((out_io, err_io))
             isempty(outstr) || println(io, outstr)
             isempty(errstr) || println(io, errstr)
 

@@ -9,20 +9,32 @@ const julia = first(Base.julia_cmd())
     let
         tempfile = tempname()
         str = """
+        @async begin
+            while(true)
+                Base.flush(stdout)
+                sleep(0.3)
+            end
+        end
         sleep(4)
         sleep(4)
         write("$tempfile", "hi")
         sleep(3)
+
         """
         proc, _ = DocumentationGenerator.run_with_timeout(`$julia -e $str`, timeout=7)
         wait(proc)
         @test !success(proc)
         @test !isfile(tempfile)
     end
-
     let
         tempfile = tempname()
         str = """
+        @async begin
+            while(true)
+                Base.flush(stdout)
+                sleep(0.3)
+            end
+        end
         for i = 1:10
         sleep(1)
         println(i)
@@ -39,6 +51,12 @@ const julia = first(Base.julia_cmd())
         tempfile = tempname()
         logfile = tempname()
         str = """
+        @async begin
+            while(true)
+                Base.flush(stdout)
+                sleep(0.3)
+            end
+        end
         for i in 1:10
         println(i)
         sleep(1)
@@ -58,7 +76,6 @@ const julia = first(Base.julia_cmd())
         @test String(read(logfile)) == logstr
     end
 end
-
 
 @testset "documentation generation run" begin
     packages = [

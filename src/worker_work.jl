@@ -137,3 +137,10 @@ function build(name, url, version, buildpath)
 end
 
 build(ARGS...)
+
+@async begin
+    while(true)
+        Base.flush(stdout)
+        sleep(1)
+    end
+end
