@@ -48,6 +48,12 @@ function license(repo, api = GitHub.DEFAULT_API; options...)
     return results, page_data
 end
 
+function topics(repo, api = GitHub.DEFAULT_API; options...)
+    results, page_data = GitHub.gh_get_paged_json(api, "/repos/$(GitHub.name(repo))/topics";
+                                                  headers = Dict("Accept" => "application/vnd.github.mercy-preview+json"), options...)
+    return results, page_data
+end
+
 function contributor_user(dict)
     Dict(
         "name" => dict["contributor"].login,
@@ -107,6 +113,8 @@ function package_metadata(name, url, version, buildpath)
         license_dict, page = license(repo_info, auth = gh_auth)
         meta["license"] = something(license_dict["license"]["name"], "")
         meta["license_url"] = something(license_dict["license"]["url"], "")
+        topics_dict, page = topics(repo_info, auth = gh_auth)
+        meta["tags"] = something(topics_dict["names"], [])
         meta["owner"] = repo_owner
         meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
     catch err

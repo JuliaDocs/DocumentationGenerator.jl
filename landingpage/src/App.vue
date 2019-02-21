@@ -76,8 +76,7 @@
       <v-container
         fluid
         v-for="pkg in filteredPackages"
-        :key="pkg.id"
-        v-show="!(pkg.hidden)">
+        :key="pkg.id">
         <v-layout align-center justify-center>
           <v-flex xs10 >
             <PackageCard
@@ -111,7 +110,9 @@ for (const pkgname in pkgobj) {
   let pkg = pkgobj[pkgname]
   pkg.name = pkgname
   pkg.id = i
-  pkg.tags = []
+  if (!pkg.tags) {
+    pkg.tags = []
+  }
   pkgs.push(pkg)
   i += 1
 }
@@ -160,21 +161,14 @@ export default {
       let pkgs = this.$data.pkgs
       const selectedTags = this.$data.primaryDrawer.pkgtagmodel
       if (selectedTags && selectedTags.length > 0) {
-        pkgs = pkgs.map(pkg => {
+        pkgs = pkgs.filter(pkg => {
           const pkgtags = pkg.tags.map(tag => tag.toLowerCase())
           for (const tag of selectedTags) {
             if (pkgtags.indexOf(tag) === -1) {
-              pkg.hidden = true
-              return pkg
+              return false
             }
           }
-          pkg.hidden = false
-          return pkg
-        })
-      } else {
-        pkgs = pkgs.map(pkg => {
-          pkg.hidden = false
-          return pkg
+          return true
         })
       }
 
