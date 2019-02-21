@@ -61,6 +61,8 @@ function package_docs(name, url, version, buildpath)
     @info("Generating docs for $name")
     doctype = :default
     meta = Dict()
+    meta["name"] = name
+    meta["url"] = url
     meta["version"] = version
     meta["installs"] = false
     try

@@ -90,7 +90,7 @@
     </v-content>
 
     <v-footer app height="50px">
-      <span class="px-3">&copy; {{ new Date().getFullYear() }} JuliaComputing, Inc</span>
+      <span class="px-3">&copy; {{ new Date().getFullYear() }}</span>
       <v-spacer></v-spacer>
       <div class="px-3">
         <v-switch v-model="dark" primary label="Dark"></v-switch>

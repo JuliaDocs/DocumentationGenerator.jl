@@ -42,9 +42,13 @@
         <span class="pl-2">⋅</span>
         <span class="pl-2">{{details.license}}</span>
         <v-spacer></v-spacer>
-        <v-btn flat color="grey">Documentation</v-btn>
+        <v-btn flat color="primary" :href="'packages/'+details.name">
+          Documentation
+        </v-btn>
         <v-btn flat color="grey">Source</v-btn>
-        <v-btn flat color="grey">Github</v-btn>
+        <v-btn flat color="primary" :href="details.url">
+          Github
+        </v-btn>
       </v-card-actions>
     </div>
   </v-card>
