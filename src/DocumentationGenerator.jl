@@ -273,7 +273,9 @@ save the HTML docs to `\$basepath/build` with logs in `\$basepath/logs`.
 
 Note that this will overwrite previous builds/logs.
 """
-function build_documentation(name, url, version; basepath = joinpath(@__DIR__, ".."))
+function build_documentation(name, url, version;
+                             basepath = joinpath(@__DIR__, ".."),
+                             juliacmd = first(Base.julia_cmd()))
     envpath = normpath(joinpath(@__DIR__, ".."))
     workerfile = joinpath(@__DIR__, "worker_work.jl")
     buildpath = joinpath(basepath, "build")
@@ -285,7 +287,7 @@ function build_documentation(name, url, version; basepath = joinpath(@__DIR__, "
     builddir = joinpath(buildpath, name, string(version))
     isdir(builddir) || mkpath(builddir)
     logfile = joinpath(logpath, "$name $version.log")
-    cmd = `$(first(Base.julia_cmd())) --project=$(envpath) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
+    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
     return process
@@ -293,7 +295,9 @@ end
 
 function build_documentations(
         packages;
-        processes::Int = 8, sleeptime = 0.5, basepath = joinpath(@__DIR__, ".."),
+        processes::Int = 8, sleeptime = 0.5,
+        juliacmd = first(Base.julia_cmd()),
+        basepath = joinpath(@__DIR__, ".."),
         filter_versions = last
     )
     process_queue = []
@@ -304,7 +308,7 @@ function build_documentations(
             sleep(sleeptime)
         end
         for version in vcat(filter_versions(sort(versions)))
-            process = build_documentation(name, url, version, basepath = basepath)
+            process = build_documentation(name, url, version, basepath = basepath, juliacmd = juliacmd)
             push!(process_queue, process)
         end
     end
