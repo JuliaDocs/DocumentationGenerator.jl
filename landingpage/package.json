@@ -11,7 +11,9 @@
     "fuzzysort": "^1.1.4",
     "underscore": "^1.9.1",
     "vue": "^2.5.22",
+    "vue-async-computed": "^3.6.1",
     "vue-router": "^3.0.1",
+    "vue-virtual-scroll-list": "^1.3.0",
     "vue-virtual-scroller": "^1.0.0-beta.5",
     "vuetify": "^1.3.0"
   },

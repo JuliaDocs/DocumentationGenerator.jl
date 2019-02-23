@@ -9,7 +9,8 @@
       <div class="px-4 pt-4">
         <h4>Search Package by Name</h4>
         <v-text-field
-          v-model="primaryDrawer.pkgpsearchmodel"
+          v-model="primaryDrawer.pkgsearchmodel"
+          :loading="primaryDrawer.loading"
           prepend-inner-icon="search"
           label="Package"
         ></v-text-field>
@@ -18,6 +19,7 @@
         <h4>Filter by Tag</h4>
         <v-combobox
           v-model="primaryDrawer.pkgtagmodel"
+          :loading="primaryDrawer.loading"
           :items="tags"
           label="Tags"
           clearable
@@ -71,21 +73,46 @@
       </v-toolbar-items> -->
     </v-toolbar>
 
+    <!-- <v-content>
+      <virtual-list
+        :size="200"
+        :remain="8"
+        class="virtual-list">
+        <v-container
+          fluid
+          v-for="pkg in filteredPackages"
+          :key="pkg.id">
+          <v-layout align-center justify-center>
+            <v-flex xs10 >
+              <PackageCard
+                v-on:tag-click="addTagFromPackageCard"
+                :details="pkg">
+              </PackageCard>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </virtual-list>
+    </v-content> -->
+
     <v-content>
-      <!-- FIXME: should maybe use something else here for performance -->
-      <v-container
-        fluid
-        v-for="pkg in filteredPackages"
-        :key="pkg.id">
-        <v-layout align-center justify-center>
-          <v-flex xs10 >
-            <PackageCard
-              v-on:tag-click="addTagFromPackageCard"
-              :details="pkg">
-            </PackageCard>
-          </v-flex>
-        </v-layout>
-      </v-container>
+      <v-data-iterator
+        :items="filteredPackages"
+        :rows-per-page-items="[10,20,50]"
+        >
+        <v-container
+          fluid
+          slot="item"
+          slot-scope="props">
+          <v-layout align-center justify-center>
+            <v-flex xs12>
+              <PackageCard
+                v-on:tag-click="addTagFromPackageCard"
+                :details="props.item">
+              </PackageCard>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-data-iterator>
     </v-content>
 
     <v-footer app height="50px">
@@ -100,6 +127,8 @@
 
 <script>
 import PackageCard from './components/PackageCard.vue'
+import virtualList from 'vue-virtual-scroll-list'
+import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 
 const pkgobj = require('./pkgs')
@@ -116,22 +145,36 @@ for (const pkgname in pkgobj) {
   pkgs.push(pkg)
   i += 1
 }
+pkgs.sort((a, b) => {
+  var nameA = a.name.toLowerCase()
+  var nameB = b.name.toLowerCase()
+  if (nameA < nameB) {
+    return -1
+  } else if (nameA > nameB) {
+    return 1
+  } else {
+    return 0
+  }
+})
 console.log(pkgs);
 
 export default {
   name: 'app',
   components: {
     PackageCard,
+    virtualList
   },
   data: () => ({
     dark: false,
     drawers: ['Default (no property)', 'Permanent', 'Temporary'],
     primaryDrawer: {
       model: null,
-      pkgpsearchmodel: null,
-      pkgtagmodel: []
+      pkgsearchmodel: null,
+      pkgtagmodel: [],
+      loading: false,
     },
-    pkgs: pkgs
+    pkgs: pkgs,
+    filteredPackages: pkgs
   }),
   methods: {
     removeTag (item) {
@@ -145,7 +188,52 @@ export default {
         tags.push(tag)
       }
       this.primaryDrawer.pkgtagmodel = [...tags]
+    },
+    filterPackages () {
+      return new Promise((resolve) => {
+        let pkgs = this.$data.pkgs
+        const selectedTags = this.$data.primaryDrawer.pkgtagmodel
+        if (selectedTags && selectedTags.length > 0) {
+          pkgs = pkgs.filter(pkg => {
+            const pkgtags = pkg.tags.map(tag => tag.toLowerCase())
+            for (const tag of selectedTags) {
+              if (pkgtags.indexOf(tag) === -1) {
+                return false
+              }
+            }
+            return true
+          })
+        }
+
+        const filterText = this.$data.primaryDrawer.pkgsearchmodel
+        if (filterText && filterText.length > 0) {
+          pkgs = fuzzysort(filterText, pkgs, {
+            key: 'name',
+            limit: Infinity,
+            threshold: -Infinity
+
+          })
+          pkgs = pkgs.map(pkg => pkg.obj)
+        }
+        resolve(pkgs)
+      })
     }
+  },
+  watch: {
+    "primaryDrawer.pkgtagmodel": _.debounce(function () {
+      this.$data.primaryDrawer.loading = true
+      this.filterPackages().then((result) => {
+        this.$data.filteredPackages = result
+        this.$data.primaryDrawer.loading = false
+      })
+    }, 200),
+    "primaryDrawer.pkgsearchmodel": _.debounce(function () {
+      this.$data.primaryDrawer.loading = true
+      this.filterPackages().then((result) => {
+        this.$data.filteredPackages = result
+        this.$data.primaryDrawer.loading = false
+      })
+    }, 200)
   },
   computed: {
     tags () {
@@ -156,33 +244,6 @@ export default {
         }
       }
       return [...tags].sort()
-    },
-    filteredPackages () {
-      let pkgs = this.$data.pkgs
-      const selectedTags = this.$data.primaryDrawer.pkgtagmodel
-      if (selectedTags && selectedTags.length > 0) {
-        pkgs = pkgs.filter(pkg => {
-          const pkgtags = pkg.tags.map(tag => tag.toLowerCase())
-          for (const tag of selectedTags) {
-            if (pkgtags.indexOf(tag) === -1) {
-              return false
-            }
-          }
-          return true
-        })
-      }
-
-      const filterText = this.$data.primaryDrawer.pkgpsearchmodel
-      if (filterText && filterText.length > 0) {
-        pkgs = fuzzysort(filterText, pkgs, {
-          key: 'name',
-          limit: Infinity,
-          threshold: -Infinity
-
-        })
-        pkgs = pkgs.map(pkg => pkg.obj)
-      }
-      return pkgs
     },
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.png') : require('./assets/julia-light.svg')
@@ -198,7 +259,8 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.scroller {
-  height: 100%;
+.virtual-list {
+  height: 100%!important;
 }
+
 </style>

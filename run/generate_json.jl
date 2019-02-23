@@ -13,14 +13,19 @@ known_batches = [
 ]
 
 function batch_value(batch)
-    svg = read(download(batch), String)
-    if occursin("passing", svg)
-        return "passes"
-    elseif occursin("failing", svg)
-        return "failing"
-    else occursin("coverage", svg)
-        m = match(r">(\d\d)%<", svg)
-        return m === nothing ? "unknown" : parse(Int, m[1])
+    try
+        svg = read(download(batch), String)
+        if occursin("passing", svg)
+            return "passes"
+        elseif occursin("failing", svg)
+            return "failing"
+        else occursin("coverage", svg)
+            m = match(r">(\d\d)%<", svg)
+            return m === nothing ? "unknown" : parse(Int, m[1])
+        end
+    catch err
+        @error "error while retrieving CI badge" error=err
+        return "unknown"
     end
 end
 

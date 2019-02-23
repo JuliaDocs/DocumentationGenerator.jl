@@ -7,6 +7,7 @@ max_packages = if isempty(ARGS)
 else
     parse(Int, ARGS[1])
 end
+# max_packages = 60
 
 processes = parse(Int, get(ENV, "NUM_PKG_PROCESSES", "8"))
 
@@ -63,51 +64,55 @@ for pkg in sort!(readdir(joinpath(docspath, "build")), by=x->lowercase(x))
     end
 end
 
-indexmd = joinpath(docspath, "build", "index.md")
-open(indexmd, "w") do io
-    lastchar = '0'
-    println(io, "# Package Documentation")
+include("generate_json.jl")
 
-    for (pkg, versions) in built_packages
-        pkgpath = joinpath(distdocpath, pkg)
-        isdir(pkgpath) || continue
 
-        startchar = uppercase(first(pkg))
-        if lastchar ≠ startchar
-            printheader(io, startchar, level=2)
-            println(io)
-        end
-        pkgindexfile = joinpath(pkgpath, "index.html")
-        if isfile(pkgindexfile)
-            printlink(io, pkg, string("file://", pkgindexfile))
-        else
-            print(io, pkg)
-        end
-        metatomlpath = joinpath(pkgpath, last(versions), "meta.toml")
-        if isfile(metatomlpath)
-            meta = Pkg.TOML.parsefile(metatomlpath)
-            print(io, " - ", meta["stargazers_count"], "★")
-        end
-
-        println(io)
-        println(io)
-        lastchar = startchar
-    end
-end
-
-distpath = joinpath(docspath, "dist")
-isdir(joinpath(distpath, "src")) || mkdir(joinpath(distpath, "src"))
-cp(indexmd, joinpath(distpath, "src", "index.md"); force=true)
-pages = ["Documentation" => "index.md"]
-@eval Module() begin
-    using Documenter
-    makedocs(
-        format = Documenter.HTML(),
-        sitename = "Documentation",
-        modules = [Module()],
-        root = $distpath,
-        pages = $(reverse(pages))
-    )
-end
-
-@info("Done building website in $(distpath)")
+#
+# indexmd = joinpath(docspath, "build", "index.md")
+# open(indexmd, "w") do io
+#     lastchar = '0'
+#     println(io, "# Package Documentation")
+#
+#     for (pkg, versions) in built_packages
+#         pkgpath = joinpath(distdocpath, pkg)
+#         isdir(pkgpath) || continue
+#
+#         startchar = uppercase(first(pkg))
+#         if lastchar ≠ startchar
+#             printheader(io, startchar, level=2)
+#             println(io)
+#         end
+#         pkgindexfile = joinpath(pkgpath, "index.html")
+#         if isfile(pkgindexfile)
+#             printlink(io, pkg, string("file://", pkgindexfile))
+#         else
+#             print(io, pkg)
+#         end
+#         metatomlpath = joinpath(pkgpath, last(versions), "meta.toml")
+#         if isfile(metatomlpath)
+#             meta = Pkg.TOML.parsefile(metatomlpath)
+#             print(io, " - ", meta["stargazers_count"], "★")
+#         end
+#
+#         println(io)
+#         println(io)
+#         lastchar = startchar
+#     end
+# end
+#
+# distpath = joinpath(docspath, "dist")
+# isdir(joinpath(distpath, "src")) || mkdir(joinpath(distpath, "src"))
+# cp(indexmd, joinpath(distpath, "src", "index.md"); force=true)
+# pages = ["Documentation" => "index.md"]
+# @eval Module() begin
+#     using Documenter
+#     makedocs(
+#         format = Documenter.HTML(),
+#         sitename = "Documentation",
+#         modules = [Module()],
+#         root = $distpath,
+#         pages = $(reverse(pages))
+#     )
+# end
+#
+# @info("Done building website in $(distpath)")
