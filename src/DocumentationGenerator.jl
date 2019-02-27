@@ -307,16 +307,20 @@ function build_documentations(
         filter_versions = last
     )
     process_queue = []
-    for (name, url, versions) in packages
-        uuids = get_uuids(name)
-        length(uuids) > 1 && (@error "Package $(name) has multiple uuids", uuids)
+    for package in packages
+        uuid = get(package, :uuid, nothing)
+        if uuid == nothing
+            uuids = get_uuids(package.name)
+            length(uuids) > 1 && (@error "Package $(name) has multiple uuids", uuids)
+            uuid = uuids[1]
+        end
         #those somehow get stuck - might be random
         while length(process_queue) >= processes
             filter!(process_running, process_queue)
             sleep(sleeptime)
         end
-        for version in vcat(filter_versions(sort(versions)))
-            process = build_documentation(string(uuids[1]), name, url, version, basepath = basepath, juliacmd = juliacmd)
+        for version in vcat(filter_versions(sort(package.versions)))
+            process = build_documentation(uuid, package.name, package.url, version, basepath = basepath, juliacmd = juliacmd)
             push!(process_queue, process)
         end
     end
