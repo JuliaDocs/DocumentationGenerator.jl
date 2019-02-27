@@ -19,6 +19,8 @@ function default_docs(package, root, pkgroot)
     end
     pkg_sym = Symbol(package)
     @eval Module() begin
+        using Pkg
+        Pkg.add("Documenter")
         using Documenter
         using $pkg_sym
         allnames = filter(x -> !startswith(string(x), '#'), names($pkg_sym, all=true))
@@ -50,6 +52,8 @@ function readme_docs(package, root, pkgroot)
     end
     pkg_sym = Symbol(package)
     @eval Module() begin
+        using Pkg
+        Pkg.add("Documenter")
         using Documenter
         makedocs(
             format = Documenter.HTML(),
