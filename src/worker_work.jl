@@ -62,8 +62,7 @@ function contributor_user(dict)
 end
 
 function package_docs(name, url, version, buildpath)
-    pspec = PackageSpec(name = name, url = url, rev = string('v', version))
-
+    pspec = PackageSpec(name = name, version = version)
     @info("Generating docs for $name")
     doctype = :default
     meta = Dict()
