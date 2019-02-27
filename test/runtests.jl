@@ -67,6 +67,7 @@ end
             name = "FixedPointNumbers",
             url = "https://github.com/JuliaMath/FixedPointNumbers.jl.git",
             versions = [v"0.5.3"],
+            uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93",
             installs = [true],
             doctype = ["default"],
         ),
@@ -75,6 +76,7 @@ end
             name = "Example",
             url = "https://github.com/JuliaLang/Example.jl.git",
             versions = [v"0.5.2"],
+            uuid = "7876af07-990d-54b4-ab0e-23690620f79a",
             installs = [true],
             doctype = ["real"],
         ),
@@ -84,6 +86,7 @@ end
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
             versions = [v"0.2.2", v"0.7.3"],
+            uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c",
             installs = [false, true],
             doctype = [nothing, "real"],
         ),
@@ -100,10 +103,10 @@ end
     build = joinpath(basepath, "build")
     @testset "build folder" begin
         for pkg in packages
-            pkgbuild = joinpath(build, pkg.name)
+            pkgbuild = joinpath(build, pkg.name*"-"*pkg.uuid)
             @test isdir(pkgbuild)
             for (i, version) in enumerate(pkg.versions)
-                @test isfile(basepath, "logs", string(pkg.name, " ", version, ".log"))
+                @test isfile(basepath, "logs", string(pkg.name*"-"*pkg.uuid, " ", version, ".log"))
                 versiondir = joinpath(pkgbuild, string(version))
                 @test isdir(versiondir)
                 toml_path = joinpath(versiondir, "meta.toml")

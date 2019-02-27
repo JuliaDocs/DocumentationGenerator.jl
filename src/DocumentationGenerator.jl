@@ -277,7 +277,7 @@ save the HTML docs to `\$basepath/build` with logs in `\$basepath/logs`.
 
 Note that this will overwrite previous builds/logs.
 """
-function build_documentation(name, url, version;
+function build_documentation(uuid, name, url, version;
                              basepath = joinpath(@__DIR__, ".."),
                              juliacmd = first(Base.julia_cmd()))
     envpath = normpath(joinpath(@__DIR__, ".."))
@@ -288,14 +288,16 @@ function build_documentation(name, url, version;
     isdir(buildpath) || mkpath(buildpath)
     isdir(logpath) || mkpath(logpath)
 
-    builddir = joinpath(buildpath, name, string(version))
+    builddir = joinpath(buildpath, "$(name)-$(uuid)", string(version))
     isdir(builddir) || mkpath(builddir)
-    logfile = joinpath(logpath, "$name $version.log")
-    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
+    logfile = joinpath(logpath, "$(name)-$(uuid) $version.log")
+    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $uuid $name $url $version $builddir`
 
-    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
+    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name*"-"*uuid))
     return process
 end
+
+get_uuids(pkg_name::String) = Pkg.Types.registered_uuids(Pkg.Types.Context().env, pkg_name)
 
 function build_documentations(
         packages;
@@ -306,13 +308,15 @@ function build_documentations(
     )
     process_queue = []
     for (name, url, versions) in packages
+        uuids = get_uuids(name)
+        length(uuids) > 1 && (@error "Package $(name) has multiple uuids", uuids)
         #those somehow get stuck - might be random
         while length(process_queue) >= processes
             filter!(process_running, process_queue)
             sleep(sleeptime)
         end
         for version in vcat(filter_versions(sort(versions)))
-            process = build_documentation(name, url, version, basepath = basepath, juliacmd = juliacmd)
+            process = build_documentation(string(uuids[1]), name, url, version, basepath = basepath, juliacmd = juliacmd)
             push!(process_queue, process)
         end
     end
