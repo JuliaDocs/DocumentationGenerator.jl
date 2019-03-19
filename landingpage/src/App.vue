@@ -4,6 +4,7 @@
       v-model="primaryDrawer.model"
       clipped
       overflow
+      permanent
       app
     >
       <div class="px-4 pt-4">
@@ -43,10 +44,10 @@
           </template>
         </v-combobox>
       </div>
-      <div class="px-4 pt-3">
+      <!-- <div class="px-4 pt-3">
         <h4>Sort by</h4>
         ...
-      </div>
+      </div> -->
     </v-navigation-drawer>
     <v-toolbar clipped-left app>
       <v-img
@@ -59,9 +60,10 @@
       <v-toolbar-title>Documentation</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-text-field
-        placeholder="Search all the docs..."
+        class="doc-search"
+        placeholder="Documentation Search. Coming soon..."
         prepend-inner-icon="search"
-        solo
+        disabled
         single-line
         flat
       ></v-text-field>
@@ -73,33 +75,14 @@
       </v-toolbar-items> -->
     </v-toolbar>
 
-    <!-- <v-content>
-      <virtual-list
-        :size="200"
-        :remain="8"
-        class="virtual-list">
-        <v-container
-          fluid
-          v-for="pkg in filteredPackages"
-          :key="pkg.id">
-          <v-layout align-center justify-center>
-            <v-flex xs10 >
-              <PackageCard
-                v-on:tag-click="addTagFromPackageCard"
-                :details="pkg">
-              </PackageCard>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </virtual-list>
-    </v-content> -->
-
     <v-content>
       <v-data-iterator
+        class="data-iterator pt-3"
         :items="filteredPackages"
         :rows-per-page-items="[10,20,50]"
         >
         <v-container
+          class="py-2"
           fluid
           slot="item"
           slot-scope="props">
@@ -112,6 +95,13 @@
             </v-flex>
           </v-layout>
         </v-container>
+        <component slot="no-data">
+          <div class="no-result-spacer">
+            <v-icon class="nothing-icon" x-large>
+              not_interested
+            </v-icon>
+          </div>
+        </component>
       </v-data-iterator>
     </v-content>
 
@@ -259,8 +249,13 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.virtual-list {
-  height: 100%!important;
+.data-iterator > div:first-of-type {
+  min-height: calc(100vh - 200px);
 }
-
+.no-result-spacer {
+  .nothing-icon {
+    font-size: 80px!important;
+    opacity: 0.3;
+  }
+}
 </style>

@@ -1,7 +1,10 @@
 <template>
   <v-card>
     <div :class="'package-card ' + cistatus">
-      <v-card-title primary-title>
+      <v-card-title
+        class="pb-1"
+        primary-title
+      >
         <div>
           <span>
             <h3 class="headline mb-0">
@@ -19,10 +22,10 @@
         </div>
       </v-card-title>
 
-      <v-card-text>
+      <v-card-text class="pb-1">
         {{details.description}}
       </v-card-text>
-      <v-card-text>
+      <v-card-text class="py-1">
         <v-chip
           label
           small
@@ -45,7 +48,7 @@
         <v-btn flat color="primary" :href="'packages/'+details.name">
           Documentation
         </v-btn>
-        <v-btn flat color="grey">Source</v-btn>
+        <!-- <v-btn flat color="grey">Source</v-btn> -->
         <v-btn flat color="primary" :href="details.url">
           Github
         </v-btn>
