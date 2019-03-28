@@ -231,11 +231,13 @@ export default {
     tags () {
       const tags = {}
       for (const pkg of this.$data.pkgs) {
+        let stars = parseInt(pkg.stargazers_count)
+        stars = isNaN(stars) ? 1 : stars
         let tag
         for (tag of pkg.tags) {
           tag = tag.toLowerCase()
           if (tags[tag]) {
-            tags[tag] += 1
+            tags[tag] += stars
           } else {
             tags[tag] = 1
           }
@@ -278,4 +280,5 @@ export default {
     opacity: 0.3;
   }
 }
+
 </style>
