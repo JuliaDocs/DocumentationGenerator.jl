@@ -35,11 +35,13 @@
                   small
                   @input="removeTag(data.item)">
                   <span class="filter-chip">
-                    {{ data.item }}
+                    {{ data.item.text }}
                   </span>
                 </v-chip>
               </template>
-              {{data.item}}
+              {{
+                data.item.text
+              }}
             </v-tooltip>
           </template>
         </v-combobox>
@@ -136,12 +138,12 @@ for (const pkgname in pkgobj) {
   i += 1
 }
 pkgs.sort((a, b) => {
-  var nameA = a.name.toLowerCase()
-  var nameB = b.name.toLowerCase()
-  if (nameA < nameB) {
-    return -1
-  } else if (nameA > nameB) {
+  var starsA = parseInt(a.stargazers_count)
+  var starsB = parseInt(b.stargazers_count)
+  if (starsA < starsB) {
     return 1
+  } else if (starsA > starsB) {
+    return -1
   } else {
     return 0
   }
@@ -187,7 +189,7 @@ export default {
           pkgs = pkgs.filter(pkg => {
             const pkgtags = pkg.tags.map(tag => tag.toLowerCase())
             for (const tag of selectedTags) {
-              if (pkgtags.indexOf(tag) === -1) {
+              if (pkgtags.indexOf(tag.text) === -1) {
                 return false
               }
             }
@@ -227,13 +229,31 @@ export default {
   },
   computed: {
     tags () {
-      const tags = new Set()
+      const tags = {}
       for (const pkg of this.$data.pkgs) {
-        for (const tag of pkg.tags) {
-          tags.add(tag.toLowerCase())
+        let tag
+        for (tag of pkg.tags) {
+          tag = tag.toLowerCase()
+          if (tags[tag]) {
+            tags[tag] += 1
+          } else {
+            tags[tag] = 1
+          }
         }
       }
-      return [...tags].sort()
+      let sortableTags = [];
+      for (let tag in tags) {
+          sortableTags.push({
+            text: tag,
+            value: tag,
+            count: tags[tag]
+          })
+      }
+
+      sortableTags.sort(function(a, b) {
+          return b.count - a.count
+      })
+      return sortableTags
     },
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.png') : require('./assets/julia-light.svg')
