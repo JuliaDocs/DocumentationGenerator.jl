@@ -237,7 +237,7 @@ export default {
         for (tag of pkg.tags) {
           tag = tag.toLowerCase()
           if (tags[tag]) {
-            tags[tag] += stars
+            tags[tag] += stars/pkg.tags.length
           } else {
             tags[tag] = 1
           }
