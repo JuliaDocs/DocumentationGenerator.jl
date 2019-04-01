@@ -3,8 +3,7 @@
     <v-navigation-drawer
       v-model="primaryDrawer.model"
       clipped
-      overflow
-      permanent
+      mobile-break-point="800"
       app
     >
       <div class="px-4 pt-4">
@@ -52,6 +51,9 @@
       </div> -->
     </v-navigation-drawer>
     <v-toolbar clipped-left app>
+      <v-toolbar-side-icon
+        @click.stop="primaryDrawer.model = !primaryDrawer.model"
+      ></v-toolbar-side-icon>
       <v-img
         :src="juliaLogo"
         contain
