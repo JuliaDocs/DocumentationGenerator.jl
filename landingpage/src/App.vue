@@ -140,18 +140,11 @@ for (const pkgname in pkgobj) {
   i += 1
 }
 pkgs.sort((a, b) => {
-  var starsA = parseInt(a.stargazers_count)
-  var starsB = parseInt(b.stargazers_count)
-  if (starsA < starsB) {
-    return 1
-  } else if (starsA > starsB) {
-    return -1
-  } else {
-    return 0
-  }
+  var starsA = parseInt(a.stargazers_count) || 0
+  var starsB = parseInt(b.stargazers_count) || 0
+  return starsB - starsA
 })
-console.log(pkgs);
-
+// console.log(pkgs);
 export default {
   name: 'app',
   components: {
