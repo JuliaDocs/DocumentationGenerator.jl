@@ -249,8 +249,7 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
             toml = Pkg.TOML.parsefile(joinpath(pkg, "Compat.toml"))
             for pkgver in keys(toml)
                 if haskey(toml[pkgver], "julia")
-                    if version in Pkg.Types.VersionRange(toml[pkgver]["julia"])
-
+                    if any(in.(version, Pkg.Types.VersionRange.(toml[pkgver]["julia"])))
                         push!(allpkgs,
                             (
                                 name = pkgtoml["name"],
