@@ -70,11 +70,32 @@ end
             installs = [true],
             doctype = ["default"],
         ),
+        (
+            name = "ReactionNetworkImporters",
+            url = "https://github.com/isaacsas/ReactionNetworkImporters.jl.git",
+            versions = [v"0.1.4"],
+            installs = [true],
+            doctype = ["default"],
+        ),
         # with docs
         (
             name = "Example",
             url = "https://github.com/JuliaLang/Example.jl.git",
             versions = [v"0.5.2"],
+            installs = [true],
+            doctype = ["real"],
+        ),
+        (
+            name = "DynamicHMC",
+            url = "https://github.com/tpapp/DynamicHMC.jl.git",
+            versions = [v"1.0.4"],
+            installs = [true],
+            doctype = ["real"],
+        ),
+        (
+            name = "Hecke",
+            url = "https://github.com/thofma/Hecke.jl.git",
+            versions = [v"0.6.1"],
             installs = [true],
             doctype = ["real"],
         ),
