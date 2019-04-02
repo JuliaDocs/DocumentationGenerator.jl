@@ -38,20 +38,22 @@
       </v-card-text>
 
       <v-card-actions>
-        <span class="pl-2">{{details.stargazers_count}}</span>
-        <v-icon small>star</v-icon>
-        <span class="pl-2">⋅</span>
-        <span class="pl-2">{{details.version}}</span>
-        <span class="pl-2">⋅</span>
-        <span class="pl-2">{{details.license}}</span>
-        <v-spacer></v-spacer>
-        <v-btn flat color="primary" :href="'packages/'+details.name">
-          Documentation
-        </v-btn>
-        <!-- <v-btn flat color="grey">Source</v-btn> -->
-        <v-btn flat color="primary" :href="details.url">
-          Github
-        </v-btn>
+          <v-layout align-center row class="package-details">
+            <span class="pl-2">{{details.stargazers_count}}</span>
+            <v-icon small>star</v-icon>
+            <span class="pl-2">⋅</span>
+            <span class="pl-2">{{details.version}}</span>
+            <span class="pl-2">⋅</span>
+            <span class="pl-2">{{details.license}}</span>
+            <v-spacer></v-spacer>
+            <v-btn flat color="primary" :href="'packages/'+details.name">
+              Documentation
+            </v-btn>
+            <!-- <v-btn flat color="grey">Source</v-btn> -->
+            <v-btn flat color="primary" :href="details.url">
+              Github
+            </v-btn>
+          </v-layout>
       </v-card-actions>
     </div>
   </v-card>
@@ -110,4 +112,7 @@ export default {
   }
 }
 
+.package-details {
+  flex-wrap: wrap;
+}
 </style>

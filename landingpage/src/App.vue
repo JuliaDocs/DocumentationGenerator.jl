@@ -61,9 +61,14 @@
         height="50px"
       >
       </v-img>
-      <v-toolbar-title>Documentation</v-toolbar-title>
+      <v-toolbar-title
+        v-show="!($vuetify.breakpoint.xs)"
+      >
+        Documentation
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-text-field
+        v-show="!($vuetify.breakpoint.xs)"
         class="doc-search"
         placeholder="Documentation Search. Coming soon..."
         prepend-inner-icon="search"
@@ -87,7 +92,6 @@
         >
         <v-container
           class="py-2"
-          fluid
           slot="item"
           slot-scope="props">
           <v-layout align-center justify-center>
