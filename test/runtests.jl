@@ -104,9 +104,9 @@ end
         (
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
-            versions = [v"0.2.2", v"0.7.3"],
-            installs = [false, true],
-            doctype = [nothing, "real"],
+            versions = [v"0.2.2", v"0.7.3", v"0.8.2"],
+            installs = [false, true, true],
+            doctype = [nothing, "real", "real"],
         ),
     ]
 
