@@ -1,7 +1,23 @@
 using GitHub, Pkg
 using Pkg: TOML
+using JSON
 
 include("DocumentationGenerator.jl")
+
+function fetch_license(path::String, confidence=85)
+         out = IOBuffer()
+         err = IOBuffer()
+         cmd = `/usr/local/bin/licensee detect --json --confidence=$confidence $path`
+         pipe = pipeline(cmd, stdout=out, stderr=err)
+         try
+              run(pipe)
+              output = JSON.parse((String(take!(out))))
+              return uppercase(output["licenses"][1]["key"]), output["licenses"][1]["url"]
+         catch ex
+              @info "ERROR: License detection", ex
+              return "UNKNOWN"
+         end
+end
 
 function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     _module, rootdir = DocumentationGenerator.install_and_use(pspec)
@@ -87,7 +103,6 @@ function package_docs(name, url, version, buildpath)
 
     return meta
 end
-
 function package_metadata(name, url, version, buildpath)
     meta = Dict()
     authpath = joinpath(@__DIR__, "gh_auth.txt")
@@ -109,9 +124,8 @@ function package_metadata(name, url, version, buildpath)
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
         meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
-        license_dict, page = license(repo_info, auth = gh_auth)
-        meta["license"] = something(license_dict["license"]["name"], "")
-        meta["license_url"] = something(license_dict["license"]["url"], "")
+        _, page = license(repo_info, auth = gh_auth)
+        meta["license"], meta["license_url"] = fetch_license(joinpath(buildpath, "_packagesource"))
         topics_dict, page = topics(repo_info, auth = gh_auth)
         meta["tags"] = something(topics_dict["names"], [])
         meta["owner"] = repo_owner

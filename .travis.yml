@@ -10,3 +10,5 @@ notifications:
 matrix:
   allow_failures:
     - julia: nightly
+before_install:
+  - sudo apt-get ruby bundler cmake pkg-config git libssl-dev && gem install --no-ri --no-rdoc licensee
