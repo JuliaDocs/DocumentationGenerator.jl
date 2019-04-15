@@ -15,7 +15,7 @@ function license(path::String, confidence=85)
               return uppercase(output["licenses"][1]["key"]), output["licenses"][1]["url"]
          catch ex
               @info "ERROR: License detection", ex
-              return "UNKNOWN"
+              return "UNKNOWN", "#"
          end
 end
 
