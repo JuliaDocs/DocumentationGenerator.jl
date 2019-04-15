@@ -4,7 +4,7 @@ using JSON
 
 include("DocumentationGenerator.jl")
 
-function fetch_license(path::String, confidence=85)
+function license(path::String, confidence=85)
          out = IOBuffer()
          err = IOBuffer()
          cmd = `/usr/local/bin/licensee detect --json --confidence=$confidence $path`
@@ -57,11 +57,6 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
         cp(joinpath(root, "build"), buildpath, force = true)
         return :default, rootdir
     end
-end
-
-function license(repo, api = GitHub.DEFAULT_API; options...)
-    results, page_data = GitHub.gh_get_paged_json(api, "/repos/$(GitHub.name(repo))/license"; options...)
-    return results, page_data
 end
 
 function topics(repo, api = GitHub.DEFAULT_API; options...)
@@ -124,8 +119,7 @@ function package_metadata(name, url, version, buildpath)
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
         meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
-        _, page = license(repo_info, auth = gh_auth)
-        meta["license"], meta["license_url"] = fetch_license(joinpath(buildpath, "_packagesource"))
+        meta["license"], meta["license_url"] = license(joinpath(buildpath, "_packagesource"))
         topics_dict, page = topics(repo_info, auth = gh_auth)
         meta["tags"] = something(topics_dict["names"], [])
         meta["owner"] = repo_owner
