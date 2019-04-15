@@ -114,7 +114,6 @@
     </v-content>
 
     <v-footer app height="50px">
-      <span class="px-3">&copy; {{ new Date().getFullYear() }}</span>
       <v-spacer></v-spacer>
       <div class="px-3">
         <v-switch v-model="dark" primary label="Dark"></v-switch>
@@ -155,18 +154,21 @@ export default {
     PackageCard,
     virtualList
   },
-  data: () => ({
-    dark: false,
-    drawers: ['Default (no property)', 'Permanent', 'Temporary'],
-    primaryDrawer: {
-      model: null,
-      pkgsearchmodel: null,
-      pkgtagmodel: [],
-      loading: false,
-    },
-    pkgs: pkgs,
-    filteredPackages: pkgs
-  }),
+  data: function () {
+    let isDark = this.$cookies.get('darkTheme') === "true"
+    return {
+      dark: isDark,
+      drawers: ['Default (no property)', 'Permanent', 'Temporary'],
+      primaryDrawer: {
+        model: null,
+        pkgsearchmodel: null,
+        pkgtagmodel: [],
+        loading: false,
+      },
+      pkgs: pkgs,
+      filteredPackages: pkgs
+    }
+  },
   methods: {
     removeTag (item) {
       let tags = this.primaryDrawer.pkgtagmodel
@@ -224,7 +226,10 @@ export default {
         this.$data.filteredPackages = result
         this.$data.primaryDrawer.loading = false
       })
-    }, 200)
+    }, 200),
+    dark: function (val) {
+      this.$cookies.set('darkTheme', val)
+    }
   },
   computed: {
     tags () {
