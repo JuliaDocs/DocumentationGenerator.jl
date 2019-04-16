@@ -81,21 +81,14 @@ end
         (
             name = "Example",
             url = "https://github.com/JuliaLang/Example.jl.git",
-            versions = [v"0.5.2"],
-            installs = [true],
-            doctype = ["real"],
+            versions = [v"0.5.1", v"0.5.2"],
+            installs = [true, false],
+            doctype = ["default", "real"],
         ),
         (
             name = "DynamicHMC",
             url = "https://github.com/tpapp/DynamicHMC.jl.git",
             versions = [v"1.0.4"],
-            installs = [true],
-            doctype = ["real"],
-        ),
-        (
-            name = "Hecke",
-            url = "https://github.com/thofma/Hecke.jl.git",
-            versions = [v"0.6.1"],
             installs = [true],
             doctype = ["real"],
         ),
@@ -124,13 +117,16 @@ end
             pkgbuild = joinpath(build, pkg.name)
             @test isdir(pkgbuild)
             for (i, version) in enumerate(pkg.versions)
+                println(pkg.name, ": ", version)
                 @test isfile(basepath, "logs", string(pkg.name, " ", version, ".log"))
                 versiondir = joinpath(pkgbuild, string(version))
                 @test isdir(versiondir)
                 toml_path = joinpath(versiondir, "meta.toml")
                 @test isfile(toml_path)
                 toml = Pkg.TOML.parsefile(toml_path)
-                if get(toml, "installs", false)
+                pkginstalls = get(toml, "installs", false)
+                @test pkginstalls == pkg.installs[i]
+                if pkginstalls
                     doctype = get(toml, "doctype", nothing)
                     @test doctype == pkg.doctype[i]
                     @test isfile(joinpath(versiondir, "index.html"))

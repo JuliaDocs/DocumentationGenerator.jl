@@ -14,7 +14,9 @@ function default_docs(package, root, pkgroot)
     pages = ["Docstrings" => "autodocs.md"]
     readme = joinpath(pkgroot, "README.md")
     if isfile(readme)
-        cp(readme, joinpath(doc_source, "index.md"))
+        newreadmepath = joinpath(doc_source, "index.md")
+        cp(readme, newreadmepath)
+        copylocallinks(readme, newreadmepath, doc_source)
         push!(pages, "Readme" => "index.md")
     end
     pkg_sym = Symbol(package)
@@ -47,7 +49,9 @@ function readme_docs(package, root, pkgroot)
     pages = []
     readme = joinpath(pkgroot, "README.md")
     if isfile(readme)
-        cp(readme, joinpath(doc_source, "index.md"))
+        newreadmepath = joinpath(doc_source, "index.md")
+        cp(readme, newreadmepath)
+        copylocallinks(readme, newreadmepath, doc_source)
         push!(pages, "Readme" => "index.md")
     end
     pkg_sym = Symbol(package)
@@ -64,6 +68,25 @@ function readme_docs(package, root, pkgroot)
         )
     end
 end
+using Markdown
+function copylocallinks(originalreadme, readmepath, rootdir)
+    basepath = normpath(joinpath(originalreadme, ".."))
+    newbasepath = normpath(joinpath(readmepath, ".."))
+    contents = String(read(readmepath))
+    md = Markdown.parse(contents)
+    links = []
+    recurseMDcontents(md, links)
+    for link in links
+        (startswith(link, "http") || isabspath(link)) && continue
+        ispath(dirname(joinpath(newbasepath, link))) || mkpath(dirname(joinpath(newbasepath, link)))
+        cp(joinpath(basepath, link), joinpath(newbasepath, link))
+    end
+end
+function recurseMDcontents(md, links)
+    isdefined(md, :content) && foreach(c -> recurseMDcontents(c, links), md.content)
+end
+recurseMDcontents(md::Markdown.Link, links) = push!(links, md.url)
+recurseMDcontents(md::Markdown.Image, links) = push!(links, md.url)
 
 function parseall(str)
     pos = firstindex(str)
