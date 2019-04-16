@@ -269,21 +269,25 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
             "Compat.toml" in readdir(pkg) || continue
             pkgtoml = Pkg.TOML.parsefile(joinpath(pkg, "Package.toml"))
             versions = Pkg.TOML.parsefile(joinpath(pkg, "Versions.toml"))
-            toml = Pkg.TOML.parsefile(joinpath(pkg, "Compat.toml"))
-            for pkgver in keys(toml)
-                if haskey(toml[pkgver], "julia")
-                    if any(in.(version, Pkg.Types.VersionRange.(toml[pkgver]["julia"])))
-                        push!(allpkgs,
-                            (
-                                name = pkgtoml["name"],
-                                url = pkgtoml["repo"],
-                                versions = [
-                                            VersionNumber(v) for v in keys(versions) if
-                                                VersionNumber(v) in VersionRange(pkgver)
-                                           ]
+            compat = Pkg.TOML.parsefile(joinpath(pkg, "Compat.toml"))
+            for pkgver in keys(compat)
+                try
+                    if haskey(compat[pkgver], "julia")
+                        if any(in.(version, Pkg.Types.VersionRange.(compat[pkgver]["julia"])))
+                            push!(allpkgs,
+                                (
+                                    name = pkgtoml["name"],
+                                    url = pkgtoml["repo"],
+                                    versions = [
+                                                VersionNumber(v) for v in keys(versions) if
+                                                    VersionNumber(v) in VersionRange(pkgver)
+                                               ]
+                                )
                             )
-                        )
+                        end
                     end
+                catch err
+                    @error err
                 end
             end
         end
