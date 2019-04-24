@@ -6,6 +6,8 @@ using Pkg.Types
 using Documenter
 
 """
+    default_docs(package, root, pkgroot)
+
 Generates a default documentation for a package without Documenter.jl docs.
 """
 function default_docs(package, root, pkgroot)
@@ -16,7 +18,7 @@ function default_docs(package, root, pkgroot)
     if isfile(readme)
         newreadmepath = joinpath(doc_source, "index.md")
         cp(readme, newreadmepath)
-        copylocallinks(readme, newreadmepath, doc_source)
+        copylocallinks(readme, newreadmepath)
         push!(pages, "Readme" => "index.md")
     end
     pkg_sym = Symbol(package)
@@ -25,13 +27,12 @@ function default_docs(package, root, pkgroot)
         Pkg.add("Documenter")
         using Documenter
         using $pkg_sym
-        allnames = filter(x -> !startswith(string(x), '#'), names($pkg_sym, all=true))
         open(joinpath($doc_source, "autodocs.md"), "w") do io
-            for name in allnames
-                println(io, "```@docs")
-                println(io, $package, ".", name)
-                println(io, "```")
-            end
+            println(io, """
+            ```@autodocs
+            Modules = [$pkg_sym]
+            ```
+            """)
         end
         makedocs(
             format = Documenter.HTML(),
@@ -43,6 +44,11 @@ function default_docs(package, root, pkgroot)
     end
 end
 
+"""
+    readme_docs(package, root, pkgroot)
+
+Generates README based fallback docs when the package installs but can't be loaded.
+"""
 function readme_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
@@ -51,7 +57,7 @@ function readme_docs(package, root, pkgroot)
     if isfile(readme)
         newreadmepath = joinpath(doc_source, "index.md")
         cp(readme, newreadmepath)
-        copylocallinks(readme, newreadmepath, doc_source)
+        copylocallinks(readme, newreadmepath)
         push!(pages, "Readme" => "index.md")
     end
     pkg_sym = Symbol(package)
@@ -68,8 +74,14 @@ function readme_docs(package, root, pkgroot)
         )
     end
 end
+
 using Markdown
-function copylocallinks(originalreadme, readmepath, rootdir)
+"""
+    copylocallinks(originalreadme, readmepath)
+
+Copy relative link targets in the `originalreadme` such that they are reachable from `readmepath` as well.
+"""
+function copylocallinks(originalreadme, readmepath)
     basepath = normpath(joinpath(originalreadme, ".."))
     newbasepath = normpath(joinpath(readmepath, ".."))
     contents = String(read(readmepath))
@@ -323,6 +335,22 @@ function build_documentation(name, url, version;
     return process
 end
 
+"""
+    build_documentations(
+        packages;
+        processes::Int = 8, sleeptime = 0.5,
+        juliacmd = first(Base.julia_cmd()),
+        basepath = joinpath(@__DIR__, ".."),
+        filter_versions = last
+    )
+
+Asynchronously build documentation `packages` (typically the output of `installable_on_version` and
+a vector of named tuples `(name, url, versions)`) and save the docs to `\$basepath/build` with logs
+in `\$basepath/logs`. `filter_versions` is applied to the vector of available package versions to
+decide which to build, so setting it to e.g. `identity` will build docs for all versions.
+
+Note that this will overwrite previous builds/logs.
+"""
 function build_documentations(
         packages;
         processes::Int = 8, sleeptime = 0.5,
