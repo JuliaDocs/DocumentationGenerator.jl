@@ -2,8 +2,8 @@ using Pkg, DocumentationGenerator
 docspath = normpath(joinpath(@__DIR__, ".."))
 packages = sort!(readdir(joinpath(docspath, "build")), by=x->lowercase(x))
 
-batch_regex = r"(\(|^| )(https://[^\)\n]*?svg[^\)\n]*?)((\))|($)|( ))"ms
-known_batches = [
+badge_regex = r"(\(|^| )(https://[^\)\n]*?svg[^\)\n]*?)((\))|($)|( ))"ms
+known_badges = [
     "appveyor",
     "codecov",
     "coveralls",
@@ -12,9 +12,9 @@ known_batches = [
     "gitlab"
 ]
 
-function batch_value(batch)
+function badge_value(badge)
     try
-        svg = read(download(batch), String)
+        svg = read(download(badge), String)
         if occursin("passing", svg)
             return "passes"
         elseif occursin("failing", svg)
@@ -29,25 +29,25 @@ function batch_value(batch)
     end
 end
 
-function extract_batches(root)
+function extract_badges(root)
     src = joinpath(root, "_packagesource")
     readme = joinpath(src, "README.md")
     if isfile(readme)
         readme_str = read(readme, String)
-        urls = getindex.(eachmatch(batch_regex, readme_str), 2)
-        return Dict(map(known_batches) do batch
-            res = findall(url-> occursin(batch, url), urls)
-            batch => if isempty(res)
+        urls = getindex.(eachmatch(badge_regex, readme_str), 2)
+        return Dict(map(known_badges) do badge
+            res = findall(url-> occursin(badge, url), urls)
+            badge => if isempty(res)
                 []
             else
                 map(res) do idx
-                    Dict("url" => urls[idx], "value" => batch_value(urls[idx]))
+                    Dict("url" => urls[idx], "value" => badge_value(urls[idx]))
                 end
             end
         end)
     else
         println(basename(root), " doesn't contain readme")
-        return Dict{String, Any}(Pair.(known_batches, ([],)))
+        return Dict{String, Any}(Pair.(known_badges, ([],)))
     end
 end
 
@@ -55,7 +55,7 @@ function extract_info_dict(pkg)
     results = Dict{String, Any}()
     build = joinpath(@__DIR__, "..", "build", pkg)
     root = joinpath(build, readdir(build)[1])
-    results["batches"] = extract_batches(root)
+    results["badges"] = extract_badges(root)
     if isfile(root, "meta.toml")
         toml = Pkg.TOML.parsefile(joinpath(root, "meta.toml"))
         merge!(results, toml)
