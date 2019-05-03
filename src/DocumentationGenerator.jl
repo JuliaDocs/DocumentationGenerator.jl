@@ -30,7 +30,7 @@ function default_docs(package, root, pkgroot)
         open(joinpath($doc_source, "autodocs.md"), "w") do io
             println(io, """
             ```@autodocs
-            Modules = [$pkg_sym]
+            Modules = [$($pkg_sym)]
             ```
             """)
         end
