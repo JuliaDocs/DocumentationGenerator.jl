@@ -2,7 +2,11 @@ using GitHub, Pkg
 using Pkg: TOML
 include("DocumentationGenerator.jl")
 
-const GIT_TOKEN_FILE = joinpath("/config/sync", "gh_auth.txt")
+const GIT_TOKEN_FILE = if isfile(joinpath("/config/sync", "gh_auth.txt"))
+    joinpath("/config/sync", "gh_auth.txt")
+else
+    joinpath(@__DIR__, "gh_auth.txt")
+end
 
 function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     _module, rootdir = DocumentationGenerator.install_and_use(pspec)
