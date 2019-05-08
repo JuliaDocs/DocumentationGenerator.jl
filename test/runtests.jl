@@ -114,11 +114,12 @@ end
     build = joinpath(basepath, "build")
     @testset "build folder" begin
         for pkg in packages
-            pkgbuild = joinpath(build, pkg.name)
+            pkgbuild = joinpath(build, pkg.name, Base.package_slug(Pkg.METADATA_compatible_uuid(pkg.name), 5))
             @test isdir(pkgbuild)
             for (i, version) in enumerate(pkg.versions)
                 println(pkg.name, ": ", version)
-                @test isfile(basepath, "logs", string(pkg.name, " ", version, ".log"))
+                @test isfile(basepath, "logs", string(pkg.name, "-", Pkg.METADATA_compatible_uuid(pkg.name), " ", version, ".log"))
+
                 versiondir = joinpath(pkgbuild, string(version))
                 @test isdir(versiondir)
                 toml_path = joinpath(versiondir, "meta.toml")

@@ -325,9 +325,8 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
     allpkgs
 end
 
-function get_docs_dir(name, uuid)
-    return joinpath(name, Base.package_slug(Base.UUID(uuid), 5))
-end
+get_docs_dir(name, uuid) = get_docs_dir(name, UUID(uuid))
+get_docs_dir(name, uuid::UUID) = joinpath(name, Base.package_slug(uuid, 5))
 
 """
     build_documentation(name, url, version; basepath=joinpath(@__DIR__, ".."))
@@ -352,7 +351,7 @@ function build_documentation(uuid, name, url, version;
     isdir(builddir) || mkpath(builddir)
     logfile = joinpath(logpath, "$(name)-$(uuid) $version.log")
     cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no -O0 $workerfile $uuid $name $url $version $builddir`
-    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name*"-"*uuid))
+    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name, "-", uuid))
     return process
 end
 
