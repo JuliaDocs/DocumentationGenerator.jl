@@ -1,15 +1,12 @@
 <template>
   <v-card>
-    <div :class="'package-card ' + cistatus">
-      <v-card-title
-        class="pb-1"
-        primary-title
-      >
+    <div :class="'package-card ' + linkactive">
+      <v-card-title primary-title>
         <div>
           <span>
             <h3 class="headline mb-0">
               <span class="pkg-owner">
-                {{details.owner}}
+                {{details.metadata.owner}}
               </span>
               <span class="pkg-owner">
                 /
@@ -23,7 +20,7 @@
       </v-card-title>
 
       <v-card-text class="pb-1">
-        {{details.description}}
+        {{details.metadata.description}}
       </v-card-text>
       <v-card-text class="py-1">
         <v-chip
@@ -38,22 +35,20 @@
       </v-card-text>
 
       <v-card-actions>
-          <v-layout align-center row class="package-details">
-            <span class="pl-2">{{details.stargazers_count}}</span>
-            <v-icon small>star</v-icon>
-            <span class="pl-2">⋅</span>
-            <span class="pl-2">{{details.version}}</span>
-            <span class="pl-2">⋅</span>
-            <span class="pl-2">{{details.license}}</span>
-            <v-spacer></v-spacer>
-            <v-btn flat color="primary" :href="'packages/'+details.name">
-              Documentation
-            </v-btn>
-            <!-- <v-btn flat color="grey">Source</v-btn> -->
-            <v-btn flat color="primary" :href="details.url">
-              Github
-            </v-btn>
-          </v-layout>
+        <span class="pl-2">{{details.metadata.stargazers_count}}</span>
+        <v-icon small>star</v-icon>
+        <span class="pl-2">⋅</span>
+        <span class="pl-2">{{details.version}}</span>
+        <span class="pl-2">⋅</span>
+        <span class="pl-2">{{details.license}}</span>
+        <v-spacer></v-spacer>
+        <v-btn flat color="primary" target="_blank" :href="details.docsfullpath">
+          Documentation
+        </v-btn>
+        <!--<v-btn flat color="grey">Source</v-btn> -->
+        <v-btn flat color="primary" target = "_blank" :href="details.repo">
+          Github
+        </v-btn>
       </v-card-actions>
     </div>
   </v-card>
@@ -73,8 +68,8 @@ export default {
   },
   computed: {
     styledTags () {
-      // return this.$props.details.tags
-      let pkgtags = this.$props.details.tags
+      // return this.$props.details..tags
+      let pkgtags = this.$props.details.metadata.tags
       let tags = []
       for (const tag of pkgtags.sort()) {
         tags.push({
@@ -83,6 +78,13 @@ export default {
         })
       }
       return tags
+    },
+    linkactive () {
+        let pkg = this.$props.details;
+        if(pkg.docsfullpath != "#"){
+                return "passes";
+        }
+        return "";
     },
     cistatus () {
       let badges = this.$props.details.batches

@@ -183,7 +183,7 @@ function install_and_use(pspec)
     try
         Pkg.add(pspec)
     catch e
-        throw(PkgNoWork(pspec.name))
+        @info "Pkg build failed for ", pspec, "due to ", e
     end
     pkg_sym = Symbol(pspec.name)
 
@@ -193,9 +193,20 @@ function install_and_use(pspec)
     catch e
         nothing
     end
-    pkg_module, normpath(joinpath(dirname(Base.find_package(pspec.name)), ".."))
+    pkgdir = Base.find_package(pspec.name)
+    if pkgdir == nothing
+       throw(PkgNoWork("Package not added"))
+    end
+    return pkg_module, normpath(joinpath(dirname(Base.find_package(pspec.name)), ".."))
 end
 
+function readstr_buffer(x::IOStream)
+    return read(x, String)
+end
+
+function readstr_buffer(x::Base.GenericIOBuffer{Array{UInt8,1}})
+    return String(take!(x))
+end
 
 """
     run_with_timeout(
@@ -210,14 +221,22 @@ and `verbose` determines whether meta-logs ("process started" etc.) will be prin
 function run_with_timeout(
         command; log=stdout, timeout = 5*60, name = "",
         wait_time = 1, verbose = true
-    )
+)
 
     out_io = IOBuffer()
     err_io = IOBuffer()
+    out_file, err_file = "", ""
+    if VERSION < v"1.1"
+        out_file, out_io = mktemp()
+        err_file, err_io = mktemp()
+    end
     pipe = pipeline(command, stdout = out_io, stderr = err_io)
     process = run(pipe, wait = false)
+    if VERSION < v"1.1"
+        out_io = open(out_file)
+        err_io = open(err_file)
+    end
     timeout_start = time()
-
     task = @async begin
         logfallback = false
         io = try
@@ -237,8 +256,7 @@ function run_with_timeout(
                     kill(process)
                     break
                 end
-
-                errstr, outstr = String.(take!.((err_io, out_io)))
+                errstr, outstr = readstr_buffer.((out_io, err_io))
                 is_silent = length(errstr) == 0 && length(outstr) == 0
                 isempty(outstr) || println(io, outstr)
                 isempty(errstr) || println(io, errstr)
@@ -255,7 +273,7 @@ function run_with_timeout(
         catch err
             @error "Error while running $(name) with timeout." error=err
         finally
-            errstr, outstr = String.(take!.((err_io, out_io)))
+            errstr, outstr = readstr_buffer.((out_io, err_io))
             isempty(outstr) || println(io, outstr)
             isempty(errstr) || println(io, errstr)
 
@@ -307,6 +325,9 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
     allpkgs
 end
 
+get_docs_dir(name, uuid) = get_docs_dir(name, UUID(uuid))
+get_docs_dir(name, uuid::UUID) = joinpath(name, Base.package_slug(uuid, 5))
+
 """
     build_documentation(name, url, version; basepath=joinpath(@__DIR__, ".."))
 
@@ -315,10 +336,10 @@ save the HTML docs to `\$basepath/build` with logs in `\$basepath/logs`.
 
 Note that this will overwrite previous builds/logs.
 """
-function build_documentation(name, url, version;
+function build_documentation(uuid, name, url, version;
                              basepath = joinpath(@__DIR__, ".."),
+                             envpath = normpath(joinpath(@__DIR__, "..")),
                              juliacmd = first(Base.julia_cmd()))
-    envpath = normpath(joinpath(@__DIR__, ".."))
     workerfile = joinpath(@__DIR__, "worker_work.jl")
     buildpath = joinpath(basepath, "build")
     logpath = joinpath(basepath, "logs")
@@ -326,47 +347,45 @@ function build_documentation(name, url, version;
     isdir(buildpath) || mkpath(buildpath)
     isdir(logpath) || mkpath(logpath)
 
-    builddir = joinpath(buildpath, name, string(version))
+    builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
-    logfile = joinpath(logpath, "$name $version.log")
-    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no --startup-file=no -O0 $workerfile $name $url $version $builddir`
-
-    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name))
+    logfile = joinpath(logpath, "$(name)-$(uuid) $version.log")
+    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no -O0 $workerfile $uuid $name $url $version $builddir`
+    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name, "-", uuid))
     return process
 end
 
-"""
-    build_documentations(
-        packages;
-        processes::Int = 8, sleeptime = 0.5,
-        juliacmd = first(Base.julia_cmd()),
-        basepath = joinpath(@__DIR__, ".."),
-        filter_versions = last
-    )
+get_uuids(pkg_name::String) = Pkg.Types.registered_uuids(Pkg.Types.Context().env, pkg_name)
 
-Asynchronously build documentation `packages` (typically the output of `installable_on_version` and
-a vector of named tuples `(name, url, versions)`) and save the docs to `\$basepath/build` with logs
-in `\$basepath/logs`. `filter_versions` is applied to the vector of available package versions to
-decide which to build, so setting it to e.g. `identity` will build docs for all versions.
-
-Note that this will overwrite previous builds/logs.
-"""
 function build_documentations(
         packages;
         processes::Int = 8, sleeptime = 0.5,
         juliacmd = first(Base.julia_cmd()),
         basepath = joinpath(@__DIR__, ".."),
+        envpath = normpath(joinpath(@__DIR__, "..")),
         filter_versions = last
     )
     process_queue = []
-    for (name, url, versions) in packages
+    for package in packages
+        uuid = get(package, :uuid, nothing)
+        if uuid == nothing
+            uuids = get_uuids(package.name)
+            length(uuids) > 1 && (@error "Package $(name) has multiple uuids", uuids)
+            uuid = uuids[1]
+        end
         #those somehow get stuck - might be random
         while length(process_queue) >= processes
             filter!(process_running, process_queue)
             sleep(sleeptime)
         end
-        for version in vcat(filter_versions(sort(versions)))
-            process = build_documentation(name, url, version, basepath = basepath, juliacmd = juliacmd)
+        process = nothing
+        if !haskey(package, :latest_docs_version)
+            for version in vcat(filter_versions(sort(package.versions, rev=true)))
+                process = build_documentation(uuid, package.name, package.url, version, envpath = envpath, basepath = basepath, juliacmd = juliacmd)
+                push!(process_queue, process)
+            end
+        else
+            process = build_documentation(uuid, package.name, package.repo, package.latest_docs_version, envpath = envpath, basepath = basepath, juliacmd = juliacmd)
             push!(process_queue, process)
         end
     end
