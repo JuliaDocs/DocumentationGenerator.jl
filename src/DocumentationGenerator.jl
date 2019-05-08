@@ -89,9 +89,16 @@ function copylocallinks(originalreadme, readmepath)
     links = []
     recurseMDcontents(md, links)
     for link in links
-        (startswith(link, "http") || isabspath(link)) && continue
+        occursin(r"^http\:\/\/.*", link) && continue
+        isabspath(link) && continue
+        isfile(joinpath(basepath, link)) || continue
+
         ispath(dirname(joinpath(newbasepath, link))) || mkpath(dirname(joinpath(newbasepath, link)))
-        cp(joinpath(basepath, link), joinpath(newbasepath, link))
+        try
+            cp(joinpath(basepath, link), joinpath(newbasepath, link))
+        catch err
+            @error("copying asset `$(link)` failed", exception=err)
+        end
     end
 end
 function recurseMDcontents(md, links)
