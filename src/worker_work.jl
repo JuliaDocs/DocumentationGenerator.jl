@@ -1,7 +1,8 @@
 using GitHub, Pkg
 using Pkg: TOML
-
 include("DocumentationGenerator.jl")
+
+const GIT_TOKEN_FILE = joinpath("/config/sync", "gh_auth.txt")
 
 function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
     _module, rootdir = DocumentationGenerator.install_and_use(pspec)
@@ -61,8 +62,8 @@ function contributor_user(dict)
     )
 end
 
-function package_docs(name, url, version, buildpath)
-    pspec = PackageSpec(name = name, version = version)
+function package_docs(uuid, name, url, version, buildpath)
+    pspec = PackageSpec(uuid = uuid, name = name, version = version)
     @info("Generating docs for $name")
     doctype = :default
     meta = Dict()
@@ -78,7 +79,7 @@ function package_docs(name, url, version, buildpath)
             meta["doctype"] = string(doctype)
             meta["installs"] = true
             @info("Done generating docs for $name")
-            package_source(name, rootdir, buildpath)
+            package_source(uuid, name, rootdir, buildpath)
         end
     catch e
         @error("Package $name didn't build", error = e)
@@ -88,21 +89,21 @@ function package_docs(name, url, version, buildpath)
     return meta
 end
 
-function package_metadata(name, url, version, buildpath)
+function package_metadata(uuid, name, url, version, buildpath)
     meta = Dict()
-    authpath = joinpath(@__DIR__, "gh_auth.txt")
+    authpath = GIT_TOKEN_FILE
     if !isfile(authpath)
         @warn("No GitHub token found. Skipping metadata retrieval.")
         return meta
     end
     if !occursin("github.com", url)
-        @warn("Can't retrieve metadata for $name (not hosted on github)")
+        @warn("Can't retrieve metadata for $(name)-$(uuid) (not hosted on github)")
         return meta
     end
 
     @info("Querying metadata for $name")
     try
-        gh_auth = authenticate(readchomp(joinpath(@__DIR__, "gh_auth.txt")))
+        gh_auth = authenticate(readchomp(GIT_TOKEN_FILE))
         matches = match(r".*/(.*)/(.*\.jl)(?:.git)?$", url)
         repo_owner = matches[1]
         repo_name = matches[2]
@@ -124,17 +125,17 @@ function package_metadata(name, url, version, buildpath)
     return meta
 end
 
-function package_source(name, rootdir, buildpath)
-    @info("Copying source code for $name")
+function package_source(uuid, name, rootdir, buildpath)
+    @info("Copying source code for $(name)-$(uuid)")
     if isdir(rootdir)
         cp(rootdir, joinpath(buildpath, "_packagesource"); force=true)
     end
-    @info("Done copying source code for $name")
+    @info("Done copying source code for $(name)-$(uuid)")
 end
 
-function build(name, url, version, buildpath)
-    meta = package_docs(name, url, version, buildpath)
-    merge!(meta, package_metadata(name, url, version, buildpath))
+function build(uuid, name, url, version, buildpath)
+    meta = package_docs(uuid, name, url, version, buildpath)
+    merge!(meta, package_metadata(uuid, name, url, version, buildpath))
     @info "making buildpath"
     isdir(buildpath) || mkpath(joinpath(buildpath))
     @info "opening meta.toml"
@@ -145,3 +146,10 @@ function build(name, url, version, buildpath)
 end
 
 build(ARGS...)
+
+@async begin
+    while(true)
+        Base.flush(stdout)
+        sleep(1)
+    end
+end
