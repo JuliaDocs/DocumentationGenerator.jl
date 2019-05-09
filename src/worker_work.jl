@@ -83,6 +83,7 @@ function package_docs(uuid, name, url, version, buildpath)
             meta["doctype"] = string(doctype)
             meta["installs"] = true
             @info("Done generating docs for $name")
+            monkeypatchdocsearch(uuid, name, buildpath)
             package_source(uuid, name, rootdir, buildpath)
         end
     catch e
@@ -91,6 +92,19 @@ function package_docs(uuid, name, url, version, buildpath)
     end
 
     return meta
+end
+
+function monkeypatchdocsearch(uuid, name, buildpath)
+    if !(get(ENV, "DISABLE_CENTRALIZED_SEARCH", false) in ("true", "1", 1))
+        @info "monkey patching search.js for $(name)"
+        searchjs = joinpath(buildpath, "assets", "search.js")
+        rm(searchjs, force=true)
+        template = String(read(joinpath(@__DIR__, "search.js.template")))
+        template = replace(template, "{{{UUID}}}" => String(uuid))
+        open(searchjs, "w") do io
+            print(io, template)
+        end
+    end
 end
 
 function package_metadata(uuid, name, url, version, buildpath)
