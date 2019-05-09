@@ -95,12 +95,15 @@ function package_docs(uuid, name, url, version, buildpath)
 end
 
 function monkeypatchdocsearch(uuid, name, buildpath)
-    searchjs = joinpath(buildpath, "assets", "search.js")
-    rm(searchjs, force=true)
-    template = String(read(joinpath(@__DIR__, "search.js.template")))
-    template = replace(template, "{{{UUID}}}" => String(uuid))
-    open(searchjs, "w") do io
-        print(io, template)
+    if !ENV["DISABLE_CENTRALIZED_SEARCH"]
+        @info "monkey patching search.js for $(name)"
+        searchjs = joinpath(buildpath, "assets", "search.js")
+        rm(searchjs, force=true)
+        template = String(read(joinpath(@__DIR__, "search.js.template")))
+        template = replace(template, "{{{UUID}}}" => String(uuid))
+        open(searchjs, "w") do io
+            print(io, template)
+        end
     end
 end
 
