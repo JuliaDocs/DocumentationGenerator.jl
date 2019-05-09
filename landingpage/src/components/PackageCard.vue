@@ -58,12 +58,12 @@
 export default {
   name: 'PackageCard',
   props: {
-    details: Object,
+    details: Object
     // selectedTags: Array
   },
   methods: {
     clickedTag (tag) {
-      this.$emit('tag-click', {text: tag.name})
+      this.$emit('tag-click', { text: tag.name })
     }
   },
   computed: {
@@ -74,24 +74,24 @@ export default {
       for (const tag of pkgtags.sort()) {
         tags.push({
           name: tag,
-          selected: false //this.$props.selectedTags.indexOf(tag) === -1
+          selected: false // this.$props.selectedTags.indexOf(tag) === -1
         })
       }
       return tags
     },
     linkactive () {
-        let pkg = this.$props.details;
-        if(pkg.docsfullpath != "#"){
-                return "passes";
-        }
-        return "";
+      let pkg = this.$props.details
+      if (pkg.docsfullpath != '#') {
+        return 'passes'
+      }
+      return ''
     },
     cistatus () {
       let badges = this.$props.details.batches
       if (badges && badges.travis && badges.travis[0]) {
-        return badges["travis"][0].value
+        return badges['travis'][0].value
       } else {
-        return ""
+        return ''
       }
     }
   }

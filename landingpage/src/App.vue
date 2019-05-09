@@ -201,10 +201,10 @@ import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
-let codefilterData = [];
-let docfilterData = [];
-let pkgs = [];
-let pkgs_raw = {};
+let codefilterData = []
+let docfilterData = []
+let pkgs = []
+let pkgs_raw = {}
 
 export default {
   name: 'app',
@@ -215,7 +215,7 @@ export default {
     DocfilterCard
   },
   data: function () {
-    let isDark = this.$cookies.get('darkTheme') === "true"
+    let isDark = this.$cookies.get('darkTheme') === 'true'
     return {
       dark: isDark,
       searchFocused: false,
@@ -224,103 +224,98 @@ export default {
         model: null,
         pkgsearchmodel: null,
         pkgtagmodel: [],
-        loading: false,
+        loading: false
       },
       pkgs: pkgs,
       filteredPackages: pkgs,
       search: '',
       codefilterData: codefilterData,
       docfilterData: docfilterData
-    }},
+    }
+  },
   mounted () {
-    this.fetchPackages();
+    this.fetchPackages()
   },
   methods: {
-    getfilterList() {
+    getfilterList () {
       let loader =
       this.$loading.show({
         // Optional parameters
         container: this.fullPage ? null : this.$refs.formContainer,
         canCancel: true,
-        color: "#009933",
-        loader: "bars",
-        onCancel: this.onCancel,
-      });
+        color: '#009933',
+        loader: 'bars',
+        onCancel: this.onCancel
+      })
       axios.all([
         this.request_1(),
         this.request_2()
-        ])
+      ])
         .then(axios.spread((doc_res, code_res) => {
-            if(doc_res.data.success)
-                docfilterData.push(doc_res.data);
-            if(code_res.data.success)
-                codefilterData.push(code_res.data);
-            loader.hide();
-      })).catch(function (error) {
-       console.log(error);
-     })
+          if (doc_res.data.success) { docfilterData.push(doc_res.data) }
+          if (code_res.data.success) { codefilterData.push(code_res.data) }
+          loader.hide()
+        })).catch(function (error) {
+          console.log(error)
+        })
     },
-    request_1() {
+    request_1 () {
       return axios.post('/search/docs',
-        { "pattern": this.search }
-        )
+        { 'pattern': this.search }
+      )
     },
-    request_2() {
+    request_2 () {
       return axios.post('/search/code',
-        { "pattern": this.search }
-        )
+        { 'pattern': this.search }
+      )
     },
-    fetchPackages() {
+    fetchPackages () {
       let loader = this.$loading.show({
-                  // Optional parameters
-                  container: this.fullPage ? null : this.$refs.formContainer,
-                  canCancel: true,
-                  color: "#009933",
-                  loader: "bars",
-                  onCancel: this.onCancel,
-                });
-      axios.get('/docs/pkgs.json')
-      .then(function (response) {
-        // handle success
-        let pkgobj = response.data;
-        pkgs_raw = response.data;
-        for (const pkgname in pkgobj) {
-          let pkg = pkgobj[pkgname];
-          pkg.uuid = pkgname;
-          pkg.version = pkg.latest_docs_version;
-          if(!pkg.metadata){
-           continue;
-          }
-          if(pkg.docslink.search("http") == -1 && pkg.docslink.search("https") == -1){
-            pkg.docsfullpath = location.protocol+"//"+location.host+"/"+pkg.docslink;
-          }
-          else
-          {
-            // links to hosted docs
-            pkg.docsfullpath = pkg.docslink;
-          }
-          if (!pkg.metadata.tags) {
-               pkg.metadata.tags = [];
-          }
-          pkgs.push(pkg)
-      }
-
-      pkgs.sort((a, b) => {
-        var starsA = parseInt(a.metadata.stargazers_count) || 0
-        var starsB = parseInt(b.metadata.stargazers_count) || 0
-        return starsB - starsA
+        // Optional parameters
+        container: this.fullPage ? null : this.$refs.formContainer,
+        canCancel: true,
+        color: '#009933',
+        loader: 'bars',
+        onCancel: this.onCancel
       })
+      axios.get('/docs/pkgs.json')
+        .then(function (response) {
+        // handle success
+          let pkgobj = response.data
+          pkgs_raw = response.data
+          for (const pkgname in pkgobj) {
+            let pkg = pkgobj[pkgname]
+            pkg.uuid = pkgname
+            pkg.version = pkg.latest_docs_version
+            if (!pkg.metadata) {
+              continue
+            }
+            if (pkg.docslink.search('http') == -1 && pkg.docslink.search('https') == -1) {
+              pkg.docsfullpath = location.protocol + '//' + location.host + '/' + pkg.docslink
+            } else {
+            // links to hosted docs
+              pkg.docsfullpath = pkg.docslink
+            }
+            if (!pkg.metadata.tags) {
+              pkg.metadata.tags = []
+            }
+            pkgs.push(pkg)
+          }
 
-    })
-      .catch(function (error) {
-       // handle error
-       console.log(error);
-     })
-      .then(function () {
-       // always executed
-       loader.hide();
-     });
-
+          pkgs.sort((a, b) => {
+            var starsA = parseInt(a.metadata.stargazers_count) || 0
+            var starsB = parseInt(b.metadata.stargazers_count) || 0
+            return starsB - starsA
+          })
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error)
+        })
+        .then(function () {
+          // always executed
+          loader.hide()
+        })
     },
     removeTag (item) {
       let tags = this.primaryDrawer.pkgtagmodel
@@ -363,19 +358,19 @@ export default {
         resolve(pkgs)
       })
     },
-    checkField (val){
-      return this.searchFocused = this.search != '' ?  true : false;
+    checkField (val) {
+      return this.searchFocused = this.search != ''
     }
   },
   watch: {
-    "primaryDrawer.pkgtagmodel": _.debounce(function () {
+    'primaryDrawer.pkgtagmodel': _.debounce(function () {
       this.$data.primaryDrawer.loading = true
       this.filterPackages().then((result) => {
         this.$data.filteredPackages = result
         this.$data.primaryDrawer.loading = false
       })
     }, 200),
-    "primaryDrawer.pkgsearchmodel": _.debounce(function () {
+    'primaryDrawer.pkgsearchmodel': _.debounce(function () {
       this.$data.primaryDrawer.loading = true
       this.filterPackages().then((result) => {
         this.$data.filteredPackages = result
@@ -396,13 +391,13 @@ export default {
         for (tag of pkg.metadata.tags) {
           tag = tag.toLowerCase()
           if (tags[tag]) {
-            tags[tag] += stars/pkg.metadata.tags.length
+            tags[tag] += stars / pkg.metadata.tags.length
           } else {
             tags[tag] = 1
           }
         }
       }
-      let sortableTags = [];
+      let sortableTags = []
       for (let tag in tags) {
         sortableTags.push({
           text: tag,
@@ -411,7 +406,7 @@ export default {
         })
       }
 
-      sortableTags.sort(function(a, b) {
+      sortableTags.sort(function (a, b) {
         return b.count - a.count
       })
       return sortableTags
@@ -419,47 +414,47 @@ export default {
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.png') : require('./assets/julia-light.svg')
     },
-    docfilteredLists (){
-      let searchArr = [];
-      this.docfilterData.forEach( function(ele) {
-        searchArr = [];
-        ele.data.forEach( function(element){
-          let y = pkgs_raw[element.package];
-          element.sections.forEach( function(e){
-            let obj = e;
-            obj['pkgname'] = y.name+".jl";
-            obj['docsfullpath'] = location.protocol+"//"+location.host+"/"+y.docslink;
-            searchArr.push(obj);
+    docfilteredLists () {
+      let searchArr = []
+      this.docfilterData.forEach(function (ele) {
+        searchArr = []
+        ele.data.forEach(function (element) {
+          let y = pkgs_raw[element.package]
+          element.sections.forEach(function (e) {
+            let obj = e
+            obj['pkgname'] = y.name + '.jl'
+            obj['docsfullpath'] = location.protocol + '//' + location.host + '/' + y.docslink
+            searchArr.push(obj)
           })
         })
-      });
-      return searchArr;
+      })
+      return searchArr
     },
     codefilteredLists () {
-      let codeSearchArr = [];
-      this.codefilterData.forEach( function(ele) {
-        codeSearchArr = [];
-        for(var i = 0; i < ele.data.length; i++){
-          let x = pkgs_raw[ele.data[i].package];
-          let str = ele.data[i].file;
-          let obj = ele.data[i];
-          obj['owner'] = x.metadata.owner;
-          let arr = str.split('/');
-          let arr1 = str.split('/');
-          arr.splice(0,1);
-          arr[0] = arr[0] + '.jl';
-          arr[1] = 'blob';
-          arr[2] = 'v' + arr[2];
-          obj['pkgurl'] = arr.join('/');
-          arr1.splice(0,1);
-          arr1.splice(1,1);
-          arr1[0] = arr1[0] + '.jl';
-          arr1[1] = 'v' + arr1[1];
-          obj['temp_pkgname'] = arr1.join('/');
-          codeSearchArr.push(obj);
+      let codeSearchArr = []
+      this.codefilterData.forEach(function (ele) {
+        codeSearchArr = []
+        for (var i = 0; i < ele.data.length; i++) {
+          let x = pkgs_raw[ele.data[i].package]
+          let str = ele.data[i].file
+          let obj = ele.data[i]
+          obj['owner'] = x.metadata.owner
+          let arr = str.split('/')
+          let arr1 = str.split('/')
+          arr.splice(0, 1)
+          arr[0] = arr[0] + '.jl'
+          arr[1] = 'blob'
+          arr[2] = 'v' + arr[2]
+          obj['pkgurl'] = arr.join('/')
+          arr1.splice(0, 1)
+          arr1.splice(1, 1)
+          arr1[0] = arr1[0] + '.jl'
+          arr1[1] = 'v' + arr1[1]
+          obj['temp_pkgname'] = arr1.join('/')
+          codeSearchArr.push(obj)
         }
-      });
-      return codeSearchArr;
+      })
+      return codeSearchArr
     }
   }
 }

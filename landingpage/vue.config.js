@@ -1,4 +1,4 @@
-const CompressionPlugin = require("compression-webpack-plugin")
+const CompressionPlugin = require('compression-webpack-plugin')
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production'
     ? '/docs/dist'
@@ -8,9 +8,9 @@ module.exports = {
       new CompressionPlugin({
         algorithm: 'gzip',
         test: new RegExp(
-            '\\.(js|css)$'
+          '\\.(js|css)$'
         ),
-        threshold: 10240,// gt 10 KB
+        threshold: 10240, // gt 10 KB
         minRatio: 0.8
       })
     ]
