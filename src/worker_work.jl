@@ -75,16 +75,28 @@ function package_docs(uuid, name, url, version, buildpath)
     meta["url"] = url
     meta["version"] = version
     meta["installs"] = false
+
     try
         @info("building: $name")
         mktempdir() do envdir
-            Pkg.activate(envdir)
-            doctype, rootdir = create_docs(pspec, buildpath)
-            meta["doctype"] = string(doctype)
-            meta["installs"] = true
-            @info("Done generating docs for $name")
-            monkeypatchdocsearch(uuid, name, buildpath)
-            package_source(uuid, name, rootdir, buildpath)
+            if name == "julia"
+                mktempdir() do path
+                    run(`wget -O $(joinpath(path, uuid*".tar.gz")) https://github.com/JuliaLang/julia/releases/download/$version/julia-$(version[2:end]).tar.gz`)
+                    run(`tar -xzf $(joinpath(path, uuid*".tar.gz"))  -C $path`)
+                    docs_path = joinpath(path, name*"-"*version[2:end], "doc", "_build", "html", "en")
+                    src_path = joinpath(path, name*"-"*version[2:end])
+                    cp(docs_path , buildpath, force=true)
+                    cp(src_path, joinpath(buildpath, "_packagesource")) ,  force=true)
+                end
+            else
+                Pkg.activate(envdir)
+                doctype, rootdir = create_docs(pspec, buildpath)
+                meta["doctype"] = string(doctype)
+                meta["installs"] = true
+                monkeypatchdocsearch(uuid, name, buildpath)
+                @info("Done generating docs for $name")
+                package_source(uuid, name, rootdir, buildpath)
+            end
         end
     catch e
         @error("Package $name didn't build", error = e)
