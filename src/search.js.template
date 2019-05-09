@@ -1,5 +1,8 @@
 /*
- * Part of Documenter.jl
+ * Adapted for DocumentationGenerator.jl
+ *     https://github.com/JuliaDocs/DocumentationGenerator.jl
+ *
+ * Originally Part of Documenter.jl
  *     https://github.com/JuliaDocs/Documenter.jl
  *
  * License: MIT
