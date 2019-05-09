@@ -95,7 +95,7 @@ function package_docs(uuid, name, url, version, buildpath)
 end
 
 function monkeypatchdocsearch(uuid, name, buildpath)
-    if !ENV["DISABLE_CENTRALIZED_SEARCH"]
+    if !(get(ENV, "DISABLE_CENTRALIZED_SEARCH", false) in ("true", "1", 1))
         @info "monkey patching search.js for $(name)"
         searchjs = joinpath(buildpath, "assets", "search.js")
         rm(searchjs, force=true)
