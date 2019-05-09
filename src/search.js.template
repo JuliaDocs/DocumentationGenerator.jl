@@ -52,19 +52,18 @@ require(["jquery", "lodash"], function($, _) {
 
     $(function(){
         function update_search(querystring) {
-            $.post("https://pkg.julialang.org/search/docs", {
+            $.post("https://pkg.julialang.org/search/docs", JSON.stringify({
                 "pattern": querystring,
                 "package": "{{{UUID}}}"
-            }, function (data) {
-                console.log(data);
-                if (data["success"]) {
-                    let results = data["data"]["sections"]
+            }), function (data) {
+                if (data["success"] && data["data"] && data["data"][0] && data["data"][0]["sections"]) {
+                    var results = data["data"][0]["sections"]
                     $('#search-info').text("Number of results: " + results.length)
 
                     $('#search-results').empty()
                     results.forEach(function(result) {
                         link = $('<a>')
-                        link.text(result["page"])
+                        link.text(result["title"])
                         link.attr('href', documenterBaseURL+'/'+result["docname"])
                         cat = $('<span class="category">('+result["category"]+')</span>')
                         li = $('<li>').append(link).append(" ").append(cat)
