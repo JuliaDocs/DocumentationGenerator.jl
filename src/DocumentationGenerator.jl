@@ -14,12 +14,17 @@ function default_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = ["Docstrings" => "autodocs.md"]
-    readme = joinpath(pkgroot, "README.md")
-    if isfile(readme)
-        newreadmepath = joinpath(doc_source, "index.md")
-        cp(readme, newreadmepath)
-        copylocallinks(readme, newreadmepath)
-        push!(pages, "Readme" => "index.md")
+    for file in readdir(pkgroot)
+        if occursin("readme", lowercase(file))
+            readme = joinpath(pkgroot, file)
+            if isfile(readme)
+                newreadmepath = joinpath(doc_source, "index.md")
+                cp(readme, newreadmepath)
+                copylocallinks(readme, newreadmepath)
+                push!(pages, "Readme" => "index.md")
+                break
+            end
+        end
     end
     pkg_sym = Symbol(package)
     @eval Module() begin
@@ -53,12 +58,17 @@ function readme_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = []
-    readme = joinpath(pkgroot, "README.md")
-    if isfile(readme)
-        newreadmepath = joinpath(doc_source, "index.md")
-        cp(readme, newreadmepath)
-        copylocallinks(readme, newreadmepath)
-        push!(pages, "Readme" => "index.md")
+    for file in readdir(pkgroot)
+        if occursin("readme", lowercase(file))
+            readme = joinpath(pkgroot, file)
+            if isfile(readme)
+                newreadmepath = joinpath(doc_source, "index.md")
+                cp(readme, newreadmepath)
+                copylocallinks(readme, newreadmepath)
+                push!(pages, "Readme" => "index.md")
+                break
+            end
+        end
     end
     pkg_sym = Symbol(package)
     @eval Module() begin
