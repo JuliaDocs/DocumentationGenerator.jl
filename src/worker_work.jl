@@ -80,7 +80,7 @@ function package_docs(uuid, name, url, version, buildpath)
         mktempdir() do envdir
              if name == "julia"
                 mktempdir() do path
-                    run(`wget --quiet -O $(joinpath(path, uuid*".tar.gz")) https://github.com/JuliaLang/julia/releases/download/v$(version)/julia-$(version).tar.gz`)
+                    download("https://github.com/JuliaLang/julia/releases/download/v$(version)/julia-$(version).tar.gz", joinpath(path, uuid*".tar.gz"))
                     run(`tar -xzf $(joinpath(path, uuid*".tar.gz"))  -C $path`)
                     docs_path = joinpath(path, name*"-"*version, "doc", "_build", "html", "en")
                     src_path = joinpath(path, name*"-"*version)
@@ -92,10 +92,10 @@ function package_docs(uuid, name, url, version, buildpath)
                 doctype, rootdir = create_docs(pspec, buildpath)
                 meta["doctype"] = string(doctype)
                 meta["installs"] = true
-                monkeypatchdocsearch(uuid, name, buildpath)
                 @info("Done generating docs for $name")
                 package_source(uuid, name, rootdir, buildpath)
-            end
+             end
+             monkeypatchdocsearch(uuid, name, buildpath)
         end
     catch e
         @error("Package $name didn't build", error = e)
@@ -135,7 +135,7 @@ function package_metadata(uuid, name, url, version, buildpath)
         gh_auth = authenticate(readchomp(GIT_TOKEN_FILE))
         matches = match(r".*/(.*)/(.*\.jl)(?:.git)?$", url)
         if isnothing(matches) && name == "julia"
-            repo_owner = "Julialang"
+            repo_owner = "JuliaLang"
             repo_name = "Julia"
         else
             repo_owner = matches[1]
