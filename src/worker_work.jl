@@ -78,13 +78,24 @@ function package_docs(uuid, name, url, version, buildpath)
     try
         @info("building: $name")
         mktempdir() do envdir
-            Pkg.activate(envdir)
-            doctype, rootdir = create_docs(pspec, buildpath)
-            meta["doctype"] = string(doctype)
-            meta["installs"] = true
-            @info("Done generating docs for $name")
-            monkeypatchdocsearch(uuid, name, buildpath)
-            package_source(uuid, name, rootdir, buildpath)
+             if name == "julia"
+                mktempdir() do path
+                    download("https://github.com/JuliaLang/julia/releases/download/v$(version)/julia-$(version).tar.gz", joinpath(path, uuid*".tar.gz"))
+                    run(`tar -xzf $(joinpath(path, uuid*".tar.gz"))  -C $path`)
+                    docs_path = joinpath(path, name*"-"*version, "doc", "_build", "html", "en")
+                    src_path = joinpath(path, name*"-"*version)
+                    cp(docs_path , buildpath, force=true)
+                    cp(src_path, joinpath(buildpath, "_packagesource") ,  force=true)
+                end
+            else
+                Pkg.activate(envdir)
+                doctype, rootdir = create_docs(pspec, buildpath)
+                meta["doctype"] = string(doctype)
+                meta["installs"] = true
+                @info("Done generating docs for $name")
+                package_source(uuid, name, rootdir, buildpath)
+             end
+             monkeypatchdocsearch(uuid, name, buildpath)
         end
     catch e
         @error("Package $name didn't build", error = e)
@@ -123,8 +134,13 @@ function package_metadata(uuid, name, url, version, buildpath)
     try
         gh_auth = authenticate(readchomp(GIT_TOKEN_FILE))
         matches = match(r".*/(.*)/(.*\.jl)(?:.git)?$", url)
-        repo_owner = matches[1]
-        repo_name = matches[2]
+        if isnothing(matches) && name == "julia"
+            repo_owner = "JuliaLang"
+            repo_name = "Julia"
+        else
+            repo_owner = matches[1]
+            repo_name = matches[2]
+        end
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
         meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
