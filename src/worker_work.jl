@@ -75,18 +75,17 @@ function package_docs(uuid, name, url, version, buildpath)
     meta["url"] = url
     meta["version"] = version
     meta["installs"] = false
-
     try
         @info("building: $name")
         mktempdir() do envdir
-            if name == "julia"
+             if name == "julia"
                 mktempdir() do path
-                    run(`wget -O $(joinpath(path, uuid*".tar.gz")) https://github.com/JuliaLang/julia/releases/download/$version/julia-$(version[2:end]).tar.gz`)
+                    run(`wget --quiet -O $(joinpath(path, uuid*".tar.gz")) https://github.com/JuliaLang/julia/releases/download/v$(version)/julia-$(version).tar.gz`)
                     run(`tar -xzf $(joinpath(path, uuid*".tar.gz"))  -C $path`)
-                    docs_path = joinpath(path, name*"-"*version[2:end], "doc", "_build", "html", "en")
-                    src_path = joinpath(path, name*"-"*version[2:end])
+                    docs_path = joinpath(path, name*"-"*version, "doc", "_build", "html", "en")
+                    src_path = joinpath(path, name*"-"*version)
                     cp(docs_path , buildpath, force=true)
-                    cp(src_path, joinpath(buildpath, "_packagesource")) ,  force=true)
+                    cp(src_path, joinpath(buildpath, "_packagesource") ,  force=true)
                 end
             else
                 Pkg.activate(envdir)
@@ -135,8 +134,13 @@ function package_metadata(uuid, name, url, version, buildpath)
     try
         gh_auth = authenticate(readchomp(GIT_TOKEN_FILE))
         matches = match(r".*/(.*)/(.*\.jl)(?:.git)?$", url)
-        repo_owner = matches[1]
-        repo_name = matches[2]
+        if isnothing(matches) && name == "julia"
+            repo_owner = "Julialang"
+            repo_name = "Julia"
+        else
+            repo_owner = matches[1]
+            repo_name = matches[2]
+        end
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
         meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
