@@ -72,6 +72,8 @@ require(["jquery", "lodash"], function($, _) {
                         li = $('<li>').append(link).append(" ").append(cat)
                         $('#search-results').append(li)
                     })
+                } else {
+                    $('#search-info').text("Internal Server Error.")
                 }
             })
         }
