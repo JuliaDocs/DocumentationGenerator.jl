@@ -6,13 +6,13 @@
           <span>
             <h3 class="headline mb-0">
               <span class="pkg-owner">
-                {{details.metadata.owner}}
+                {{ details.metadata.owner }}
               </span>
               <span class="pkg-owner">
                 /
               </span>
               <span class="pkg-name">
-                {{details.name}}
+                {{ details.name }}
               </span>
             </h3>
           </span>
@@ -20,33 +20,46 @@
       </v-card-title>
 
       <v-card-text class="pb-1">
-        {{details.metadata.description}}
+        {{ details.metadata.description }}
       </v-card-text>
       <v-card-text class="py-1">
         <v-chip
+          v-for="tag in styledTags"
+          :key="tag.name"
           label
           small
-          v-on:click="clickedTag(tag)"
-          v-for="tag in styledTags"
           :outline="tag.selected"
-          :key="tag.name">
-          {{tag.name}}
+          @click="clickedTag(tag)"
+        >
+          {{ tag.name }}
         </v-chip>
       </v-card-text>
 
       <v-card-actions>
-        <span class="pl-2">{{details.metadata.stargazers_count}}</span>
-        <v-icon small>star</v-icon>
+        <span class="pl-2">{{ details.metadata.stargazers_count }}</span>
+        <v-icon small>
+          star
+        </v-icon>
         <span class="pl-2">⋅</span>
-        <span class="pl-2">{{details.version}}</span>
+        <span class="pl-2">{{ details.version }}</span>
         <span class="pl-2">⋅</span>
-        <span class="pl-2">{{details.license}}</span>
-        <v-spacer></v-spacer>
-        <v-btn flat color="primary" target="_blank" :href="details.docsfullpath">
+        <span class="pl-2">{{ details.license }}</span>
+        <v-spacer />
+        <v-btn
+          flat
+          color="primary"
+          target="_blank"
+          :href="details.docsfullpath"
+        >
           Documentation
         </v-btn>
         <!--<v-btn flat color="grey">Source</v-btn> -->
-        <v-btn flat color="primary" target = "_blank" :href="details.repo">
+        <v-btn
+          flat
+          color="primary"
+          target="_blank"
+          :href="details.repo"
+        >
           Github
         </v-btn>
       </v-card-actions>
@@ -60,11 +73,6 @@ export default {
   props: {
     details: Object
     // selectedTags: Array
-  },
-  methods: {
-    clickedTag (tag) {
-      this.$emit('tag-click', { text: tag.name })
-    }
   },
   computed: {
     styledTags () {
@@ -93,6 +101,11 @@ export default {
       } else {
         return ''
       }
+    }
+  },
+  methods: {
+    clickedTag (tag) {
+      this.$emit('tag-click', { text: tag.name })
     }
   }
 }

@@ -2,31 +2,27 @@
   <v-card>
     <v-card-title class="pb-0">
       <a
-      class="a-color"
-      :href="'https://github.com/' + data.owner + '/' + data.pkgurl + '#L' + data.line"
-      v-html="data.temp_pkgname"
-      target="_blank">
-    </a>
-  </v-card-title>
-  <v-card-text >
-    <code>
-      <span>{{ data.line }}</span>
+        class="a-color"
+        :href="'https://github.com/' + data.owner + '/' + data.pkgurl + '#L' + data.line"
+        target="_blank"
+        v-html="data.temp_pkgname"
+      />
+    </v-card-title>
+    <v-card-text>
+      <code>
+        <span>{{ data.line }}</span>
       &nbsp;
-      <span v-html="$options.filters.highlight(data.text, searchKey)">
-        {{ data.text }}
-      </span>
-    </code>
-  </v-card-text>
-</v-card>
+        <span v-html="$options.filters.highlight(data.text, searchKey)">
+          {{ data.text }}
+        </span>
+      </code>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
 export default {
   name: 'CodefilterCard',
-  props: {
-    data: Object,
-    searchKey: String
-  },
   filters: {
     highlight (words, query) {
       var str = new RegExp(query, 'ig')
@@ -34,6 +30,10 @@ export default {
         return ('<span style="background-color: #EFD469">' + matchedStr + '</span>')
       })
     }
+  },
+  props: {
+    data: Object,
+    searchKey: String
   }
 }
 </script>

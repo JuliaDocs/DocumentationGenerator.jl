@@ -1,93 +1,104 @@
 <template>
-  <v-app id="app" :dark="dark">
+  <v-app
+    id="app"
+    :dark="dark"
+  >
     <v-navigation-drawer
-    v-model="primaryDrawer.model"
-    clipped
-    overflow
-    mobile-break-point="800"
-    app
+      v-model="primaryDrawer.model"
+      clipped
+      overflow
+      mobile-break-point="800"
+      app
     >
-    <div class="px-4 pt-4">
-      <h4>Search Package by Name</h4>
-      <v-text-field
-      v-model="primaryDrawer.pkgsearchmodel"
-      :loading="primaryDrawer.loading"
-      prepend-inner-icon="search"
-      label="Package"
-      :disabled="searchFocused"
-      ></v-text-field>
-    </div>
-    <div class="px-4 pt-3">
-      <h4>Filter by Tag</h4>
-      <v-combobox
-      v-model="primaryDrawer.pkgtagmodel"
-      :loading="primaryDrawer.loading"
-      :items="tags"
-      label="Tags"
-      clearable
-      multiple
-      chips
-      :disabled="searchFocused">
-      <template slot="selection" slot-scope="data">
-        <v-tooltip right>
-          <template slot="activator">
-            <v-chip
-            close
-            label
-            small
-            @input="removeTag(data.item)">
-            <span class="filter-chip">
-              {{ data.item.text }}
-            </span>
-          </v-chip>
-        </template>
-        {{
-          data.item.text
-        }}
-      </v-tooltip>
-    </template>
-  </v-combobox>
-</div>
+      <div class="px-4 pt-4">
+        <h4>Search Package by Name</h4>
+        <v-text-field
+          v-model="primaryDrawer.pkgsearchmodel"
+          :loading="primaryDrawer.loading"
+          prepend-inner-icon="search"
+          clearable
+          label="Package"
+          :disabled="searchFocused"
+        />
+      </div>
+      <div class="px-4 pt-3">
+        <h4>Filter by Tag</h4>
+        <v-autocomplete
+          v-model="primaryDrawer.pkgtagmodel"
+          :loading="primaryDrawer.loading"
+          :items="tags"
+          label="Tags"
+          clearable
+          prepend-inner-icon="label_important"
+          multiple
+          dense
+          return-object
+          small-chips
+          auto-select-first
+          :disabled="searchFocused"
+        >
+          <template
+            slot="selection"
+            slot-scope="data"
+          >
+            <v-tooltip right>
+              <template slot="activator">
+                <v-chip
+                  :selected="data.selected"
+                  close
+                  label
+                  small
+                  @input="removeTag(data.item)"
+                >
+                  <span class="filter-chip">
+                    {{ data.item.text }}
+                  </span>
+                </v-chip>
+              </template>
+              {{
+                data.item.text
+              }}
+            </v-tooltip>
+          </template>
+        </v-autocomplete>
+      </div>
       <!-- <div class="px-4 pt-3">
         <h4>Sort by</h4>
         ...
       </div> -->
     </v-navigation-drawer>
-    <v-toolbar clipped-left app>
+    <v-toolbar
+      clipped-left
+      app
+    >
       <v-toolbar-side-icon
-      @click.stop="primaryDrawer.model = !primaryDrawer.model"
-      ></v-toolbar-side-icon>
+        @click.stop="primaryDrawer.model = !primaryDrawer.model"
+      />
       <v-img
-      :src="juliaLogo"
-      contain
-      max-width="70px"
-      height="50px"
-      >
-    </v-img>
-          <v-toolbar-title
+        :src="juliaLogo"
+        contain
+        max-width="70px"
+        height="50px"
+      />
+      <v-toolbar-title
         v-show="!($vuetify.breakpoint.xs)"
       >
         Documentation
       </v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-text-field
-    v-show="!($vuetify.breakpoint.xs)"
-    v-model="search"
-    :loading="primaryDrawer.loading"
-    @keyup.13="getfilterList"
-    @focus="searchFocused = true"
-    @blur="checkField"
-    placeholder="Search ..."
-    prepend-inner-icon="search"
-    single-line
-    flat>
-  </v-text-field>
-      <!-- <v-toolbar-items>
-        <v-text-field
-          placeholder="Search..."
-          full-width
-        ></v-text-field>
-      </v-toolbar-items> -->
+      <v-spacer />
+      <v-text-field
+        v-show="!($vuetify.breakpoint.xs)"
+        v-model="search"
+        :loading="primaryDrawer.loading"
+        placeholder="Search ..."
+        prepend-inner-icon="search"
+        single-line
+        flat
+        clearable
+        @keyup.13="getfilterList"
+        @focus="searchFocused = true"
+        @blur="checkField"
+      />
     </v-toolbar>
 
     <v-content>
@@ -95,108 +106,131 @@
       <div v-if="search != ''">
         <v-tabs>
           <v-tab>
-           Docs
-         </v-tab>
-         <v-tab>
-           Code
-         </v-tab>
-         <v-tab-item>
-          <v-card flat>
-            <v-card-text>
-             <v-flex xs12 >
-              <v-data-iterator
-              class="data-iterator pt-3"
-              :items="docfilteredLists"
-              :rows-per-page-items="[30,40,60]"
-              >
-              <v-container
-              class="py-0"
-              slot="item"
-              slot-scope="props">
-              <v-layout align-center justify-center>
+            Docs
+          </v-tab>
+          <v-tab>
+            Code
+          </v-tab>
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
                 <v-flex xs12>
-                  <DocfilterCard
-                  :searchKey="search"
-                  :data="props.item">
-                </DocfilterCard>
+                  <v-data-iterator
+                    class="data-iterator pt-3"
+                    :items="docfilteredLists"
+                    :rows-per-page-items="[30,40,60]"
+                  >
+                    <v-container
+                      slot="item"
+                      slot-scope="props"
+                      class="py-0"
+                    >
+                      <v-layout
+                        align-center
+                        justify-center
+                      >
+                        <v-flex xs12>
+                          <DocfilterCard
+                            :search-key="search"
+                            :data="props.item"
+                          />
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-data-iterator>
+                </v-flex>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <!-- Code search results displaying section -->
+                <v-data-iterator
+                  class="data-iterator pt-3"
+                  :items="codefilteredLists"
+                  :rows-per-page-items="[10,20,50]"
+                >
+                  <v-container
+                    slot="item"
+                    slot-scope="props"
+                    class="py-2"
+                  >
+                    <v-layout
+                      align-center
+                      justify-center
+                    >
+                      <v-flex xs12>
+                        <CodefilterCard
+                          :search-key="search"
+                          :data="props.item"
+                        />
+                      </v-flex>
+                    </v-layout>
+                  </v-container>
+                </v-data-iterator>
+                <!-- Code search results displaying section -->
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+        </v-tabs>
+      </div>
+      <!-- Search Section ends -->
+      <div
+        v-if="search == ''"
+        ref="content"
+      >
+        <v-data-iterator
+          class="data-iterator pt-3"
+          :items="filteredPackages"
+          :rows-per-page-items="[10,20,50]"
+        >
+          <v-container
+            slot="item"
+            slot-scope="props"
+            class="py-2"
+            fluid
+          >
+            <v-layout
+              align-center
+              justify-center
+            >
+              <v-flex xs12>
+                <PackageCard
+                  :details="props.item"
+                  @tag-click="addTagFromPackageCard"
+                />
               </v-flex>
             </v-layout>
           </v-container>
         </v-data-iterator>
-      </v-flex>
-    </v-card-text>
-  </v-card>
-</v-tab-item>
-<v-tab-item>
-  <v-card flat>
-    <v-card-text>
-      <!-- Code search results displaying section -->
-      <v-data-iterator
-      class="data-iterator pt-3"
-      :items="codefilteredLists"
-      :rows-per-page-items="[10,20,50]"
-      >
-      <v-container
-      class="py-2"
-      slot="item"
-      slot-scope="props">
-      <v-layout align-center justify-center>
-        <v-flex xs12>
-          <CodefilterCard
-          :searchKey="search"
-          :data="props.item">
-        </CodefilterCard>
-      </v-flex>
-    </v-layout>
-  </v-container>
-</v-data-iterator>
-<!-- Code search results displaying section -->
-</v-card-text>
-</v-card>
-</v-tab-item>
-</v-tabs>
-</div>
-<!-- Search Section ends -->
-<div v-if="search == ''">
-  <v-data-iterator
-  class="data-iterator pt-3"
-  :items="filteredPackages"
-  :rows-per-page-items="[10,20,50]"
-  >
-  <v-container
-  class="py-2"
-  fluid
-  slot="item"
-  slot-scope="props">
-  <v-layout align-center justify-center>
-    <v-flex xs12>
-      <PackageCard
-      v-on:tag-click="addTagFromPackageCard"
-      :details="props.item">
-    </PackageCard>
-  </v-flex>
-</v-layout>
-</v-container>
-</v-data-iterator>
-</div>
+      </div>
+    </v-content>
 
-</v-content>
-
-<v-footer app height="50px">
-  <span class="px-3">Powered by <a href = "https://juliacomputing.com/blog/2019/02/13/JuliaTeam-Vision.html" target="_blank">JuliaTeam</a></span>
-  <v-spacer></v-spacer>
-  <div class="px-3">
-    <v-switch v-model="dark" primary label="Dark"></v-switch>
-  </div>
-</v-footer>
-</v-app>
+    <v-footer
+      app
+      height="50px"
+    >
+      <span class="px-3">Powered by <a
+        href="https://juliacomputing.com/blog/2019/02/13/JuliaTeam-Vision.html"
+        target="_blank"
+      >JuliaTeam</a>.</span>
+      <v-spacer/>
+      <div class="px-3">
+        <v-switch
+          v-model="dark"
+          primary
+          label="Dark"
+        ></v-switch>
+      </div>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
 import PackageCard from './components/PackageCard.vue'
 import CodefilterCard from './components/CodefilterCard.vue'
 import DocfilterCard from './components/DocfilterCard.vue'
-import virtualList from 'vue-virtual-scroll-list'
 import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
@@ -207,10 +241,9 @@ let pkgs = []
 let pkgs_raw = {}
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     PackageCard,
-    virtualList,
     CodefilterCard,
     DocfilterCard
   },
@@ -241,7 +274,7 @@ export default {
       let loader =
       this.$loading.show({
         // Optional parameters
-        container: this.fullPage ? null : this.$refs.formContainer,
+        container: this.$refs.content,
         canCancel: true,
         color: '#009933',
         loader: 'bars',
@@ -272,7 +305,7 @@ export default {
     fetchPackages () {
       let loader = this.$loading.show({
         // Optional parameters
-        container: this.fullPage ? null : this.$refs.formContainer,
+        container: this.$refs.content,
         canCancel: true,
         color: '#009933',
         loader: 'bars',
