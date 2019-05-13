@@ -1,7 +1,6 @@
 language: julia
 os:
   - linux
-  - osx
 julia:
   - 1.1
   - nightly
@@ -10,4 +9,5 @@ notifications:
 matrix:
   allow_failures:
     - julia: nightly
-    - os: osx
+before_install:
+  - sudo apt-get install ruby bundler cmake pkg-config git libssl-dev && gem install --no-ri --no-rdoc licensee
