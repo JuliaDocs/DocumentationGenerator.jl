@@ -89,9 +89,9 @@
       <v-text-field
         v-show="!($vuetify.breakpoint.xs)"
         v-model="search"
-        :loading="primaryDrawer.loading"
         placeholder="Search ..."
         prepend-inner-icon="search"
+        :loading="searchLoading"
         single-line
         flat
         clearable
@@ -252,6 +252,7 @@ export default {
     return {
       dark: isDark,
       searchFocused: false,
+      searchLoading: false,
       drawers: ['Default (no property)', 'Permanent', 'Temporary'],
       primaryDrawer: {
         model: null,
@@ -271,15 +272,7 @@ export default {
   },
   methods: {
     getfilterList () {
-      let loader =
-      this.$loading.show({
-        // Optional parameters
-        container: this.$refs.content,
-        canCancel: true,
-        color: '#009933',
-        loader: 'bars',
-        onCancel: this.onCancel
-      })
+      this.searchLoading = true
       axios.all([
         this.request_1(),
         this.request_2()
@@ -287,8 +280,9 @@ export default {
         .then(axios.spread((doc_res, code_res) => {
           if (doc_res.data.success) { docfilterData.push(doc_res.data) }
           if (code_res.data.success) { codefilterData.push(code_res.data) }
-          loader.hide()
+          this.searchLoading = false
         })).catch(function (error) {
+          this.searchLoading = false
           console.log(error)
         })
     },
