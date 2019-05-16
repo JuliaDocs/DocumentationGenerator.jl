@@ -11,18 +11,18 @@ else
 end
 
 function license(path::String, confidence=85)
-         out = IOBuffer()
-         err = IOBuffer()
-         cmd = `/usr/local/bin/licensee detect --json --confidence=$confidence $path`
-         pipe = pipeline(cmd, stdout=out, stderr=err)
-         try
-              run(pipe)
-              output = JSON.parse((String(take!(out))))
-              return uppercase(output["licenses"][1]["key"]), output["licenses"][1]["url"]
-         catch ex
-              @info "ERROR: License detection", ex
-              return "UNKNOWN", "#"
-         end
+    out = IOBuffer()
+    err = IOBuffer()
+    cmd = `/usr/local/bin/licensee detect --json --confidence=$confidence $path`
+    pipe = pipeline(cmd, stdout=out, stderr=err)
+    try
+        run(pipe)
+        output = JSON.parse((String(take!(out))))
+        return uppercase(output["licenses"][1]["key"]), output["licenses"][1]["url"]
+    catch ex
+        @info "ERROR: License detection", ex
+        return "UNKNOWN", "#"
+    end
 end
 
 function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
@@ -144,7 +144,7 @@ function package_metadata(uuid, name, url, version, buildpath)
     @info("Querying metadata for $name")
     try
         gh_auth = authenticate(readchomp(GIT_TOKEN_FILE))
-        matches = match(r".*/(.*)/(.*\.jl)(?:.git)?$", url)
+        matches = match(r".*/(.*)/(.*(?:\.jl)?)(?:.git)?$", url)
         if isnothing(matches) && name == "julia"
             repo_owner = "JuliaLang"
             repo_name = "Julia"

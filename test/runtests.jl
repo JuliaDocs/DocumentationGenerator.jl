@@ -65,6 +65,7 @@ end
         # without docs
         (
             name = "FixedPointNumbers",
+            uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93",
             url = "https://github.com/JuliaMath/FixedPointNumbers.jl.git",
             versions = [v"0.5.3"],
             installs = [true],
@@ -73,6 +74,7 @@ end
         (
             name = "ReactionNetworkImporters",
             url = "https://github.com/isaacsas/ReactionNetworkImporters.jl.git",
+            uuid = "b4db0fb7-de2a-5028-82bf-5021f5cfa881",
             versions = [v"0.1.4"],
             installs = [true],
             doctype = ["default"],
@@ -81,6 +83,7 @@ end
         (
             name = "Example",
             url = "https://github.com/JuliaLang/Example.jl.git",
+            uuid = "7876af07-990d-54b4-ab0e-23690620f79a",
             versions = [v"0.5.1", v"0.5.2"],
             installs = [true, false],
             doctype = ["default", "real"],
@@ -88,15 +91,25 @@ end
         (
             name = "DynamicHMC",
             url = "https://github.com/tpapp/DynamicHMC.jl.git",
+            uuid = "bbc10e6e-7c05-544b-b16e-64fede858acb",
             versions = [v"1.0.4"],
             installs = [true],
             doctype = ["real"],
+        ),
+        (
+            name = "jlpkg",
+            url = "https://github.com/fredrikekre/jlpkg",
+            uuid = "c4c688b2-6cc8-11e9-1c12-6d20b663313d",
+            versions = [v"1.0.2"],
+            installs = [true],
+            doctype = ["default"],
         ),
         # with fancy docs
         # not installable (wrong julia version)
         (
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
+            uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c",
             versions = [v"0.2.2", v"0.7.3", v"0.8.2"],
             installs = [false, true, true],
             doctype = [nothing, "real", "real"],
@@ -114,11 +127,11 @@ end
     build = joinpath(basepath, "build")
     @testset "build folder" begin
         for pkg in packages
-            pkgbuild = joinpath(build, pkg.name, Base.package_slug(Pkg.METADATA_compatible_uuid(pkg.name), 5))
+            pkgbuild = joinpath(build, DocumentationGenerator.get_docs_dir(pkg.name, pkg.uuid))
             @test isdir(pkgbuild)
             for (i, version) in enumerate(pkg.versions)
                 println(pkg.name, ": ", version)
-                @test isfile(basepath, "logs", string(pkg.name, "-", Pkg.METADATA_compatible_uuid(pkg.name), " ", version, ".log"))
+                @test isfile(basepath, "logs", string(pkg.name, "-", pkg.uuid, " ", version, ".log"))
 
                 versiondir = joinpath(pkgbuild, string(version))
                 @test isdir(versiondir)
