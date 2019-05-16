@@ -14,18 +14,7 @@ function default_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = ["Docstrings" => "autodocs.md"]
-    for file in readdir(pkgroot)
-        if occursin("readme", lowercase(file))
-            readme = joinpath(pkgroot, file)
-            if isfile(readme)
-                newreadmepath = joinpath(doc_source, "index.md")
-                cp(readme, newreadmepath)
-                copylocallinks(readme, newreadmepath)
-                push!(pages, "Readme" => "index.md")
-                break
-            end
-        end
-    end
+    handle_readme(pages, pkgroot, doc_source)
     pkg_sym = Symbol(package)
     @eval Module() begin
         using Pkg
@@ -49,6 +38,35 @@ function default_docs(package, root, pkgroot)
     end
 end
 
+function handle_readme(pages, pkgroot, doc_source)
+    for file in readdir(pkgroot)
+        if occursin("readme", lowercase(file))
+            readme = joinpath(pkgroot, file)
+            if isfile(readme)
+                newreadmepath = joinpath(doc_source, "index.md")
+                rendergfm(readme, newreadmepath)
+                copylocallinks(readme, newreadmepath)
+                push!(pages, "Readme" => "index.md")
+                break
+            end
+        end
+    end
+end
+
+function rendergfm(file, fileout)
+    try
+        redcarpet = expanduser("~/.gem/ruby/2.6.0/bin/redcarpet")
+        cmd = `$(redcarpet) $(file)`
+        rendered = read(cmd, String)
+        open(fileout, "w") do io
+            println(io, "````````````@raw html\n", rendered, "\n````````````")
+        end
+    catch err
+        cp(file, fileout)
+        @error("Rendering GFM failed. Falling back to Julia implementation.", error = err)
+    end
+end
+
 """
     readme_docs(package, root, pkgroot)
 
@@ -58,18 +76,7 @@ function readme_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = []
-    for file in readdir(pkgroot)
-        if occursin("readme", lowercase(file))
-            readme = joinpath(pkgroot, file)
-            if isfile(readme)
-                newreadmepath = joinpath(doc_source, "index.md")
-                cp(readme, newreadmepath)
-                copylocallinks(readme, newreadmepath)
-                push!(pages, "Readme" => "index.md")
-                break
-            end
-        end
-    end
+    handle_readme(pages, pkgroot, doc_source)
     pkg_sym = Symbol(package)
     @eval Module() begin
         using Pkg
