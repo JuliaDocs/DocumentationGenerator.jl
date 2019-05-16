@@ -55,10 +55,11 @@ end
 
 function rendergfm(file, fileout)
     try
-        redcarpet = expanduser("~/.gem/ruby/2.6.0/bin/redcarpet")
+        redcarpet = expanduser("~/.gem/ruby/2.6.0/bin/commonmarker")
         cmd = `$(redcarpet) $(file)`
         rendered = read(cmd, String)
         open(fileout, "w") do io
+            # lots of backticks so the @raw block doesn't end prematurely
             println(io, "````````````@raw html\n", rendered, "\n````````````")
         end
     catch err
