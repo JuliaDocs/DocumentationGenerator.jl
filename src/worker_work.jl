@@ -13,7 +13,8 @@ end
 function license(path::String, confidence=85)
     out = IOBuffer()
     err = IOBuffer()
-    cmd = `/usr/local/bin/licensee detect --json --confidence=$confidence $path`
+    licensee = DocumentationGenerator.find_ruby_gem("licensee")
+    cmd = `$licensee detect --json --confidence=$confidence $path`
     pipe = pipeline(cmd, stdout=out, stderr=err)
     try
         run(pipe)

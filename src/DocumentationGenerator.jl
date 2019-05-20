@@ -55,8 +55,8 @@ end
 
 function rendergfm(file, fileout)
     try
-        redcarpet = expanduser("~/.gem/ruby/2.6.0/bin/commonmarker")
-        cmd = `$(redcarpet) $(file)`
+        commonmarker = find_ruby_gem("commonmarker")
+        cmd = `$(commonmarker) $(file)`
         rendered = read(cmd, String)
         open(fileout, "w") do io
             # lots of backticks so the @raw block doesn't end prematurely
@@ -91,6 +91,38 @@ function readme_docs(package, root, pkgroot)
             pages = $(reverse(pages))
         )
     end
+end
+
+function find_ruby_gem(gem)
+    which = Sys.iswindows() ? "where" : "which"
+    so = IOBuffer()
+    p = run(pipeline(`$which $gem`, stdout = so), wait = false)
+    # gem is on path
+    success(p) && return chomp(String(take!(so)))
+    so = IOBuffer()
+    p = run(pipeline(`$which gem`, stdout = so), wait = false)
+    if !success(p)
+        @error("`gem` not found on PATH")
+        return ""
+    end
+    gempath = chomp(String(take!(so)))
+
+    p = run(pipeline(`$gempath environment gempath`, stdout = so), wait = false)
+    if success(p)
+        paths = chomp(String(take!(so)))
+        paths = split(paths, Sys.iswindows() ? ';' : ':')
+        for path in paths
+            gempath = joinpath(path, "bin", gem)
+            isfile(gempath) && return gempath
+        end
+    end
+
+    if Sys.isunix()
+        fallback = joinpath("/usr/local/bin", gem)
+        isfile(fallback) && return fallback
+    end
+
+    return ""
 end
 
 using Markdown
