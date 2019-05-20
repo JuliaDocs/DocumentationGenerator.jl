@@ -7,7 +7,7 @@ Generate documentation for *all the packages*.
 ## Installation
 
 ```
-pkg> install DocumentationGenerator
+pkg> add DocumentationGenerator
 ```
 installs this package. Optionally you might want to install the `commonmarker` and `licensee` ruby
 gems for better license detection and GFM rendering:

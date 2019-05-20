@@ -11,5 +11,5 @@ matrix:
     - julia: nightly
 before_install:
   - sudo apt-get install ruby bundler cmake pkg-config git libssl-dev
-  - sudo gem install --no-ri --no-rdoc licensee
-  - sudo gem install --no-ri --no-rdoc commonmarker
+  - gem install --no-ri --no-rdoc licensee
+  - gem install --no-ri --no-rdoc commonmarker
