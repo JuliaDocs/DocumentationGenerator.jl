@@ -1,7 +1,10 @@
 <template>
   <v-card>
     <div :class="'package-card ' + linkactive">
-      <v-card-title primary-title>
+      <v-card-title
+        class="pb-0 pt-3"
+        primary-title
+      >
         <div>
           <span>
             <h3 class="headline mb-0">
@@ -36,32 +39,36 @@
       </v-card-text>
 
       <v-card-actions>
-        <span class="pl-2">{{ details.metadata.stargazers_count }}</span>
-        <v-icon small>
-          star
-        </v-icon>
-        <span class="pl-2">⋅</span>
-        <span class="pl-2">{{ details.version }}</span>
-        <span class="pl-2">⋅</span>
-        <span class="pl-2">{{ details.license }}</span>
-        <v-spacer />
-        <v-btn
-          flat
-          color="primary"
-          target="_blank"
-          :href="details.docsfullpath"
-        >
-          Documentation
-        </v-btn>
-        <!--<v-btn flat color="grey">Source</v-btn> -->
-        <v-btn
-          flat
-          color="primary"
-          target="_blank"
-          :href="details.repo"
-        >
-          Github
-        </v-btn>
+        <v-layout align-center row class="package-details">
+          <span class="pl-2">{{ details.metadata.stargazers_count }}</span>
+          <v-icon small>
+            star
+          </v-icon>
+          <span class="pl-2">⋅</span>
+          <span class="pl-2">{{ details.version }}</span>
+          <span class="pl-2">⋅</span>
+          <span class="pl-2">{{ details.license }}</span>
+          <v-layout align-right row>
+            <v-spacer></v-spacer>
+            <v-btn
+              flat
+              color="primary"
+              target="_blank"
+              :href="details.docsfullpath"
+            >
+              Documentation
+            </v-btn>
+            <!--<v-btn flat color="grey">Source</v-btn> -->
+            <v-btn
+              flat
+              color="primary"
+              target="_blank"
+              :href="details.repo"
+            >
+              Github
+            </v-btn>
+          </v-layout>
+        </v-layout>
       </v-card-actions>
     </div>
   </v-card>

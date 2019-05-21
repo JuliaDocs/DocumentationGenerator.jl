@@ -75,19 +75,20 @@
         @click.stop="primaryDrawer.model = !primaryDrawer.model"
       />
       <v-img
+        v-show="!($vuetify.breakpoint.xs && showSearch)"
         :src="juliaLogo"
         contain
         max-width="70px"
         height="50px"
       />
       <v-toolbar-title
-        v-show="!($vuetify.breakpoint.xs)"
+        v-show="!($vuetify.breakpoint.xs || $vuetify.breakpoint.sm)"
       >
         Documentation
       </v-toolbar-title>
       <v-spacer />
       <v-text-field
-        v-show="!($vuetify.breakpoint.xs)"
+        v-show="showSearch || !($vuetify.breakpoint.xs)"
         v-model="search"
         placeholder="Search ..."
         prepend-inner-icon="search"
@@ -95,10 +96,22 @@
         single-line
         flat
         clearable
+        autofocus
+        ref="searchField"
         @keyup.13="getfilterList"
         @focus="searchFocused = true"
-        @blur="checkField"
+        @blur="onBlurSearch"
       />
+      <v-btn
+        class="pr-0 pl-0"
+        v-show="$vuetify.breakpoint.xs && !showSearch"
+        icon
+        @click="toggleSearch"
+      >
+        <v-icon>
+          search
+        </v-icon>
+    </v-btn>
     </v-toolbar>
 
     <v-content>
@@ -183,6 +196,7 @@
         <v-data-iterator
           class="data-iterator pt-3"
           :items="filteredPackages"
+          item-key="uuid"
           :rows-per-page-items="[10,20,50]"
         >
           <v-container
@@ -235,6 +249,8 @@ import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org'
+
 let codefilterData = []
 let docfilterData = []
 let pkgs = []
@@ -251,6 +267,7 @@ export default {
     let isDark = this.$cookies.get('darkTheme') === 'true'
     return {
       dark: isDark,
+      showSearch: false,
       searchFocused: false,
       searchLoading: false,
       drawers: ['Default (no property)', 'Permanent', 'Temporary'],
@@ -261,6 +278,7 @@ export default {
         loading: false
       },
       pkgs: pkgs,
+      tags: [],
       filteredPackages: pkgs,
       search: '',
       codefilterData: codefilterData,
@@ -300,13 +318,11 @@ export default {
       let loader = this.$loading.show({
         // Optional parameters
         container: this.$refs.content,
-        canCancel: true,
         color: '#009933',
         loader: 'bars',
-        onCancel: this.onCancel
       })
       axios.get('/docs/pkgs.json')
-        .then(function (response) {
+        .then(response => {
         // handle success
           let pkgobj = response.data
           pkgs_raw = response.data
@@ -334,6 +350,7 @@ export default {
             var starsB = parseInt(b.metadata.stargazers_count) || 0
             return starsB - starsA
           })
+          this.tags = this.computeTags(pkgs)
         })
         .catch(function (error) {
           // handle error
@@ -342,6 +359,7 @@ export default {
         .then(function () {
           // always executed
           loader.hide()
+
         })
     },
     removeTag (item) {
@@ -385,33 +403,20 @@ export default {
         resolve(pkgs)
       })
     },
-    checkField (val) {
-      return this.searchFocused = this.search != ''
-    }
-  },
-  watch: {
-    'primaryDrawer.pkgtagmodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
-    'primaryDrawer.pkgsearchmodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
-    dark: function (val) {
-      this.$cookies.set('darkTheme', val)
-    }
-  },
-  computed: {
-    tags () {
+    onBlurSearch (val) {
+      this.showSearch = false
+      this.searchFocused = this.search != ''
+    },
+    toggleSearch () {
+      let willShow = !this.showSearch
+      this.showSearch = willShow
+      if (willShow) {
+        this.$nextTick(this.$refs.searchField.focus)
+      }
+    },
+    computeTags (pkgs) {
       const tags = {}
-      for (const pkg of this.$data.pkgs) {
+      for (const pkg of pkgs) {
         let stars = parseInt(pkg.metadata.stargazers_count)
         stars = isNaN(stars) ? 1 : stars
         let tag
@@ -437,7 +442,28 @@ export default {
         return b.count - a.count
       })
       return sortableTags
-    },
+    }
+  },
+  watch: {
+    'primaryDrawer.pkgtagmodel': _.debounce(function () {
+      this.$data.primaryDrawer.loading = true
+      this.filterPackages().then((result) => {
+        this.$data.filteredPackages = result
+        this.$data.primaryDrawer.loading = false
+      })
+    }, 200),
+    'primaryDrawer.pkgsearchmodel': _.debounce(function () {
+      this.$data.primaryDrawer.loading = true
+      this.filterPackages().then((result) => {
+        this.$data.filteredPackages = result
+        this.$data.primaryDrawer.loading = false
+      })
+    }, 200),
+    dark: function (val) {
+      this.$cookies.set('darkTheme', val)
+    }
+  },
+  computed: {
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.png') : require('./assets/julia-light.svg')
     },
