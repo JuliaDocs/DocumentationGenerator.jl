@@ -51,12 +51,12 @@
                   @input="removeTag(data.item)"
                 >
                   <span class="filter-chip">
-                    {{ data.item.text }}
+                    {{ data.item }}
                   </span>
                 </v-chip>
               </template>
               {{
-                data.item.text
+                data.item
               }}
             </v-tooltip>
           </template>
@@ -96,7 +96,6 @@
         single-line
         flat
         clearable
-        autofocus
         ref="searchField"
         @keyup.13="getfilterList"
         @focus="searchFocused = true"
@@ -382,7 +381,8 @@ export default {
           pkgs = pkgs.filter(pkg => {
             const pkgtags = pkg.metadata.tags.map(tag => tag.toLowerCase())
             for (const tag of selectedTags) {
-              if (pkgtags.indexOf(tag.text) === -1) {
+              console.log(tag);
+              if (pkgtags.indexOf(tag) === -1) {
                 return false
               }
             }
@@ -441,7 +441,7 @@ export default {
       sortableTags.sort(function (a, b) {
         return b.count - a.count
       })
-      return sortableTags
+      return sortableTags.map(tag => tag.text)
     }
   },
   watch: {

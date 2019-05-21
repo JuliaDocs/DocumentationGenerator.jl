@@ -112,7 +112,7 @@ export default {
   },
   methods: {
     clickedTag (tag) {
-      this.$emit('tag-click', { text: tag.name })
+      this.$emit('tag-click', tag.name)
     }
   }
 }
