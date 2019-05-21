@@ -381,7 +381,6 @@ export default {
           pkgs = pkgs.filter(pkg => {
             const pkgtags = pkg.metadata.tags.map(tag => tag.toLowerCase())
             for (const tag of selectedTags) {
-              console.log(tag);
               if (pkgtags.indexOf(tag) === -1) {
                 return false
               }
