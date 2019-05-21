@@ -10,4 +10,6 @@ matrix:
   allow_failures:
     - julia: nightly
 before_install:
-  - sudo apt-get install ruby bundler cmake pkg-config git libssl-dev && gem install --no-ri --no-rdoc licensee
+  - sudo apt-get install ruby bundler cmake pkg-config git libssl-dev
+  - gem install --no-ri --no-rdoc licensee
+  - gem install --no-ri --no-rdoc commonmarker

@@ -14,18 +14,7 @@ function default_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = ["Docstrings" => "autodocs.md"]
-    for file in readdir(pkgroot)
-        if occursin("readme", lowercase(file))
-            readme = joinpath(pkgroot, file)
-            if isfile(readme)
-                newreadmepath = joinpath(doc_source, "index.md")
-                cp(readme, newreadmepath)
-                copylocallinks(readme, newreadmepath)
-                push!(pages, "Readme" => "index.md")
-                break
-            end
-        end
-    end
+    handle_readme(pages, pkgroot, doc_source)
     pkg_sym = Symbol(package)
     @eval Module() begin
         using Pkg
@@ -49,6 +38,36 @@ function default_docs(package, root, pkgroot)
     end
 end
 
+function handle_readme(pages, pkgroot, doc_source)
+    for file in readdir(pkgroot)
+        if occursin("readme", lowercase(file))
+            readme = joinpath(pkgroot, file)
+            if isfile(readme)
+                newreadmepath = joinpath(doc_source, "index.md")
+                rendergfm(readme, newreadmepath)
+                copylocallinks(readme, newreadmepath)
+                push!(pages, "Readme" => "index.md")
+                break
+            end
+        end
+    end
+end
+
+function rendergfm(file, fileout)
+    try
+        commonmarker = find_ruby_gem("commonmarker")
+        cmd = `$(commonmarker) $(file)`
+        rendered = read(cmd, String)
+        open(fileout, "w") do io
+            # lots of backticks so the @raw block doesn't end prematurely
+            println(io, "````````````@raw html\n", rendered, "\n````````````")
+        end
+    catch err
+        cp(file, fileout)
+        @error("Rendering GFM failed. Falling back to Julia implementation.", error = err)
+    end
+end
+
 """
     readme_docs(package, root, pkgroot)
 
@@ -58,18 +77,7 @@ function readme_docs(package, root, pkgroot)
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = []
-    for file in readdir(pkgroot)
-        if occursin("readme", lowercase(file))
-            readme = joinpath(pkgroot, file)
-            if isfile(readme)
-                newreadmepath = joinpath(doc_source, "index.md")
-                cp(readme, newreadmepath)
-                copylocallinks(readme, newreadmepath)
-                push!(pages, "Readme" => "index.md")
-                break
-            end
-        end
-    end
+    handle_readme(pages, pkgroot, doc_source)
     pkg_sym = Symbol(package)
     @eval Module() begin
         using Pkg
@@ -83,6 +91,38 @@ function readme_docs(package, root, pkgroot)
             pages = $(reverse(pages))
         )
     end
+end
+
+function find_ruby_gem(gem)
+    which = Sys.iswindows() ? "where" : "which"
+    so = IOBuffer()
+    p = run(pipeline(`$which $gem`, stdout = so), wait = false)
+    # gem is on path
+    success(p) && return chomp(String(take!(so)))
+    so = IOBuffer()
+    p = run(pipeline(`$which gem`, stdout = so), wait = false)
+    if !success(p)
+        @error("`gem` not found on PATH")
+        return ""
+    end
+    gempath = chomp(String(take!(so)))
+
+    p = run(pipeline(`$gempath environment gempath`, stdout = so), wait = false)
+    if success(p)
+        paths = chomp(String(take!(so)))
+        paths = split(paths, Sys.iswindows() ? ';' : ':')
+        for path in paths
+            gempath = joinpath(path, "bin", gem)
+            isfile(gempath) && return gempath
+        end
+    end
+
+    if Sys.isunix()
+        fallback = joinpath("/usr/local/bin", gem)
+        isfile(fallback) && return fallback
+    end
+
+    return ""
 end
 
 using Markdown

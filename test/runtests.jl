@@ -59,7 +59,6 @@ const julia = first(Base.julia_cmd())
     end
 end
 
-
 @testset "documentation generation run" begin
     packages = [
         # without docs
@@ -154,4 +153,9 @@ end
     @testset "log folder" begin
 
     end
+end
+
+@testset "utils" begin
+    @test isfile(DocumentationGenerator.find_ruby_gem("licensee"))
+    @test isfile(DocumentationGenerator.find_ruby_gem("commonmarker"))
 end
