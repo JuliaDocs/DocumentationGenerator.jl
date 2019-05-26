@@ -471,10 +471,13 @@ export default {
       this.docfilterData.forEach(function (ele) {
         searchArr = []
         ele.data.forEach(function (element) {
-          let y = pkgs_raw[element.package]
-          element.sections.forEach(function (e) {
+            let y = pkgs_raw[element.package]
+            element.sections.forEach(function (e) {
             let obj = e
-            obj['pkgname'] = y.name + '.jl'
+            obj['pkgname'] = y.name + '.jl';
+            if(y.name  == "julia"){
+                obj['pkgname'] = y.name;
+            }
             obj['docsfullpath'] = location.protocol + '//' + location.host + '/' + y.docslink
             searchArr.push(obj)
           })
@@ -487,22 +490,17 @@ export default {
       this.codefilterData.forEach(function (ele) {
         codeSearchArr = []
         for (var i = 0; i < ele.data.length; i++) {
-          let x = pkgs_raw[ele.data[i].package]
-          let str = ele.data[i].file
-          let obj = ele.data[i]
-          obj['owner'] = x.metadata.owner
-          let arr = str.split('/')
-          let arr1 = str.split('/')
-          arr.splice(0, 1)
-          arr[0] = arr[0] + '.jl'
-          arr[1] = 'blob'
-          arr[2] = 'v' + arr[2]
-          obj['pkgurl'] = arr.join('/')
-          arr1.splice(0, 1)
-          arr1.splice(1, 1)
-          arr1[0] = arr1[0] + '.jl'
-          arr1[1] = 'v' + arr1[1]
-          obj['temp_pkgname'] = arr1.join('/')
+          let pkg_data = pkgs_raw[ele.data[i].package]
+          let pkg_search_data_file = ele.data[i].file
+          let pkg_search_data = ele.data[i]
+          pkg_search_data['owner'] = pkg_data.metadata.owner;
+          let search_file_parts = pkg_search_data_file.split('/');
+          let name = arr[1] == "julia" ? "julia": arr[1]+".jl";
+          let version = arr[3];
+          let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, length(search_file_parts) - 1)).join('/')
+          obj['pkg_actual_path'] = pkgurl_actual_path
+          let pkg_display_path = [name, 'v'+version].concat(search_file_parts.splice(4, length(search_file_parts) - 1)).join('/')
+          obj['pkg_display_path'] = pkg_display_path
           codeSearchArr.push(obj)
         }
       })
