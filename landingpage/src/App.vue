@@ -18,7 +18,7 @@
           prepend-inner-icon="search"
           clearable
           label="Package"
-          :disabled="searchFocused"
+          :disabled="isSearch"
         />
       </div>
       <div class="px-4 pt-3">
@@ -35,7 +35,7 @@
           return-object
           small-chips
           auto-select-first
-          :disabled="searchFocused"
+          :disabled="isSearch"
         >
           <template
             slot="selection"
@@ -74,18 +74,20 @@
       <v-toolbar-side-icon
         @click.stop="primaryDrawer.model = !primaryDrawer.model"
       />
-      <v-img
-        v-show="!($vuetify.breakpoint.xs && showSearch)"
-        :src="juliaLogo"
-        contain
-        max-width="70px"
-        height="50px"
-      />
-      <v-toolbar-title
-        v-show="!($vuetify.breakpoint.xs || $vuetify.breakpoint.sm)"
-      >
-        Documentation
-      </v-toolbar-title>
+      <router-link class="v-responsive home-link" to="/">
+        <v-img
+          v-show="!($vuetify.breakpoint.xs && showSearch)"
+          :src="juliaLogo"
+          contain
+          max-width="70px"
+          height="50px"
+        />
+        <v-toolbar-title
+          v-show="!($vuetify.breakpoint.xs || $vuetify.breakpoint.sm)"
+        >
+          Documentation
+        </v-toolbar-title>
+      </router-link>
       <v-spacer />
       <v-text-field
         v-show="showSearch || !($vuetify.breakpoint.xs)"
@@ -97,7 +99,7 @@
         flat
         clearable
         ref="searchField"
-        @keyup.13="getfilterList"
+        @keyup.13="commitSearch"
         @focus="searchFocused = true"
         @blur="onBlurSearch"
       />
@@ -115,7 +117,7 @@
 
     <v-content>
       <!-- Search Section Begins -->
-      <div v-if="search != ''">
+      <div v-if="isSearch">
         <v-tabs>
           <v-tab>
             Docs
@@ -143,7 +145,7 @@
                       >
                         <v-flex xs12>
                           <DocfilterCard
-                            :search-key="search"
+                            :search-key="searchQuery"
                             :data="props.item"
                           />
                         </v-flex>
@@ -189,7 +191,7 @@
       </div>
       <!-- Search Section ends -->
       <div
-        v-if="search == ''"
+        v-if="!isSearch"
         ref="content"
       >
         <v-data-iterator
@@ -286,32 +288,43 @@ export default {
   },
   mounted () {
     this.fetchPackages()
+    this.maybeRunSearch()
   },
   methods: {
-    getfilterList () {
-      this.searchLoading = true
-      axios.all([
-        this.request_1(),
-        this.request_2()
+    maybeRunSearch () {
+      if (this.isSearch && this.$route.query.query) {
+        this.searchPackages(this.searchQuery)
+      }
+    },
+    commitSearch () {
+      this.$router.push({
+        path: 'search',
+        query: {
+          query: this.search
+        }
+      })
+      this.searchPackages(this.search)
+    },
+    searchPackages (query) {
+      let p = axios.all([
+        axios.post('/search/docs',
+          { 'pattern': query }
+        ),
+        axios.post('/search/code',
+          { 'pattern': query }
+        )
       ])
         .then(axios.spread((doc_res, code_res) => {
-          if (doc_res.data.success) { docfilterData.push(doc_res.data) }
-          if (code_res.data.success) { codefilterData.push(code_res.data) }
-          this.searchLoading = false
+          if (doc_res.data.success) {
+            docfilterData.push(doc_res.data)
+          }
+          if (code_res.data.success) {
+            codefilterData.push(code_res.data)
+          }
         })).catch(function (error) {
-          this.searchLoading = false
           console.log(error)
         })
-    },
-    request_1 () {
-      return axios.post('/search/docs',
-        { 'pattern': this.search }
-      )
-    },
-    request_2 () {
-      return axios.post('/search/code',
-        { 'pattern': this.search }
-      )
+      return p
     },
     fetchPackages () {
       let loader = this.$loading.show({
@@ -463,8 +476,17 @@ export default {
     }
   },
   computed: {
+    isSearch () {
+      return this.$route.path.indexOf('/search') === 0
+    },
+    searchQuery () {
+      if (this.isSearch) {
+        return this.$route.query.query
+      }
+      return ''
+    },
     juliaLogo () {
-      return this.$data.dark ? require('./assets/julia-dark.png') : require('./assets/julia-light.svg')
+      return this.$data.dark ? require('./assets/julia-dark.svg') : require('./assets/julia-light.svg')
     },
     docfilteredLists () {
       let searchArr = []
@@ -513,8 +535,13 @@ export default {
 </script>
 
 <style lang="scss">
+.home-link {
+  color: inherit;
+  text-decoration: none;
+  line-height: 50px;
+}
 .filter-chip {
-  max-width: 140px;
+  max-width: 115px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

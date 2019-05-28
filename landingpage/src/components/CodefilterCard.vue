@@ -11,7 +11,7 @@
     <v-card-text>
       <code>
         <span>{{ data.line }}</span>
-      &nbsp;
+        &nbsp;
         <span v-html="$options.filters.highlight(data.text, searchKey)">
           {{ data.text }}
         </span>
@@ -42,6 +42,7 @@ export default {
 code{
   padding: 10px;
   white-space: normal;
+
   font-weight: 500;
   font-size: 90%;
   width: 100%;
