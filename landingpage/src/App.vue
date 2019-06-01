@@ -495,13 +495,13 @@ export default {
           let pkg_search_data = ele.data[i]
           pkg_search_data['owner'] = pkg_data.metadata.owner;
           let search_file_parts = pkg_search_data_file.split('/');
-          let name = arr[1] == "julia" ? "julia": arr[1]+".jl";
-          let version = arr[3];
-          let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, length(search_file_parts) - 1)).join('/')
-          obj['pkg_actual_path'] = pkgurl_actual_path
-          let pkg_display_path = [name, 'v'+version].concat(search_file_parts.splice(4, length(search_file_parts) - 1)).join('/')
-          obj['pkg_display_path'] = pkg_display_path
-          codeSearchArr.push(obj)
+          let name = search_file_parts[1] == "julia" ? "julia": search_file_parts[1]+".jl";
+          let version = search_file_parts[3];
+          let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+          pkg_search_data['pkg_actual_path'] = pkg_actual_url
+          let pkg_display_path = [name, 'v'+version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+          pkg_search_data['pkg_display_path'] = pkg_display_path
+          codeSearchArr.push(pkg_search_data)
         }
       })
       return codeSearchArr
