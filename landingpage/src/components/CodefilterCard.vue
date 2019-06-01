@@ -3,9 +3,9 @@
     <v-card-title class="pb-0">
       <a
         class="a-color"
-        :href="'https://github.com/' + data.owner + '/' + data.pkgurl + '#L' + data.line"
+        :href="'https://github.com/' + data.owner + '/' + data.pkg_actual_path + '#L' + data.line"
         target="_blank"
-        v-html="data.temp_pkgname"
+        v-html="data.pkg_display_path"
       />
     </v-card-title>
     <v-card-text>
