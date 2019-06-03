@@ -95,12 +95,13 @@
         :loading="searchLoading"
         single-line
         flat
-        clearable
         ref="searchField"
         @keyup.13="getfilterList"
         @focus="searchFocused = true"
         @blur="onBlurSearch"
-      />
+      >
+        <v-icon slot="append" v-show="search != ''" @click="handleClear">clear</v-icon>
+      </v-text-field>
       <v-btn
         class="pr-0 pl-0"
         v-show="$vuetify.breakpoint.xs && !showSearch"
@@ -401,6 +402,11 @@ export default {
         }
         resolve(pkgs)
       })
+    },
+    handleClear (event){
+      if(this.searchLoading == false){
+        this.search = '';
+      }
     },
     onBlurSearch (val) {
       this.showSearch = false
