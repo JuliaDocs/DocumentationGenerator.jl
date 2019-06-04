@@ -62,6 +62,7 @@
           </template>
         </v-autocomplete>
       </div>
+
       <!-- <div class="px-4 pt-3">
         <h4>Sort by</h4>
         ...
@@ -93,7 +94,6 @@
         v-show="showSearch || !($vuetify.breakpoint.xs)"
         v-model="search"
         placeholder="Search ..."
-        prepend-inner-icon="search"
         :loading="searchLoading"
         single-line
         flat
@@ -102,7 +102,19 @@
         @keyup.13="commitSearch"
         @focus="searchFocused = true"
         @blur="onBlurSearch"
-      />
+      >
+      <v-btn
+        slot="prepend-inner"
+        small
+        class="pa-0 ma-0"
+        icon
+        @click="commitSearch"
+      >
+        <v-icon>
+          search
+        </v-icon>
+      </v-btn>
+      </v-text-field>
       <v-btn
         class="pr-0 pl-0"
         v-show="$vuetify.breakpoint.xs && !showSearch"
@@ -117,82 +129,78 @@
 
     <v-content>
       <!-- Search Section Begins -->
-      <div v-if="isSearch">
-        <v-tabs>
-          <v-tab>
+      <div v-show="isSearch">
+        <v-tabs
+          v-model="tabModel"
+          class="tabs"
+          grow
+        >
+          <v-tab href="#docsTab">
             Docs
           </v-tab>
-          <v-tab>
+          <v-tab href="#codeTab">
             Code
           </v-tab>
-          <v-tab-item>
-            <v-card flat>
-              <v-card-text>
-                <v-flex xs12>
-                  <v-data-iterator
-                    class="data-iterator pt-3"
-                    :items="docfilteredLists"
-                    :rows-per-page-items="[30,40,60]"
-                  >
-                    <v-container
-                      slot="item"
-                      slot-scope="props"
-                      class="py-0"
-                    >
-                      <v-layout
-                        align-center
-                        justify-center
-                      >
-                        <v-flex xs12>
-                          <DocfilterCard
-                            :search-key="searchQuery"
-                            :data="props.item"
-                          />
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
-                  </v-data-iterator>
-                </v-flex>
-              </v-card-text>
-            </v-card>
-          </v-tab-item>
-          <v-tab-item>
-            <v-card flat>
-              <v-card-text>
-                <!-- Code search results displaying section -->
-                <v-data-iterator
-                  class="data-iterator pt-3"
-                  :items="codefilteredLists"
-                  :rows-per-page-items="[10,20,50]"
+          <v-tab-item value="docsTab">
+            <v-flex xs12 ref="contentSearch">
+              <v-data-iterator
+                class="data-iterator pt-3"
+                :items="docfilteredLists"
+                :rows-per-page-items="[30,40,60]"
+              >
+                <v-container
+                  slot="item"
+                  slot-scope="props"
+                  class="py-0"
                 >
-                  <v-container
-                    slot="item"
-                    slot-scope="props"
-                    class="py-2"
+                  <v-layout
+                    align-center
+                    justify-center
                   >
-                    <v-layout
-                      align-center
-                      justify-center
-                    >
-                      <v-flex xs12>
-                        <CodefilterCard
-                          :search-key="search"
-                          :data="props.item"
-                        />
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-data-iterator>
-                <!-- Code search results displaying section -->
-              </v-card-text>
-            </v-card>
+                    <v-flex xs12>
+                      <DocfilterCard
+                        :search-key="searchQuery"
+                        :data="props.item"
+                      />
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-data-iterator>
+            </v-flex>
+          </v-tab-item>
+          <v-tab-item value="codeTab">
+            <!-- Code search results displaying section -->
+            <v-data-iterator
+              class="data-iterator pt-3"
+              :items="codefilteredLists"
+              :rows-per-page-items="[10,20,50]"
+            >
+              <v-container
+                slot="item"
+                slot-scope="props"
+                class="py-2"
+              >
+                <v-layout
+                  align-center
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <CodefilterCard
+                      :search-key="searchQuery"
+                      :data="props.item"
+                    />
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-data-iterator>
+            <!-- Code search results displaying section -->
           </v-tab-item>
         </v-tabs>
       </div>
       <!-- Search Section ends -->
       <div
-        v-if="!isSearch"
-        ref="content"
+        v-show="!isSearch"
+        ref="contentPkg"
       >
         <v-data-iterator
           class="data-iterator pt-3"
@@ -250,10 +258,8 @@ import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org'
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org/'
 
-let codefilterData = []
-let docfilterData = []
 let pkgs = []
 let pkgs_raw = {}
 
@@ -282,8 +288,10 @@ export default {
       tags: [],
       filteredPackages: pkgs,
       search: '',
-      codefilterData: codefilterData,
-      docfilterData: docfilterData
+      searching: false,
+      codefilterData: [],
+      docfilterData: [],
+      tabModel: 'docsTab'
     }
   },
   mounted () {
@@ -292,20 +300,29 @@ export default {
   },
   methods: {
     maybeRunSearch () {
-      if (this.isSearch && this.$route.query.query) {
+      if (this.isSearch && this.searchQuery) {
         this.searchPackages(this.searchQuery)
+        this.search = this.searchQuery
       }
     },
     commitSearch () {
+      if (this.searching) return
+      this.searching = true
       this.$router.push({
         path: 'search',
         query: {
-          query: this.search
+          q: this.search
         }
       })
-      this.searchPackages(this.search)
+      this.searchPackages(this.search).then(() => {
+        this.searching = false
+      })
     },
     searchPackages (query) {
+      this.searchLoading = true
+      this.docfilterData = []
+      this.codefilterData = []
+
       let p = axios.all([
         axios.post('/search/docs',
           { 'pattern': query }
@@ -315,13 +332,17 @@ export default {
         )
       ])
         .then(axios.spread((doc_res, code_res) => {
+          this.searchLoading = false
+
           if (doc_res.data.success) {
-            docfilterData.push(doc_res.data)
+            this.docfilterData.push(doc_res.data)
           }
           if (code_res.data.success) {
-            codefilterData.push(code_res.data)
+            this.codefilterData.push(code_res.data)
           }
         })).catch(function (error) {
+          this.searchLoading = false
+
           console.log(error)
         })
       return p
@@ -329,8 +350,8 @@ export default {
     fetchPackages () {
       let loader = this.$loading.show({
         // Optional parameters
-        container: this.$refs.content,
-        color: '#009933',
+        container: this.$refs.contentPkg,
+        color: '#2196F3',
         loader: 'bars',
       })
       axios.get('/docs/pkgs.json')
@@ -371,7 +392,6 @@ export default {
         .then(function () {
           // always executed
           loader.hide()
-
         })
     },
     removeTag (item) {
@@ -481,7 +501,7 @@ export default {
     },
     searchQuery () {
       if (this.isSearch) {
-        return this.$route.query.query
+        return this.$route.query.q
       }
       return ''
     },
@@ -546,14 +566,13 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.data-iterator > div:first-of-type {
-  min-height: calc(100vh - 200px);
-}
+
 .no-result-spacer {
   .nothing-icon {
     font-size: 80px!important;
     opacity: 0.3;
   }
 }
+
 
 </style>
