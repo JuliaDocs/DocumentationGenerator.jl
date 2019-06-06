@@ -39,7 +39,11 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-layout align-center row class="package-details">
+        <v-layout
+          align-center
+          row
+          class="package-details"
+        >
           <span class="pl-2">{{ details.metadata.stargazers_count }}</span>
           <v-icon small>
             star
@@ -48,8 +52,11 @@
           <span class="pl-2">{{ details.version }}</span>
           <span class="pl-2">⋅</span>
           <span class="pl-2">{{ details.license }}</span>
-          <v-layout align-right row>
-            <v-spacer></v-spacer>
+          <v-layout
+            align-right
+            row
+          >
+            <v-spacer />
             <v-btn
               flat
               color="primary"
@@ -78,7 +85,7 @@
 export default {
   name: 'PackageCard',
   props: {
-    details: Object
+    details: {}
     // selectedTags: Array
   },
   computed: {
@@ -96,7 +103,7 @@ export default {
     },
     linkactive () {
       let pkg = this.$props.details
-      if (pkg.docsfullpath != '#') {
+      if (pkg.docsfullpath !== '#') {
         return 'passes'
       }
       return ''
