@@ -75,7 +75,10 @@
       <v-toolbar-side-icon
         @click.stop="primaryDrawer.model = !primaryDrawer.model"
       />
-      <router-link class="v-responsive home-link" to="/">
+      <router-link
+        class="v-responsive home-link"
+        to="/"
+      >
         <v-img
           v-show="!($vuetify.breakpoint.xs && showSearch)"
           :src="juliaLogo"
@@ -92,39 +95,39 @@
       <v-spacer />
       <v-text-field
         v-show="showSearch || !($vuetify.breakpoint.xs)"
+        ref="searchField"
         v-model="search"
         placeholder="Search ..."
         :loading="searchLoading"
         single-line
         flat
         clearable
-        ref="searchField"
         @keyup.13="commitSearch"
         @focus="searchFocused = true"
         @blur="onBlurSearch"
       >
-      <v-btn
-        slot="prepend-inner"
-        small
-        class="pa-0 ma-0"
-        icon
-        @click="commitSearch"
-      >
-        <v-icon>
-          search
-        </v-icon>
-      </v-btn>
+        <v-btn
+          slot="prepend-inner"
+          small
+          class="pa-0 ma-0"
+          icon
+          @click="commitSearch"
+        >
+          <v-icon>
+            search
+          </v-icon>
+        </v-btn>
       </v-text-field>
       <v-btn
-        class="pr-0 pl-0"
         v-show="$vuetify.breakpoint.xs && !showSearch"
+        class="pr-0 pl-0"
         icon
         @click="toggleSearch"
       >
         <v-icon>
           search
         </v-icon>
-    </v-btn>
+      </v-btn>
     </v-toolbar>
 
     <v-content>
@@ -142,7 +145,10 @@
             Code
           </v-tab>
           <v-tab-item value="docsTab">
-            <v-flex xs12 ref="contentSearch">
+            <v-flex
+              ref="contentSearch"
+              xs12
+            >
               <v-data-iterator
                 class="data-iterator pt-3"
                 :items="docfilteredLists"
@@ -238,13 +244,13 @@
         href="https://juliacomputing.com/blog/2019/02/13/JuliaTeam-Vision.html"
         target="_blank"
       >JuliaTeam</a>.</span>
-      <v-spacer/>
+      <v-spacer />
       <div class="px-3">
         <v-switch
           v-model="dark"
           primary
           label="Dark"
-        ></v-switch>
+        />
       </div>
     </v-footer>
   </v-app>
@@ -352,7 +358,7 @@ export default {
         // Optional parameters
         container: this.$refs.contentPkg,
         color: '#2196F3',
-        loader: 'bars',
+        loader: 'bars'
       })
       axios.get('/docs/pkgs.json')
         .then(response => {
@@ -513,12 +519,12 @@ export default {
       this.docfilterData.forEach(function (ele) {
         searchArr = []
         ele.data.forEach(function (element) {
-            let y = pkgs_raw[element.package]
-            element.sections.forEach(function (e) {
+          let y = pkgs_raw[element.package]
+          element.sections.forEach(function (e) {
             let obj = e
-            obj['pkgname'] = y.name + '.jl';
-            if(y.name  == "julia"){
-                obj['pkgname'] = y.name;
+            obj['pkgname'] = y.name + '.jl'
+            if (y.name == 'julia') {
+              obj['pkgname'] = y.name
             }
             obj['docsfullpath'] = location.protocol + '//' + location.host + '/' + y.docslink
             searchArr.push(obj)
@@ -535,13 +541,13 @@ export default {
           let pkg_data = pkgs_raw[ele.data[i].package]
           let pkg_search_data_file = ele.data[i].file
           let pkg_search_data = ele.data[i]
-          pkg_search_data['owner'] = pkg_data.metadata.owner;
-          let search_file_parts = pkg_search_data_file.split('/');
-          let name = search_file_parts[1] == "julia" ? "julia": search_file_parts[1]+".jl";
-          let version = search_file_parts[3];
+          pkg_search_data['owner'] = pkg_data.metadata.owner
+          let search_file_parts = pkg_search_data_file.split('/')
+          let name = search_file_parts[1] == 'julia' ? 'julia' : search_file_parts[1] + '.jl'
+          let version = search_file_parts[3]
           let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
           pkg_search_data['pkg_actual_path'] = pkg_actual_url
-          let pkg_display_path = [name, 'v'+version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+          let pkg_display_path = [name, 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
           pkg_search_data['pkg_display_path'] = pkg_display_path
           codeSearchArr.push(pkg_search_data)
         }
@@ -571,6 +577,5 @@ export default {
     opacity: 0.3;
   }
 }
-
 
 </style>
