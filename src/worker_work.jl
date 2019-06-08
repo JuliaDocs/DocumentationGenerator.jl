@@ -132,6 +132,15 @@ end
 
 function package_metadata(uuid, name, url, version, buildpath)
     meta = Dict()
+    matches = match(r".*/(.*)/(.*(?:\.jl)?)(?:.git)?$", url)
+    if isnothing(matches) && name == "julia"
+        repo_owner = "JuliaLang"
+        repo_name = "Julia"
+    else
+        repo_owner = matches[1]
+        repo_name = matches[2]
+    end
+    meta["owner"] = repo_owner
     authpath = GIT_TOKEN_FILE
     if !isfile(authpath)
         @warn("No GitHub token found. Skipping metadata retrieval.")
@@ -144,15 +153,6 @@ function package_metadata(uuid, name, url, version, buildpath)
 
     @info("Querying metadata for $name")
     try
-        matches = match(r".*/(.*)/(.*(?:\.jl)?)(?:.git)?$", url)
-        if isnothing(matches) && name == "julia"
-            repo_owner = "JuliaLang"
-            repo_name = "Julia"
-        else
-            repo_owner = matches[1]
-            repo_name = matches[2]
-        end
-        meta["owner"] = repo_owner
         gh_auth = authenticate(readchomp(GIT_TOKEN_FILE))
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
