@@ -502,8 +502,9 @@ export default {
     }
   },
   computed: {
-    isSearch () {
-      return this.$route.path.indexOf('/search') === 0
+      isSearch () {
+          let search_path_parts = this.$route.path.split("/");
+          return search_path_parts[search_path_parts.length - 1] == "search";
     },
     searchQuery () {
       if (this.isSearch) {
