@@ -51,7 +51,7 @@
           <span class="pl-2">⋅</span>
           <span class="pl-2">{{ details.version }}</span>
           <span class="pl-2">⋅</span>
-          <span class="pl-2">{{ details.license }}</span>
+          <span class="pl-2">{{ details.metadata.license }}</span>
           <v-layout
             align-right
             row

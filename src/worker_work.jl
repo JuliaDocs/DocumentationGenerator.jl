@@ -141,6 +141,7 @@ function package_metadata(uuid, name, url, version, buildpath)
         repo_name = matches[2]
     end
     meta["owner"] = repo_owner
+    meta["license"], meta["license_url"] = license(joinpath(buildpath, "_packagesource"))
     authpath = GIT_TOKEN_FILE
     if !isfile(authpath)
         @warn("No GitHub token found. Skipping metadata retrieval.")
@@ -157,7 +158,6 @@ function package_metadata(uuid, name, url, version, buildpath)
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
         meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
-        meta["license"], meta["license_url"] = license(joinpath(buildpath, "_packagesource"))
         topics_dict, page = topics(repo_info, auth = gh_auth)
         meta["tags"] = something(topics_dict["names"], [])
         meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
