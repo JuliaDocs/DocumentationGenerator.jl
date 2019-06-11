@@ -109,7 +109,7 @@ end
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
             uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c",
-            versions = [v"0.2.2", v"0.7.3", v"0.8.2"],
+            versions = [v"0.2.2", v"0.7.3", v"0.8.3"],
             installs = [false, true, true],
             doctype = [nothing, "real", "real"],
         ),
