@@ -11,6 +11,7 @@ using Documenter
 Generates a default documentation for a package without Documenter.jl docs.
 """
 function default_docs(package, root, pkgroot)
+    @info("Generating default fallback docs (readme + exported methods).")
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = ["Docstrings" => "autodocs.md"]
@@ -74,6 +75,7 @@ end
 Generates README based fallback docs when the package installs but can't be loaded.
 """
 function readme_docs(package, root, pkgroot)
+    @info("Generating readme-only fallback docs.")
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = []
@@ -156,6 +158,25 @@ function recurseMDcontents(md, links)
 end
 recurseMDcontents(md::Markdown.Link, links) = push!(links, md.url)
 recurseMDcontents(md::Markdown.Image, links) = push!(links, md.url)
+
+function parse_metadata_toml(root)
+    metadata_path = joinpath(root, "Metadata.toml")
+    if isfile(metadata_path)
+        toml = Pkg.TOML.parsefile(metadata_path)
+        docs = get(toml, "DocumentationGenerator", Dict())
+        docs isa Array || (docs = [docs])
+        if haskey(first(docs), "method") && haskey(first(docs), "location")
+            return [
+                (doc["method"], doc["location"]) for doc in docs
+            ]
+        else
+            @warn("`Metadata.toml` has incorrect specification. Falling back to `vendored` docs.")
+        end
+    else
+        @warn("No `Metadata.toml` found. Falling back to `vendored` docs.")
+    end
+    return [("vendored", joinpath(root, "docs"))]
+end
 
 function parseall(str)
     pos = firstindex(str)
@@ -240,7 +261,7 @@ function install_and_use(pspec)
     try
         Pkg.add(pspec)
     catch e
-        @info "Pkg build failed for ", pspec, "due to ", e
+        @warn("Pkg build failed for ", pspec, " due to ", e)
     end
     pkg_sym = Symbol(pspec.name)
 
@@ -248,6 +269,7 @@ function install_and_use(pspec)
     pkg_module = try
         @eval(Main, (using $pkg_sym; $pkg_sym))
     catch e
+        @warn("Could not load `$pkg_sym`.")
         nothing
     end
     pkgdir = Base.find_package(pspec.name)
