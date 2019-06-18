@@ -113,6 +113,15 @@ end
             installs = [false, true, true],
             doctype = [nothing, "real", "real"],
         ),
+        # with hosted docs
+        (
+            name = "Juno",
+            url = "https://github.com/JunoLab/Juno.jl.git",
+            uuid = "e5e0dc1b-0480-54bc-9374-aad01c23163d",
+            versions = [v"0.7.0"],
+            installs = [true],
+            doctype = ["real"]
+        ),
     ]
 
     basepath = @__DIR__

@@ -26,39 +26,33 @@ function license(path::String, confidence=85)
     end
 end
 
-function create_docs(pspec::Pkg.Types.PackageSpec, buildpath)
+function create_docs(pspec::Pkg.Types.PackageSpec, buildpath, registry)
     _module, rootdir = DocumentationGenerator.install_and_use(pspec)
     pkgname = pspec.name
 
-    methods = DocumentationGenerator.parse_metadata_toml(rootdir)
-    @info methods
-    for method in methods
-        errored = false
-        type, uri = method
-        @info "$(pkgname) specifies docs of type $(type)"
-        out = try
-            if type == "git-repo"
-                @info("building `git-repo` docs")
-                build_git_docs(pkgname, rootdir, buildpath, uri)
-            elseif type == "hosted"
-                @info("building `hosted` docs")
-                build_hosted_docs(pkgname, rootdir, buildpath, uri)
-            elseif type == "vendored"
-                @info("building `vendored` docs")
-                build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
-            else
-                @error("invalid doctype: $type")
-                :nope, ""
-            end
-        catch err
-            @error("Error building docs of type `$type`:", exception = err)
-            errored = true
-        end
+    type, uri = DocumentationGenerator.get_method_from_registry(pspec, registry, rootdir)
 
-        if !errored
-            return out
+    @info "$(pkgname) specifies docs of type $(type)"
+    out = try
+        if type == "git-repo"
+            @info("building `git-repo` docs")
+            build_git_docs(pkgname, rootdir, buildpath, uri)
+        elseif type == "hosted"
+            @info("building `hosted` docs")
+            build_hosted_docs(pkgname, rootdir, buildpath, uri)
+        elseif type == "vendored"
+            @info("building `vendored` docs")
+            build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
+        else
+            @error("invalid doctype: $type")
+            :nope, ""
         end
+    catch err
+        @error("Error building docs of type `$type`:", exception = err)
+        errored = true
     end
+
+    return out
 end
 
 function build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
@@ -154,7 +148,7 @@ function build_git_docs(pkgname, rootdir, buildpath, uri)
     return :real, rootdir
 end
 
-function package_docs(uuid, name, url, version, buildpath)
+function package_docs(uuid, name, url, version, buildpath, registry)
     pspec = PackageSpec(uuid = uuid, name = name, version = version)
     @info("Generating docs for $name")
     doctype = :default
@@ -177,7 +171,7 @@ function package_docs(uuid, name, url, version, buildpath)
                 end
             else
                 Pkg.activate(envdir)
-                doctype, rootdir = create_docs(pspec, buildpath)
+                doctype, rootdir = create_docs(pspec, buildpath, registry)
                 meta["doctype"] = string(doctype)
                 meta["installs"] = true
                 @info("Done generating docs for $name")
@@ -195,13 +189,15 @@ end
 
 function monkeypatchdocsearch(uuid, name, buildpath)
     if !(get(ENV, "DISABLE_CENTRALIZED_SEARCH", false) in ("true", "1", 1))
-        @info "monkey patching search.js for $(name)"
         searchjs = joinpath(buildpath, "assets", "search.js")
-        rm(searchjs, force=true)
-        template = String(read(joinpath(@__DIR__, "search.js.template")))
-        template = replace(template, "{{{UUID}}}" => String(uuid))
-        open(searchjs, "w") do io
-            print(io, template)
+        if isfile(searchjs)
+            @info "monkey patching search.js for $(name)"
+            rm(searchjs, force=true)
+            template = String(read(joinpath(@__DIR__, "search.js.template")))
+            template = replace(template, "{{{UUID}}}" => String(uuid))
+            open(searchjs, "w") do io
+                print(io, template)
+            end
         end
     end
 end
@@ -253,8 +249,8 @@ function package_source(uuid, name, rootdir, buildpath)
     @info("Done copying source code for $(name)-$(uuid)")
 end
 
-function build(uuid, name, url, version, buildpath)
-    meta = package_docs(uuid, name, url, version, buildpath)
+function build(uuid, name, url, version, buildpath, registry)
+    meta = package_docs(uuid, name, url, version, buildpath, registry)
     merge!(meta, package_metadata(uuid, name, url, version, buildpath))
     @info "making buildpath"
     isdir(buildpath) || mkpath(joinpath(buildpath))
