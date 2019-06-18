@@ -411,7 +411,7 @@ function download_registry(basepath)
         rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
         cd(basepath)
         # FIXME: change URL to JuliaDocs/DocumentationGeneratorRegistry.git
-        run(`git clone --depth=1 git@github.com:pfitzseb/DocumentationGeneratorRegistry.git DocumentationGeneratorRegistry`)
+        run(`git clone --depth=1 https://github.com/pfitzseb/DocumentationGeneratorRegistry.git DocumentationGeneratorRegistry`)
         tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
         @assert isfile(tomlpath)
         return tomlpath
