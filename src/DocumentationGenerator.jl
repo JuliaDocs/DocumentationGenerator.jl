@@ -163,9 +163,8 @@ function get_method_from_registry(pspec, registry, root)
     if isfile(registry)
         uuid = string(pspec.uuid)
         toml = Pkg.TOML.parsefile(registry)
-        docs = get(toml, "packages", Dict())
-        if haskey(docs, uuid)
-            pkg = docs[uuid]
+        if haskey(toml, uuid)
+            pkg = toml[uuid]
             if haskey(pkg, "method") && haskey(pkg, "location")
                 return (pkg["method"], pkg["location"])
             else
@@ -406,12 +405,12 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
     allpkgs
 end
 
+const DOCS_REGISTRY = "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git"
 function download_registry(basepath)
     try
         rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
         cd(basepath)
-        # FIXME: change URL to JuliaDocs/DocumentationGeneratorRegistry.git
-        run(`git clone --depth=1 https://github.com/pfitzseb/DocumentationGeneratorRegistry.git DocumentationGeneratorRegistry`)
+        run(`git clone --depth=1 $DOCS_REGISTRY DocumentationGeneratorRegistry`)
         tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
         @assert isfile(tomlpath)
         return tomlpath
