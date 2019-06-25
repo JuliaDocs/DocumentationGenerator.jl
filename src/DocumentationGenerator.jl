@@ -406,16 +406,25 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
 end
 
 const DOCS_REGISTRY = "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git"
-function download_registry(basepath)
-    try
-        rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
-        cd(basepath)
-        run(`git clone --depth=1 $DOCS_REGISTRY DocumentationGeneratorRegistry`)
-        tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
-        @assert isfile(tomlpath)
-        return tomlpath
-    catch err
-        @warn "Couldn't download docs registry." exception = err
+function download_registry(basepath; sync = true)
+    tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
+    if sync
+        try
+            rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
+            cd(basepath)
+            run(`git clone --depth=1 $DOCS_REGISTRY DocumentationGeneratorRegistry`)
+            @assert isfile(tomlpath)
+            return tomlpath
+        catch err
+            @warn("Couldn't download docs registry.", exception = err)
+        end
+    else
+        if isfile(tomlpath)
+            return tomlpath
+        else
+            @warn("No registry found at `$(tomlpath)`. Cloning again.")
+            return download_registry(basepath; sync = true)
+        end
     end
     return ""
 end
@@ -462,11 +471,8 @@ function build_documentations(
         filter_versions = last,
         sync_registry = true
     )
-    regpath = if sync_registry
-        download_registry(basepath)
-    else
-        joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
-    end
+    regpath = download_registry(basepath, sync = sync_registry)
+
     process_queue = []
     for package in packages
         uuid = get(package, :uuid, nothing)
