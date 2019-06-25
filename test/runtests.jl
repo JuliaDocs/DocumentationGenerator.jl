@@ -5,7 +5,7 @@ const julia = first(Base.julia_cmd())
 
 @test length(DocumentationGenerator.installable_on_version()) > 1500
 
-@testset "run with timeout" begin
+@testset "Running code with a timeout" begin
     let
         tempfile = tempname()
         str = """
@@ -59,7 +59,7 @@ const julia = first(Base.julia_cmd())
     end
 end
 
-@testset "documentation generation run" begin
+@testset "Documentation Generation" begin
     packages = [
         # without docs
         (
@@ -113,6 +113,15 @@ end
             installs = [false, true, true],
             doctype = [nothing, "real", "real"],
         ),
+        # with hosted docs
+        (
+            name = "Juno",
+            url = "https://github.com/JunoLab/Juno.jl.git",
+            uuid = "e5e0dc1b-0480-54bc-9374-aad01c23163d",
+            versions = [v"0.7.0"],
+            installs = [true],
+            doctype = ["real"]
+        ),
     ]
 
     basepath = @__DIR__
@@ -128,8 +137,7 @@ end
         for pkg in packages
             pkgbuild = joinpath(build, DocumentationGenerator.get_docs_dir(pkg.name, pkg.uuid))
             @test isdir(pkgbuild)
-            for (i, version) in enumerate(pkg.versions)
-                println(pkg.name, ": ", version)
+            @testset "$(pkg.name): $(version)" for (i, version) in enumerate(pkg.versions)
                 @test isfile(basepath, "logs", string(pkg.name, "-", pkg.uuid, " ", version, ".log"))
 
                 versiondir = joinpath(pkgbuild, string(version))
@@ -150,12 +158,21 @@ end
             end
         end
     end
-    @testset "log folder" begin
-
-    end
 end
 
-@testset "utils" begin
+@testset "Ruby Gems" begin
     @test isfile(DocumentationGenerator.find_ruby_gem("licensee"))
     @test isfile(DocumentationGenerator.find_ruby_gem("commonmarker"))
+end
+
+@testset "Documentation Registry" begin
+    mktempdir() do dir
+        reg = DocumentationGenerator.download_registry(dir)
+        @test isfile(reg)
+        toml = Pkg.TOML.parsefile(reg)
+        @test length(keys(toml)) > 0
+        @test haskey(toml, "e5e0dc1b-0480-54bc-9374-aad01c23163d")
+        junosettings = toml["e5e0dc1b-0480-54bc-9374-aad01c23163d"]
+        @test junosettings["method"] == "hosted"
+    end
 end

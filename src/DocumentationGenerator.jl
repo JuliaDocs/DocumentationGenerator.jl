@@ -11,6 +11,7 @@ using Documenter
 Generates a default documentation for a package without Documenter.jl docs.
 """
 function default_docs(package, root, pkgroot)
+    @info("Generating default fallback docs (readme + exported methods).")
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = ["Docstrings" => "autodocs.md"]
@@ -74,6 +75,7 @@ end
 Generates README based fallback docs when the package installs but can't be loaded.
 """
 function readme_docs(package, root, pkgroot)
+    @info("Generating readme-only fallback docs.")
     doc_source = joinpath(root, "src")
     mkpath(doc_source)
     pages = []
@@ -156,6 +158,26 @@ function recurseMDcontents(md, links)
 end
 recurseMDcontents(md::Markdown.Link, links) = push!(links, md.url)
 recurseMDcontents(md::Markdown.Image, links) = push!(links, md.url)
+
+function get_method_from_registry(pspec, registry, root)
+    if isfile(registry)
+        uuid = string(pspec.uuid)
+        toml = Pkg.TOML.parsefile(registry)
+        if haskey(toml, uuid)
+            pkg = toml[uuid]
+            if haskey(pkg, "method") && haskey(pkg, "location")
+                return (pkg["method"], pkg["location"])
+            else
+                @warn("Invalid registry entry for $(pspec.name).")
+            end
+        else
+            @warn("$(pspec.name) ($(uuid)) not found in registry.")
+        end
+    else
+        @warn("No registry found. Falling back to `vendored` docs.")
+    end
+    return ("vendored", joinpath(root, "docs"))
+end
 
 function parseall(str)
     pos = firstindex(str)
@@ -240,7 +262,7 @@ function install_and_use(pspec)
     try
         Pkg.add(pspec)
     catch e
-        @info "Pkg build failed for ", pspec, "due to ", e
+        @warn("Pkg build failed for ", pspec, " due to ", e)
     end
     pkg_sym = Symbol(pspec.name)
 
@@ -248,6 +270,7 @@ function install_and_use(pspec)
     pkg_module = try
         @eval(Main, (using $pkg_sym; $pkg_sym))
     catch e
+        @warn("Could not load `$pkg_sym`.")
         nothing
     end
     pkgdir = Base.find_package(pspec.name)
@@ -382,6 +405,21 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
     allpkgs
 end
 
+const DOCS_REGISTRY = "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git"
+function download_registry(basepath)
+    try
+        rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
+        cd(basepath)
+        run(`git clone --depth=1 $DOCS_REGISTRY DocumentationGeneratorRegistry`)
+        tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
+        @assert isfile(tomlpath)
+        return tomlpath
+    catch err
+        @warn "Couldn't download docs registry." exception = err
+    end
+    return ""
+end
+
 get_docs_dir(name, uuid) = get_docs_dir(name, UUID(uuid))
 get_docs_dir(name, uuid::UUID) = joinpath(name, Base.package_slug(uuid, 5))
 
@@ -396,7 +434,8 @@ Note that this will overwrite previous builds/logs.
 function build_documentation(uuid, name, url, version;
                              basepath = joinpath(@__DIR__, ".."),
                              envpath = normpath(joinpath(@__DIR__, "..")),
-                             juliacmd = first(Base.julia_cmd()))
+                             juliacmd = first(Base.julia_cmd()),
+                             registry_path = "")
     workerfile = joinpath(@__DIR__, "worker_work.jl")
     buildpath = joinpath(basepath, "build")
     logpath = joinpath(basepath, "logs")
@@ -407,8 +446,8 @@ function build_documentation(uuid, name, url, version;
     builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
     logfile = joinpath(logpath, "$(name)-$(uuid) $version.log")
-    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no -O0 $workerfile $uuid $name $url $version $builddir`
-    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name, "-", uuid))
+    cmd = `$(juliacmd) --project=$(envpath) --color=no --compiled-modules=no -O0 $workerfile $uuid $name $url $version $builddir $registry_path`
+    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for package ", name, " (", uuid, ")"))
     return process
 end
 
@@ -422,6 +461,7 @@ function build_documentations(
         envpath = normpath(joinpath(@__DIR__, "..")),
         filter_versions = last
     )
+    regpath = download_registry(basepath)
     process_queue = []
     for package in packages
         uuid = get(package, :uuid, nothing)
@@ -438,11 +478,11 @@ function build_documentations(
         process = nothing
         if !haskey(package, :latest_docs_version)
             for version in vcat(filter_versions(sort(package.versions, rev=true)))
-                process = build_documentation(uuid, package.name, package.url, version, envpath = envpath, basepath = basepath, juliacmd = juliacmd)
+                process = build_documentation(uuid, package.name, package.url, version, envpath = envpath, basepath = basepath, juliacmd = juliacmd, registry_path = regpath)
                 push!(process_queue, process)
             end
         else
-            process = build_documentation(uuid, package.name, package.repo, package.latest_docs_version, envpath = envpath, basepath = basepath, juliacmd = juliacmd)
+            process = build_documentation(uuid, package.name, package.repo, package.latest_docs_version, envpath = envpath, basepath = basepath, juliacmd = juliacmd, registry_path = regpath)
             push!(process_queue, process)
         end
     end
