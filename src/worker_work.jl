@@ -204,14 +204,13 @@ end
 
 function package_metadata(uuid, name, url, version, buildpath)
     meta = Dict()
-    matches = match(r".*/(.*)/(.*(?:\.jl)?)(?:.git)?$", url)
+    matches = match(r".*/(.*)/(.*?(?:\.jl)?)(?:.git)?$", url)
     if isnothing(matches) && name == "julia"
         repo_owner = "JuliaLang"
         repo_name = "Julia"
     else
         repo_owner = matches[1]
-        ## Need a better way to do this
-        repo_name = split(matches[2], ".git")[1]
+        repo_name = matches[2]
     end
     meta["owner"] = repo_owner
     meta["license"], meta["license_url"] = license(joinpath(buildpath, "_packagesource"))
