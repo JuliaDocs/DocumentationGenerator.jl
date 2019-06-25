@@ -459,9 +459,14 @@ function build_documentations(
         juliacmd = first(Base.julia_cmd()),
         basepath = joinpath(@__DIR__, ".."),
         envpath = normpath(joinpath(@__DIR__, "..")),
-        filter_versions = last
+        filter_versions = last,
+        sync_registry = true
     )
-    regpath = download_registry(basepath)
+    regpath = if sync_registry
+        download_registry(basepath)
+    else
+        joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
+    end
     process_queue = []
     for package in packages
         uuid = get(package, :uuid, nothing)
