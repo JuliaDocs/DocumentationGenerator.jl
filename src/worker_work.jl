@@ -4,7 +4,7 @@ using JSON
 
 include("DocumentationGenerator.jl")
 
-const GIT_TOKEN_FILE = if isfile(joinpath("config", "sync", "gh_auth.txt"))
+const GIT_TOKEN_FILE = if isfile(joinpath("/config", "sync", "gh_auth.txt"))
     joinpath("/config/sync", "gh_auth.txt")
 else
     joinpath(@__DIR__, "gh_auth.txt")
