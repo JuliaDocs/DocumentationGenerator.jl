@@ -144,6 +144,10 @@
           <v-tab href="#codeTab">
             Code
           </v-tab>
+          <v-tab href="#symbolTab">
+            Symbol
+          </v-tab>
+          <!-- Docs search results. Begins -->
           <v-tab-item value="docsTab">
             <v-flex
               ref="contentSearch"
@@ -164,7 +168,7 @@
                     justify-center
                   >
                     <v-flex xs12>
-                      <DocfilterCard
+                      <FilterCard
                         :search-key="searchQuery"
                         :data="props.item"
                       />
@@ -174,8 +178,9 @@
               </v-data-iterator>
             </v-flex>
           </v-tab-item>
+          <!-- Docs search results. Ends -->
+          <!-- Code search results. Begins -->
           <v-tab-item value="codeTab">
-            <!-- Code search results displaying section -->
             <v-data-iterator
               class="data-iterator pt-3"
               :items="codefilteredLists"
@@ -191,7 +196,7 @@
                   justify-center
                 >
                   <v-flex xs12>
-                    <CodefilterCard
+                    <FilterCard
                       :search-key="searchQuery"
                       :data="props.item"
                     />
@@ -199,8 +204,58 @@
                 </v-layout>
               </v-container>
             </v-data-iterator>
-            <!-- Code search results displaying section -->
           </v-tab-item>
+          <!-- Code search results. Ends -->
+          <!-- Symbol search results. Begins -->
+          <v-tab-item value="symbolTab">
+            <v-layout row justify-space-between class="px-4 pt-3">
+              <v-flex xs1>
+                <h4 class="mt-4">Filter by</h4>
+              </v-flex>
+              <!-- Usage filter section. Begins -->
+              <v-flex xs5>
+                <v-select
+                  v-model="symbolSearch.filterByUsage"
+                  :items="symbolSearch.usageOptions"
+                  label="usage"
+                ></v-select>
+              </v-flex>
+              <!-- Usage filter section. Ends -->
+              <!-- Type filter section. Begins --> 
+              <v-flex xs5>
+                <v-select
+                  v-model="symbolSearch.filterByType"
+                  :items="symbolSearch.typeOptions"
+                  label="type"
+                ></v-select>
+              </v-flex>
+              <!-- Type filter section. Ends -->
+            </v-layout>
+            <v-data-iterator
+              class="data-iterator pt-3"
+              :items="filterSymbolLists"
+              :rows-per-page-items="[10,20,50]"
+            >
+              <v-container
+                slot="item"
+                slot-scope="props"
+                class="py-2"
+              >
+                <v-layout
+                  align-center
+                  justify-center
+                >
+                  <v-flex xs12>
+                    <FilterCard
+                      :search-key="searchQuery"
+                      :data="props.item"
+                    />
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-data-iterator>
+          </v-tab-item>
+          <!-- Code search results. Ends -->
         </v-tabs>
       </div>
       <!-- Search Section ends -->
@@ -258,13 +313,12 @@
 
 <script>
 import PackageCard from './components/PackageCard.vue'
-import CodefilterCard from './components/CodefilterCard.vue'
-import DocfilterCard from './components/DocfilterCard.vue'
+import FilterCard from './components/FilterCard.vue'
 import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org/'
+// axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org/'
 
 let pkgs = []
 let pkgs_raw = {}
@@ -273,8 +327,7 @@ export default {
   name: 'App',
   components: {
     PackageCard,
-    CodefilterCard,
-    DocfilterCard
+    FilterCard
   },
   data: function () {
     let isDark = this.$cookies.get('darkTheme') === 'true'
@@ -297,7 +350,14 @@ export default {
       searching: false,
       codefilterData: [],
       docfilterData: [],
-      tabModel: 'docsTab'
+      symbolfilterData: [],
+      tabModel: 'docsTab',
+      symbolSearch: {
+        filterByUsage: '',
+        filterByType: '',
+        usageOptions: ['all', 'use', 'define'],
+        typeOptions: ['all', 'function', 'type', 'macro', 'module']
+      }
     }
   },
   mounted () {
@@ -323,35 +383,6 @@ export default {
       this.searchPackages(this.search).then(() => {
         this.searching = false
       })
-    },
-    searchPackages (query) {
-      this.searchLoading = true
-      this.docfilterData = []
-      this.codefilterData = []
-
-      let p = axios.all([
-        axios.post('/search/docs',
-          { 'pattern': query }
-        ),
-        axios.post('/search/code',
-          { 'pattern': query }
-        )
-      ])
-        .then(axios.spread((doc_res, code_res) => {
-          this.searchLoading = false
-
-          if (doc_res.data.success) {
-            this.docfilterData.push(doc_res.data)
-          }
-          if (code_res.data.success) {
-            this.codefilterData.push(code_res.data)
-          }
-        })).catch(function (error) {
-          this.searchLoading = false
-
-          console.log(error)
-        })
-      return p
     },
     fetchPackages () {
       let loader = this.$loading.show({
@@ -400,6 +431,36 @@ export default {
           loader.hide()
         })
     },
+    searchPackages (query) {
+      this.searchLoading = true
+      this.docfilterData = []
+      this.codefilterData = []
+
+      let p = axios.all([
+        axios.get('/search/docs'
+        ),
+        axios.get('/search/code'
+        ),
+        axios.get('/search/sym'
+        )
+      ])
+        .then(axios.spread((doc_res, code_res, sym_res) => {
+          this.searchLoading = false
+          if (doc_res.data.success) {
+            this.docfilterData.push(doc_res.data)
+          }
+          if (code_res.data.success) {
+            this.codefilterData.push(code_res.data)
+          }
+          if (sym_res.data.success) {
+            this.symbolfilterData.push(sym_res.data)
+          }
+        })).catch(function (error) {
+          this.searchLoading = false
+          console.log(error)
+        })
+      return p
+    },
     removeTag (item) {
       let tags = this.primaryDrawer.pkgtagmodel
       tags.splice(tags.indexOf(item), 1)
@@ -434,12 +495,41 @@ export default {
             key: 'name',
             limit: Infinity,
             threshold: -Infinity
-
           })
           pkgs = pkgs.map(pkg => pkg.obj)
         }
         resolve(pkgs)
       })
+    },
+    // Function used to further filter the symbol search based on its usage and type. Begins here
+    getBySymUsage(list, keyword) {
+      const search = keyword
+      if (!search.length || search == 'all') return list
+      return list.filter(item => item.usage.indexOf(search) > -1)
+    },
+    getBySymType(list, keyword) {
+      const search = keyword
+      if (!search.length || search == 'all') return list
+      return list.filter(item => item.type.indexOf(search) > -1)
+    },
+    // Function used to further filter the symbol search based on its usage and type. Ends here
+    filterSearchData (data) {
+      let arr = []
+      for (var i = 0; i < data.length; i++) {
+          let pkg_data = pkgs_raw[data[i].package]
+          let pkg_search_data_file = data[i].file
+          let pkg_search_data = data[i]
+          pkg_search_data['owner'] = pkg_data.metadata ? pkg_data.metadata.owner : 'JuliaLang'
+          let search_file_parts = pkg_search_data_file.split('/')
+          let name = search_file_parts[1] == 'julia' ? 'julia' : search_file_parts[1] + '.jl'
+          let version = search_file_parts[3]
+          let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+          pkg_search_data['pkg_actual_path'] = pkg_actual_url
+          let pkg_display_path = [name, 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+          pkg_search_data['pkg_display_path'] = pkg_display_path
+          arr.push(pkg_search_data)
+        }
+      return arr
     },
     onBlurSearch (val) {
       this.showSearch = false
@@ -528,6 +618,7 @@ export default {
               obj['pkgname'] = y.name
             }
             obj['docsfullpath'] = location.protocol + '//' + location.host + '/' + y.docslink
+            obj['isDoc'] = true
             searchArr.push(obj)
           })
         })
@@ -536,24 +627,19 @@ export default {
     },
     codefilteredLists () {
       let codeSearchArr = []
+      var self = this
       this.codefilterData.forEach(function (ele) {
-        codeSearchArr = []
-        for (var i = 0; i < ele.data.length; i++) {
-          let pkg_data = pkgs_raw[ele.data[i].package]
-          let pkg_search_data_file = ele.data[i].file
-          let pkg_search_data = ele.data[i]
-          pkg_search_data['owner'] = pkg_data.metadata.owner
-          let search_file_parts = pkg_search_data_file.split('/')
-          let name = search_file_parts[1] == 'julia' ? 'julia' : search_file_parts[1] + '.jl'
-          let version = search_file_parts[3]
-          let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
-          pkg_search_data['pkg_actual_path'] = pkg_actual_url
-          let pkg_display_path = [name, 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
-          pkg_search_data['pkg_display_path'] = pkg_display_path
-          codeSearchArr.push(pkg_search_data)
-        }
+        codeSearchArr = self.filterSearchData(ele.data);
       })
       return codeSearchArr
+    },
+    filterSymbolLists() {
+      let symArr = [];
+      let self = this;
+      this.symbolfilterData.forEach( function(element) {
+        symArr = self.filterSearchData(element.data)
+      });
+      return this.getBySymUsage(this.getBySymType(symArr, this.symbolSearch.filterByType), this.symbolSearch.filterByUsage)
     }
   }
 }
