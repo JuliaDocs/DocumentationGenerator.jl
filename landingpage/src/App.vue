@@ -437,11 +437,14 @@ export default {
       this.codefilterData = []
 
       let p = axios.all([
-        axios.get('/search/docs'
+        axios.post('/search/docs',
+	{ 'pattern': query }
         ),
-        axios.get('/search/code'
+        axios.post('/search/code',
+	{ 'pattern': query }
         ),
-        axios.get('/search/sym'
+        axios.post('/search/sym',
+	{ 'pattern': query }
         )
       ])
         .then(axios.spread((doc_res, code_res, sym_res) => {
