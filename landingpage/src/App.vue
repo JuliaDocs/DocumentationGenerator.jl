@@ -318,7 +318,7 @@ import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
-// axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org/'
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org/'
 
 let pkgs = []
 let pkgs_raw = {}
