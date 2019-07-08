@@ -300,7 +300,7 @@ and `verbose` determines whether meta-logs ("process started" etc.) will be prin
 """
 function run_with_timeout(
         command; log=stdout, timeout = 5*60, name = "",
-        wait_time = 1, verbose = true
+        wait_time = 1, verbose = true, kill_timeout = 60
 )
 
     out_io = IOBuffer()
@@ -332,8 +332,17 @@ function run_with_timeout(
             while process_running(process)
                 elapsed = (time() - timeout_start)
                 if elapsed > timeout
-                    verbose && @info("killing $name")
+                    verbose && @info("Terminating $name")
                     kill(process)
+                    # Handle scenarios where SIGTERM is blocked/ignored/handled by the process
+                    start_time = time()
+                    while process_running(process)
+                        if time() - start_time > kill_timeout
+                            verbose && @info("Killing $name")
+                            kill(process, signum = SIGKILL)
+                        end
+                        sleep(5)
+                    end
                     break
                 end
                 errstr, outstr = readstr_buffer.((out_io, err_io))
