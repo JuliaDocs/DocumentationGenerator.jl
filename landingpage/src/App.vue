@@ -386,14 +386,14 @@ export default {
     },
     fetchPackages () {
       let loader = this.$loading.show({
-        // Optional parameters
+        //Optional parameters
         container: this.$refs.contentPkg,
         color: '#2196F3',
         loader: 'bars'
       })
       axios.get('/docs/pkgs.json')
         .then(response => {
-        // handle success
+        //handle success
           let pkgobj = response.data
           pkgs_raw = response.data
           for (const pkgname in pkgobj) {
@@ -506,7 +506,7 @@ export default {
     },
     // Function used to further filter the symbol search based on its usage and type. Begins here
     getBySymUsage(list, keyword) {
-      var search ; 
+      var search 
       if ( keyword == 'usage' ) {
         search = 'use'
       }else if ( keyword == 'definition' ) {
