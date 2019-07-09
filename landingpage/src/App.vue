@@ -355,7 +355,7 @@ export default {
       symbolSearch: {
         filterByUsage: '',
         filterByType: '',
-        usageOptions: ['all', 'use', 'define'],
+        usageOptions: ['all', 'usage', 'definition'],
         typeOptions: ['all', 'function', 'type', 'macro', 'module']
       }
     }
@@ -438,13 +438,13 @@ export default {
 
       let p = axios.all([
         axios.post('/search/docs',
-	{ 'pattern': query }
+	        { 'pattern': query }
         ),
         axios.post('/search/code',
-	{ 'pattern': query }
+	        { 'pattern': query }
         ),
         axios.post('/search/sym',
-	{ 'pattern': query }
+	        { 'pattern': query }
         )
       ])
         .then(axios.spread((doc_res, code_res, sym_res) => {
@@ -506,12 +506,12 @@ export default {
     },
     // Function used to further filter the symbol search based on its usage and type. Begins here
     getBySymUsage(list, keyword) {
-      const search = keyword
+      const search = keyword == 'usage' ? 'use' : 'all'
       if (!search.length || search == 'all') return list
       return list.filter(item => item.usage.indexOf(search) > -1)
     },
     getBySymType(list, keyword) {
-      const search = keyword
+      const search = keyword == 'definition' ? 'define' : 'all'
       if (!search.length || search == 'all') return list
       return list.filter(item => item.type.indexOf(search) > -1)
     },
