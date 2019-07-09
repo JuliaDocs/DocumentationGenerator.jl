@@ -506,7 +506,7 @@ export default {
     },
     // Function used to further filter the symbol search based on its usage and type. Begins here
     getBySymUsage(list, keyword) {
-      var search 
+      var search ; 
       if ( keyword == 'usage' ) {
         search = 'use'
       }else if ( keyword == 'definition' ) {
