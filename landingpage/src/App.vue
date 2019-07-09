@@ -506,12 +506,19 @@ export default {
     },
     // Function used to further filter the symbol search based on its usage and type. Begins here
     getBySymUsage(list, keyword) {
-      const search = keyword == 'usage' ? 'use' : 'all'
+      const search 
+      if ( keyword == 'usage' ) {
+        search = 'use'
+      }else if ( keyword == 'definition' ) {
+        search = 'define'
+      }else {
+        search = keyword
+      }
       if (!search.length || search == 'all') return list
       return list.filter(item => item.usage.indexOf(search) > -1)
     },
     getBySymType(list, keyword) {
-      const search = keyword == 'definition' ? 'define' : 'all'
+      const search = keyword
       if (!search.length || search == 'all') return list
       return list.filter(item => item.type.indexOf(search) > -1)
     },
