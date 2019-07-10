@@ -51,11 +51,11 @@ const julia = first(Base.julia_cmd())
         @test String(read(tempfile)) == "hi"
         logstr = ""
         for i in 1:10
-            logstr *= "$i\n\n"
+            logstr *= "$i"
         end
         wait(task)
         @test isfile(logfile)
-        @test String(read(logfile)) == logstr
+        @test replace(String(read(logfile)), '\n' => "") == logstr
     end
 end
 
