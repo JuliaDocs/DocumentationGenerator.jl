@@ -36,7 +36,10 @@
           />
         </div>
         <!-- Only for symbol search. Begins -->
-        <div v-if="data.usage"class="pb-1">{{data.packagename}} ( {{data.type}} {{data.usage}} )</div >
+        <div v-if="data.usage"class="pb-1">{{data.packagename}} ( {{data.type}} 
+          <span v-if="data.usage == 'use'"> usage </span>
+          <span v-if="data.usage == 'define'"> definition </span> )
+        </div >
         <!-- Only for symbol search. Ends-->
         <code>
           <span>{{ data.line }}</span>

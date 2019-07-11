@@ -139,13 +139,13 @@
           grow
         >
           <v-tab href="#docsTab">
-            Docs
+            Docs <v-chip color="grey lighten-4" v-if="showCount">{{docfilterData[0].data.length}}</v-chip>
           </v-tab>
           <v-tab href="#codeTab">
-            Code
+            Code <v-chip color="grey lighten-4" v-if="showCount">{{codefilterData[0].data.length}}</v-chip>
           </v-tab>
           <v-tab href="#symbolTab">
-            Symbol
+            Symbol <v-chip color="grey lighten-4" v-if="showCount">{{symbolfilterData[0].data.length}}</v-chip>
           </v-tab>
           <!-- Docs search results. Begins -->
           <v-tab-item value="docsTab">
@@ -357,7 +357,8 @@ export default {
         filterByType: '',
         usageOptions: ['all', 'usage', 'definition'],
         typeOptions: ['all', 'function', 'type', 'macro', 'module']
-      }
+      },
+      showCount: false
     }
   },
   mounted () {
@@ -374,6 +375,7 @@ export default {
     commitSearch () {
       if (this.searching) return
       this.searching = true
+      this.showCount = false
       this.$router.push({
         path: 'search',
         query: {
@@ -382,6 +384,7 @@ export default {
       })
       this.searchPackages(this.search).then(() => {
         this.searching = false
+        this.showCount = true
       })
     },
     fetchPackages () {
@@ -433,6 +436,7 @@ export default {
     },
     searchPackages (query) {
       this.searchLoading = true
+      this.showCount = false
       this.docfilterData = []
       this.codefilterData = []
 
@@ -458,6 +462,7 @@ export default {
           if (sym_res.data.success) {
             this.symbolfilterData.push(sym_res.data)
           }
+          this.showCount = true
         })).catch(function (error) {
           this.searchLoading = false
           console.log(error)
@@ -675,4 +680,8 @@ export default {
   }
 }
 
+.v-chip .v-chip__content {
+  height: auto;
+  padding: 3px;
+}
 </style>
