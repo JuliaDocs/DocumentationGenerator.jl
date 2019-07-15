@@ -139,13 +139,13 @@
           grow
         >
           <v-tab href="#docsTab">
-            Docs <v-chip color="grey lighten-4" v-if="showCount">{{docfilterData[0].data.length}}</v-chip>
+            Docs <v-chip color="grey lighten-4" v-if="showCount">{{count.docs}}</v-chip>
           </v-tab>
           <v-tab href="#codeTab">
-            Code <v-chip color="grey lighten-4" v-if="showCount">{{codefilterData[0].data.length}}</v-chip>
+            Code <v-chip color="grey lighten-4" v-if="showCount">{{count.code}}</v-chip>
           </v-tab>
           <v-tab href="#symbolTab">
-            Symbol <v-chip color="grey lighten-4" v-if="showCount">{{symbolfilterData[0].data.length}}</v-chip>
+            Symbol <v-chip color="grey lighten-4" v-if="showCount">{{count.symbol}}</v-chip>
           </v-tab>
           <!-- Docs search results. Begins -->
           <v-tab-item value="docsTab">
@@ -218,6 +218,7 @@
                   v-model="symbolSearch.filterByUsage"
                   :items="symbolSearch.usageOptions"
                   label="usage"
+                  @change="commitSearch"
                 ></v-select>
               </v-flex>
               <!-- Usage filter section. Ends -->
@@ -227,6 +228,7 @@
                   v-model="symbolSearch.filterByType"
                   :items="symbolSearch.typeOptions"
                   label="type"
+                  @change="commitSearch"
                 ></v-select>
               </v-flex>
               <!-- Type filter section. Ends -->
@@ -358,6 +360,11 @@ export default {
         usageOptions: ['all', 'usage', 'definition'],
         typeOptions: ['all', 'function', 'type', 'macro', 'module']
       },
+      count: {
+        docs: '',
+        code: '',
+        symbol: ''
+      },
       showCount: false
     }
   },
@@ -440,6 +447,19 @@ export default {
       this.docfilterData = []
       this.codefilterData = []
 
+      var usage = ''
+      var type = ''
+      if(this.symbolSearch.filterByUsage != '' || this.symbolSearch.filterByType != ''){
+        if (this.symbolSearch.filterByUsage != '') {
+          if ( this.symbolSearch.filterByUsage == 'usage' ) {
+            usage = 'use'
+          }else if ( this.symbolSearch.filterByUsage == 'definition' ) {
+            usage = 'define'
+          }
+        }
+        type = this.symbolSearch.filterByType != '' ? this.symbolSearch.filterByType : ''
+      }
+
       let p = axios.all([
         axios.post('/search/docs',
 	        { 'pattern': query }
@@ -448,7 +468,11 @@ export default {
 	        { 'pattern': query }
         ),
         axios.post('/search/sym',
-	        { 'pattern': query }
+	        { 
+            'pattern': query,
+            'types': type,
+            'usages': usage
+          }
         )
       ])
         .then(axios.spread((doc_res, code_res, sym_res) => {
@@ -509,32 +533,13 @@ export default {
         resolve(pkgs)
       })
     },
-    // Function used to further filter the symbol search based on its usage and type. Begins here
-    getBySymUsage(list, keyword) {
-      var search 
-      if ( keyword == 'usage' ) {
-        search = 'use'
-      }else if ( keyword == 'definition' ) {
-        search = 'define'
-      }else {
-        search = keyword
-      }
-      if (!search.length || search == 'all') return list
-      return list.filter(item => item.usage.indexOf(search) > -1)
-    },
-    getBySymType(list, keyword) {
-      const search = keyword
-      if (!search.length || search == 'all') return list
-      return list.filter(item => item.type.indexOf(search) > -1)
-    },
-    // Function used to further filter the symbol search based on its usage and type. Ends here
     filterSearchData (data) {
       let arr = []
       for (var i = 0; i < data.length; i++) {
           let pkg_data = pkgs_raw[data[i].package]
           let pkg_search_data_file = data[i].file
           let pkg_search_data = data[i]
-          pkg_search_data['owner'] = pkg_data.metadata ? pkg_data.metadata.owner : 'JuliaLang'
+          pkg_search_data['owner'] = typeof pkg_data !== 'undefined' && pkg_data.hasOwnProperty('metadata') ? pkg_data.metadata.owner : 'JuliaLang'
           let search_file_parts = pkg_search_data_file.split('/')
           let name = search_file_parts[1] == 'julia' ? 'julia' : search_file_parts[1] + '.jl'
           let version = search_file_parts[3]
@@ -638,23 +643,26 @@ export default {
           })
         })
       })
+      this.count.docs = searchArr.length
       return searchArr
     },
     codefilteredLists () {
       let codeSearchArr = []
       var self = this
-      this.codefilterData.forEach(function (ele) {
+      self.codefilterData.forEach(function (ele) {
         codeSearchArr = self.filterSearchData(ele.data);
       })
+      self.count.code = codeSearchArr.length
       return codeSearchArr
     },
     filterSymbolLists() {
       let symArr = [];
       let self = this;
-      this.symbolfilterData.forEach( function(element) {
+      self.symbolfilterData.forEach( function(element) {
         symArr = self.filterSearchData(element.data)
       });
-      return this.getBySymUsage(this.getBySymType(symArr, this.symbolSearch.filterByType), this.symbolSearch.filterByUsage)
+      self.count.symbol = symArr.length
+      return symArr
     }
   }
 }
@@ -683,5 +691,9 @@ export default {
 .v-chip .v-chip__content {
   height: auto;
   padding: 3px;
+}
+
+.theme--dark.grey.lighten-4 {
+  background-color: #9e9e9e !important;
 }
 </style>
