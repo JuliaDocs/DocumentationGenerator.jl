@@ -693,10 +693,6 @@ export default {
   padding: 3px;
 }
 
-.theme--dark .v-chip {
-  background-color: #424242;
-}
-
 .theme--dark.grey.lighten-4 {
   background-color: #9e9e9e !important;
 }
