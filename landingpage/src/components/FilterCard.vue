@@ -29,17 +29,21 @@
       <v-card-text>
         <div class="pb-1">
           <a
-          class="a-color"
-          :href="'https://github.com/' + data.owner + '/' + data.pkg_actual_path + '#L' + data.line"
-          target="_blank"
-          v-html="data.pkg_display_path"
+            class="a-color"
+            :href="'https://github.com/' + data.owner + '/' + data.pkg_actual_path + '#L' + data.line"
+            target="_blank"
+            v-html="data.pkg_display_path"
           />
         </div>
         <!-- Only for symbol search. Begins -->
-        <div v-if="data.usage"class="pb-1">{{data.packagename}} ( {{data.type}} 
+        <div
+          v-if="data.usage"
+          class="pb-1"
+        >
+          {{ data.packagename }} ( {{ data.type }}
           <span v-if="data.usage == 'use'"> usage </span>
           <span v-if="data.usage == 'define'"> definition </span> )
-        </div >
+        </div>
         <!-- Only for symbol search. Ends-->
         <code>
           <span>{{ data.line }}</span>
@@ -81,7 +85,7 @@ code{
   font-size: 90%;
   width: 100%;
 
-  box-shadow: 0px 0px;  
+  box-shadow: 0px 0px;
 }
 .theme--dark .a-color{
   color: #82b1ff;
