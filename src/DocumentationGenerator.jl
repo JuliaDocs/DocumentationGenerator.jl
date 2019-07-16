@@ -171,7 +171,7 @@ function get_method_from_registry(pspec, registry, root)
                 @warn("Invalid registry entry for $(pspec.name).")
             end
         else
-            @warn("$(pspec.name) ($(uuid)) not found in registry.")
+            @info("$(pspec.name) ($(uuid)) not found in documentation registry.")
         end
     else
         @warn("No registry found. Falling back to `vendored` docs.")
@@ -216,16 +216,16 @@ function rewrite_makefile(makefile)
                     name, arg = argument.args
                     # assure that we generate HTML
                     if name == :format
-                        argument.args[2] = :(Documenter.HTML())
+                        html = :(Documenter.HTML())
+                        if Meta.isexpr(arg, :call) && arg.args[1] == :(Documenter.HTML)
+                            append!(html.args, arg.args[2:end])
+                        end
+                        argument.args[2] = html
                     end
                     # filter out root + build dir
                     if name == :build
                         # if there is a custom build folder, record it!
                         cd(dirname(makefile)) do
-                            # uhm, joinpath(path1, path2) doesn't work...
-                            # considering splitting this mayself, but this seems
-                            # to be the easiest way to get the abspath respecting
-                            # build path needs to be relative to root path
                             buildpath = abspath(arg)
                         end
                     end
