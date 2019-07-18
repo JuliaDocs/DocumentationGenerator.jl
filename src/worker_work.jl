@@ -249,15 +249,25 @@ function package_source(uuid, name, rootdir, buildpath)
     @info("Done copying source code for $(name)-$(uuid)")
 end
 
-function build(uuid, name, url, version, buildpath, registry)
-    meta = package_docs(uuid, name, url, version, buildpath, registry)
-    merge!(meta, package_metadata(uuid, name, url, version, buildpath))
-    @info "making buildpath"
-    isdir(buildpath) || mkpath(joinpath(buildpath))
-    @info "opening meta.toml"
-    open(joinpath(buildpath, "meta.toml"), "w") do io
-        @info "writing meta.toml"
-        TOML.print(io, meta)
+function docs_url(deployment_url, name, uuid, version)
+    isempty(deployment_url) && return nothing
+    join([deployment_url, DocumentationGenerator.get_docs_dir(name, uuid), version], '/')
+end
+
+function build(uuid, name, url, version, buildpath, registry, deployment_url)
+    withenv(
+        "DOCUMENTATIONGENERATOR" => "true",
+        "DOCUMENTATIONGENERATOR_BASE_URL" => docs_url(deployment_url, name, uuid, version)
+    ) do
+        meta = package_docs(uuid, name, url, version, buildpath, registry)
+        merge!(meta, package_metadata(uuid, name, url, version, buildpath))
+        @info "making buildpath"
+        isdir(buildpath) || mkpath(joinpath(buildpath))
+        @info "opening meta.toml"
+        open(joinpath(buildpath, "meta.toml"), "w") do io
+            @info "writing meta.toml"
+            TOML.print(io, meta)
+        end
     end
 end
 
