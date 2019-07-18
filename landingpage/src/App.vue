@@ -17,6 +17,7 @@
           :loading="primaryDrawer.loading"
           prepend-inner-icon="search"
           clearable
+          @keyup.13="dCommitFilter"
           label="Name"
         />
       </div>
@@ -26,6 +27,7 @@
           :loading="primaryDrawer.loading"
           prepend-inner-icon="group"
           clearable
+          @keyup.13="dCommitFilter"
           label="Owner"
         />
       </div>
@@ -42,6 +44,7 @@
           return-object
           small-chips
           auto-select-first
+          @keyup.13="dCommitFilter"
         >
           <template
             slot="selection"
@@ -385,27 +388,48 @@ export default {
   },
   mounted () {
     this.fetchPackages()
-    this.maybeRunSearch()
+    this.decodeURL()
   },
   methods: {
-    maybeRunSearch () {
+    decodeURL () {
       if (this.isSearch && this.searchQuery) {
         this.searchPackages(this.searchQuery)
         this.search = this.searchQuery
+      }
+      let f = this.filterQuery
+      if (f) {
+        this.primaryDrawer.pkgnamemodel = f.n
+        this.primaryDrawer.pkgownermodel = f.o
+        this.primaryDrawer.pkgtagmodel = f.t
       }
     },
     commitSearch () {
       if (this.searching) return
       this.searching = true
-      this.$router.push({
+      let query = {
         path: 'search',
         query: {
           q: this.search
         }
-      })
-      this.searchPackages(this.search).then(() => {
+      }
+      if (this.filterUrlString) {
+        query.query.f = this.filterUrlString
+      }
+      this.$router.push(query)
+      this.searchPackages(this.search).finally(() => {
         this.searching = false
       })
+    },
+    commitFilter () {
+      let query = {
+        path: '/',
+        query: {}
+      }
+      if (this.filterUrlString) {
+        query.query.f = this.filterUrlString
+      }
+      this.$router.push(query)
+      this.lFilterPackages()
     },
     fetchPackages () {
       let loader = this.$loading.show({
@@ -526,7 +550,7 @@ export default {
         pkgs.forEach(p => {
           p.owner = p.metadata.owner
         })
-        console.log(pkgs);
+
         const selectedTags = this.$data.primaryDrawer.pkgtagmodel
         if (selectedTags && selectedTags.length > 0) {
           pkgs = pkgs.filter(pkg => {
@@ -619,35 +643,43 @@ export default {
         return b.count - a.count
       })
       return sortableTags.map(tag => tag.text)
-    }
+    },
+    lFilterPackages () {
+      this.$data.primaryDrawer.loading = true
+      this.filterPackages().then((result) => {
+        this.$data.filteredPackages = result
+        this.$data.primaryDrawer.loading = false
+      })
+    },
+    dCommitFilter: _.debounce(function () {this.commitFilter()}, 500)
   },
   watch: {
-    'primaryDrawer.pkgtagmodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
-    'primaryDrawer.pkgnamemodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
-    'primaryDrawer.pkgownermodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
+    'primaryDrawer.pkgtagmodel': function () {
+      this.dCommitFilter()
+    },
+    'primaryDrawer.pkgnamemodel': function () {
+      this.dCommitFilter()
+    },
+    'primaryDrawer.pkgownermodel': function () {
+      this.dCommitFilter()
+    },
     dark: function (val) {
       this.$cookies.set('darkTheme', val)
     }
   },
   computed: {
+    filterUrlString () {
+      if (this.primaryDrawer.pkgnamemodel ||
+          this.primaryDrawer.pkgownermodel ||
+          this.primaryDrawer.pkgtagmodel.length > 0) {
+        return btoa(JSON.stringify({
+          n: this.primaryDrawer.pkgnamemodel,
+          o: this.primaryDrawer.pkgownermodel,
+          t: this.primaryDrawer.pkgtagmodel,
+        }))
+      }
+      return false
+    },
     isSearch () {
       let search_path_parts = this.$route.path.split('/')
       return search_path_parts[search_path_parts.length - 1] === 'search'
@@ -657,6 +689,9 @@ export default {
         return this.$route.query.q
       }
       return ''
+    },
+    filterQuery () {
+      return JSON.parse(atob(this.$route.query.f))
     },
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.svg') : require('./assets/julia-light.svg')
