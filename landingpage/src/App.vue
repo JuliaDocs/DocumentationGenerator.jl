@@ -701,9 +701,15 @@ export default {
     filterQuery () {
       let query = ''
       try {
-        query = JSON.parse(atob(this.$route.query.f))
+        let f = this.$route.query.f
+        if (f) {
+          query = JSON.parse(atob(f))
+        }
       } catch (err) {
-        console.log('malformed URL');
+        console.warn('malformed URL');
+        this.$router.push({
+          path: '/'
+        })
       }
       return query
     },
