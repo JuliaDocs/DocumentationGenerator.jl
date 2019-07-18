@@ -663,7 +663,15 @@ export default {
     'primaryDrawer.pkgownermodel': function () {
       this.dCommitFilter()
     },
-    dark: function (val) {
+    searchQuery () {
+      this.decodeURL()
+      this.commitSearch()
+    },
+    filterQuery () {
+      this.decodeURL()
+      this.dCommitFilter()
+    },
+    dark (val) {
       this.$cookies.set('darkTheme', val)
     }
   },
@@ -691,7 +699,13 @@ export default {
       return ''
     },
     filterQuery () {
-      return JSON.parse(atob(this.$route.query.f))
+      let query = ''
+      try {
+        query = JSON.parse(atob(this.$route.query.f))
+      } catch (err) {
+        console.log('malformed URL');
+      }
+      return query
     },
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.svg') : require('./assets/julia-light.svg')
