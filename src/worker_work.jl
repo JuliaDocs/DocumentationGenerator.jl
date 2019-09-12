@@ -31,6 +31,7 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath, registry)
     pkgname = pspec.name
 
     type, uri = DocumentationGenerator.get_method_from_registry(pspec, registry, rootdir)
+    errored = false
 
     @info "$(pkgname) specifies docs of type $(type)"
     out = try
@@ -52,7 +53,7 @@ function create_docs(pspec::Pkg.Types.PackageSpec, buildpath, registry)
         errored = true
     end
 
-    return out
+    return out[1], out[2], errored
 end
 
 function build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
@@ -61,9 +62,11 @@ function build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
         return mktempdir() do root
             DocumentationGenerator.readme_docs(pkgname, root, rootdir)
             cp(joinpath(root, "build"), buildpath, force = true)
-            return :default, rootdir
+            return :default, rootdir, true
         end
     end
+
+    errored = false
 
     # actual Documenter docs
     try
@@ -80,6 +83,7 @@ function build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
             end
         end
     catch err
+        errored = true
         @error("Tried building Documenter.jl docs but failed.", error=err)
     end
     @info("Building default docs.")
@@ -88,7 +92,7 @@ function build_local_dir_docs(pkgname, _module, rootdir, buildpath, uri)
     mktempdir() do root
         DocumentationGenerator.default_docs(pkgname, root, rootdir)
         cp(joinpath(root, "build"), buildpath, force = true)
-        return :default, rootdir
+        return :default, rootdir, errored
     end
 end
 
@@ -157,6 +161,7 @@ function package_docs(uuid, name, url, version, buildpath, registry)
     meta["url"] = url
     meta["version"] = version
     meta["installs"] = false
+    meta["errored"] = false
     try
         @info("building: $name")
         mktempdir() do envdir
@@ -164,16 +169,17 @@ function package_docs(uuid, name, url, version, buildpath, registry)
                 mktempdir() do path
                     download("https://github.com/JuliaLang/julia/releases/download/v$(version)/julia-$(version).tar.gz", joinpath(path, uuid*".tar.gz"))
                     run(`tar -xzf $(joinpath(path, uuid*".tar.gz"))  -C $path`)
-                    docs_path = joinpath(path, name*"-"*version, "doc", "_build", "html", "en")
+                    docs_path = joinpath(   path, name*"-"*version, "doc", "_build", "html", "en")
                     src_path = joinpath(path, name*"-"*version)
                     cp(docs_path , buildpath, force=true)
                     cp(src_path, joinpath(buildpath, "_packagesource") ,  force=true)
                 end
             else
                 Pkg.activate(envdir)
-                doctype, rootdir = create_docs(pspec, buildpath, registry)
+                doctype, rootdir, errored = create_docs(pspec, buildpath, registry)
                 meta["doctype"] = string(doctype)
                 meta["installs"] = true
+                meta["errored"] = errored
                 @info("Done generating docs for $name")
                 package_source(uuid, name, rootdir, buildpath)
              end

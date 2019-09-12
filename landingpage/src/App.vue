@@ -10,19 +10,28 @@
       mobile-break-point="800"
       app
     >
-      <div class="px-4 pt-4">
-        <h4>Search Package by Name</h4>
+      <h4 class="px-4 pt-4">Filter Packages by...</h4>
+      <div class="px-4 pt-1">
         <v-text-field
-          v-model="primaryDrawer.pkgsearchmodel"
+          v-model="primaryDrawer.pkgnamemodel"
           :loading="primaryDrawer.loading"
           prepend-inner-icon="search"
           clearable
-          label="Package"
-          :disabled="isSearch"
+          @keyup.13="dCommitFilter"
+          label="Name"
         />
       </div>
-      <div class="px-4 pt-3">
-        <h4>Filter by Tag</h4>
+      <div class="px-4 pt-1">
+        <v-text-field
+          v-model="primaryDrawer.pkgownermodel"
+          :loading="primaryDrawer.loading"
+          prepend-inner-icon="group"
+          clearable
+          @keyup.13="dCommitFilter"
+          label="Owner"
+        />
+      </div>
+      <div class="px-4 pt-1">
         <v-autocomplete
           v-model="primaryDrawer.pkgtagmodel"
           :loading="primaryDrawer.loading"
@@ -35,7 +44,7 @@
           return-object
           small-chips
           auto-select-first
-          :disabled="isSearch"
+          @keyup.13="dCommitFilter"
         >
           <template
             slot="selection"
@@ -62,11 +71,6 @@
           </template>
         </v-autocomplete>
       </div>
-
-      <!-- <div class="px-4 pt-3">
-        <h4>Sort by</h4>
-        ...
-      </div> -->
     </v-navigation-drawer>
     <v-toolbar
       clipped-left
@@ -136,16 +140,24 @@
         <v-tabs
           v-model="tabModel"
           class="tabs"
-          grow
         >
           <v-tab href="#docsTab">
-            Docs <v-chip color="grey lighten-4" v-if="showCount">{{count.docs}}</v-chip>
+            Docs
+            <span>
+              : {{ count.docs }}
+            </span>
           </v-tab>
           <v-tab href="#codeTab">
-            Code <v-chip color="grey lighten-4" v-if="showCount">{{count.code}}</v-chip>
+            Code
+            <span>
+              : {{ count.code }}
+            </span>
           </v-tab>
           <v-tab href="#symbolTab">
-            Symbol <v-chip color="grey lighten-4" v-if="showCount">{{count.symbol}}</v-chip>
+            Symbol
+            <span>
+              : {{ count.symbol }}
+            </span>
           </v-tab>
           <!-- Docs search results. Begins -->
           <v-tab-item value="docsTab">
@@ -208,9 +220,15 @@
           <!-- Code search results. Ends -->
           <!-- Symbol search results. Begins -->
           <v-tab-item value="symbolTab">
-            <v-layout row justify-space-between class="px-4 pt-3">
+            <v-layout
+              row
+              justify-space-between
+              class="px-4 pt-3"
+            >
               <v-flex xs1>
-                <h4 class="mt-4">Filter by</h4>
+                <h4 class="mt-4">
+                  Filter by
+                </h4>
               </v-flex>
               <!-- Usage filter section. Begins -->
               <v-flex xs5>
@@ -219,17 +237,17 @@
                   :items="symbolSearch.usageOptions"
                   label="usage"
                   @change="commitSearch"
-                ></v-select>
+                />
               </v-flex>
               <!-- Usage filter section. Ends -->
-              <!-- Type filter section. Begins --> 
+              <!-- Type filter section. Begins -->
               <v-flex xs5>
                 <v-select
                   v-model="symbolSearch.filterByType"
                   :items="symbolSearch.typeOptions"
                   label="type"
                   @change="commitSearch"
-                ></v-select>
+                />
               </v-flex>
               <!-- Type filter section. Ends -->
             </v-layout>
@@ -320,7 +338,7 @@ import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org/'
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org'
 
 let pkgs = []
 let pkgs_raw = {}
@@ -338,10 +356,10 @@ export default {
       showSearch: false,
       searchFocused: false,
       searchLoading: false,
-      drawers: ['Default (no property)', 'Permanent', 'Temporary'],
       primaryDrawer: {
         model: null,
-        pkgsearchmodel: null,
+        pkgnamemodel: null,
+        pkgownermodel: null,
         pkgtagmodel: [],
         loading: false
       },
@@ -360,20 +378,20 @@ export default {
         usageOptions: ['all', 'usage', 'definition'],
         typeOptions: ['all', 'function', 'type', 'macro', 'module']
       },
-      count: {
-        docs: '',
-        code: '',
-        symbol: ''
-      },
-      showCount: false
     }
   },
   mounted () {
     this.fetchPackages()
-    this.maybeRunSearch()
+    this.decodeURL()
   },
   methods: {
-    maybeRunSearch () {
+    decodeURL () {
+      let f = this.filterQuery
+      if (f) {
+        this.primaryDrawer.pkgnamemodel = f.n
+        this.primaryDrawer.pkgownermodel = f.o
+        this.primaryDrawer.pkgtagmodel = f.t
+      }
       if (this.isSearch && this.searchQuery) {
         this.searchPackages(this.searchQuery)
         this.search = this.searchQuery
@@ -382,115 +400,130 @@ export default {
     commitSearch () {
       if (this.searching) return
       this.searching = true
-      this.showCount = false
-      this.$router.push({
+      let query = {
         path: 'search',
         query: {
           q: this.search
         }
-      })
-      this.searchPackages(this.search).then(() => {
+      }
+      if (this.filterUrlString) {
+        query.query.f = this.filterUrlString
+      }
+      this.$router.push(query)
+      this.searchPackages(this.search).finally(() => {
         this.searching = false
-        this.showCount = true
       })
+    },
+    commitFilter () {
+      let query = {
+        path: '/',
+        query: {}
+      }
+      if (this.filterUrlString) {
+        query.query.f = this.filterUrlString
+      }
+      this.$router.push(query)
+      this.lFilterPackages()
     },
     fetchPackages () {
       let loader = this.$loading.show({
-        //Optional parameters
+        // Optional parameters
         container: this.$refs.contentPkg,
         color: '#2196F3',
         loader: 'bars'
       })
-      axios.get('/docs/pkgs.json')
-        .then(response => {
-        //handle success
-          let pkgobj = response.data
-          pkgs_raw = response.data
-          for (const pkgname in pkgobj) {
-            let pkg = pkgobj[pkgname]
-            pkg.uuid = pkgname
-            pkg.version = pkg.latest_docs_version
-            if (!pkg.metadata) {
-              continue
-            }
-            if (pkg.docslink.search('http') == -1 && pkg.docslink.search('https') == -1) {
-              pkg.docsfullpath = location.protocol + '//' + location.host + '/' + pkg.docslink
-            } else {
-            // links to hosted docs
-              pkg.docsfullpath = pkg.docslink
-            }
-            if (!pkg.metadata.tags) {
-              pkg.metadata.tags = []
-            }
-            pkgs.push(pkg)
+      axios.get('/docs/pkgs.json').then(response => {
+        // handle success
+        let pkgobj = response.data
+        pkgs_raw = response.data
+        for (const pkgname in pkgobj) {
+          let pkg = pkgobj[pkgname]
+          pkg.uuid = pkgname
+          pkg.version = pkg.latest_docs_version
+          if (!pkg.metadata) {
+            continue
           }
+          if (pkg.docslink.search('http') === -1 && pkg.docslink.search('https') === -1) {
+            pkg.docsfullpath = location.protocol + '//' + location.host + '/' + pkg.docslink
+          } else {
+          // links to hosted docs
+            pkg.docsfullpath = pkg.docslink
+          }
+          if (!pkg.metadata.tags) {
+            pkg.metadata.tags = []
+          }
+          pkgs.push(pkg)
+        }
 
-          pkgs.sort((a, b) => {
-            var starsA = parseInt(a.metadata.stargazers_count) || 0
-            var starsB = parseInt(b.metadata.stargazers_count) || 0
-            return starsB - starsA
-          })
-          this.tags = this.computeTags(pkgs)
+        pkgs.sort((a, b) => {
+          var starsA = parseInt(a.metadata.stargazers_count) || 0
+          var starsB = parseInt(b.metadata.stargazers_count) || 0
+          return starsB - starsA
         })
-        .catch(function (error) {
-          // handle error
-          console.log(error)
-        })
-        .then(function () {
-          // always executed
-          loader.hide()
-        })
+        this.tags = this.computeTags(pkgs)
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error)
+      })
+      .finally(function () {
+        // always executed
+        loader.hide()
+      })
     },
     searchPackages (query) {
       this.searchLoading = true
       this.showCount = false
       this.docfilterData = []
       this.codefilterData = []
+      this.symbolfilterData = []
 
-      var usage = ''
-      var type = ''
-      if(this.symbolSearch.filterByUsage != '' || this.symbolSearch.filterByType != ''){
-        if (this.symbolSearch.filterByUsage != '') {
-          if ( this.symbolSearch.filterByUsage == 'usage' ) {
+      let usage = ''
+      let type = ''
+      if (this.symbolSearch.filterByUsage !== '' || this.symbolSearch.filterByType !== '') {
+        if (this.symbolSearch.filterByUsage !== '') {
+          if (this.symbolSearch.filterByUsage === 'usage') {
             usage = 'use'
-          }else if ( this.symbolSearch.filterByUsage == 'definition' ) {
+          } else if (this.symbolSearch.filterByUsage === 'definition') {
             usage = 'define'
           }
         }
-        type = this.symbolSearch.filterByType != '' ? this.symbolSearch.filterByType : ''
+        type = this.symbolSearch.filterByType !== '' ? this.symbolSearch.filterByType : ''
+      }
+
+      let q = {
+        pattern: query
+      }
+      if (this.$data.filteredPackages.length !== this.$data.pkgs.length) {
+        let pkgs = this.$data.filteredPackages.map(p => p.uuid)
+        q.package = pkgs
       }
 
       let p = axios.all([
-        axios.post('/search/docs',
-	        { 'pattern': query }
-        ),
-        axios.post('/search/code',
-	        { 'pattern': query }
-        ),
-        axios.post('/search/sym',
-	        { 
-            'pattern': query,
+        axios.post('/search/docs', q),
+        axios.post('/search/code', q),
+        axios.post('/search/sym', Object.assign(q, {
             'types': type,
             'usages': usage
-          }
+          })
         )
       ])
-        .then(axios.spread((doc_res, code_res, sym_res) => {
-          this.searchLoading = false
-          if (doc_res.data.success) {
-            this.docfilterData.push(doc_res.data)
-          }
-          if (code_res.data.success) {
-            this.codefilterData.push(code_res.data)
-          }
-          if (sym_res.data.success) {
-            this.symbolfilterData.push(sym_res.data)
-          }
-          this.showCount = true
-        })).catch(function (error) {
-          this.searchLoading = false
-          console.log(error)
-        })
+      .then(axios.spread((doc_res, code_res, sym_res) => {
+        this.searchLoading = false
+        if (doc_res.data.success) {
+          this.docfilterData.push(doc_res.data)
+        }
+        if (code_res.data.success) {
+          this.codefilterData.push(code_res.data)
+        }
+        if (sym_res.data.success) {
+          this.symbolfilterData.push(sym_res.data)
+        }
+        this.showCount = true
+      })).catch(function (error) {
+        this.searchLoading = false
+        console.log(error)
+      })
       return p
     },
     removeTag (item) {
@@ -508,6 +541,10 @@ export default {
     filterPackages () {
       return new Promise((resolve) => {
         let pkgs = this.$data.pkgs
+        pkgs.forEach(p => {
+          p.owner = p.metadata.owner
+        })
+
         const selectedTags = this.$data.primaryDrawer.pkgtagmodel
         if (selectedTags && selectedTags.length > 0) {
           pkgs = pkgs.filter(pkg => {
@@ -521,7 +558,17 @@ export default {
           })
         }
 
-        const filterText = this.$data.primaryDrawer.pkgsearchmodel
+        let filterText = this.$data.primaryDrawer.pkgownermodel
+        if (filterText && filterText.length > 0) {
+          pkgs = fuzzysort(filterText, pkgs, {
+            key: 'owner',
+            limit: Infinity,
+            threshold: -Infinity
+          })
+          pkgs = pkgs.map(pkg => pkg.obj)
+        }
+
+        filterText = this.$data.primaryDrawer.pkgnamemodel
         if (filterText && filterText.length > 0) {
           pkgs = fuzzysort(filterText, pkgs, {
             key: 'name',
@@ -536,24 +583,24 @@ export default {
     filterSearchData (data) {
       let arr = []
       for (var i = 0; i < data.length; i++) {
-          let pkg_data = pkgs_raw[data[i].package]
-          let pkg_search_data_file = data[i].file
-          let pkg_search_data = data[i]
-          pkg_search_data['owner'] = typeof pkg_data !== 'undefined' && pkg_data.hasOwnProperty('metadata') ? pkg_data.metadata.owner : 'JuliaLang'
-          let search_file_parts = pkg_search_data_file.split('/')
-          let name = search_file_parts[1] == 'julia' ? 'julia' : search_file_parts[1] + '.jl'
-          let version = search_file_parts[3]
-          let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
-          pkg_search_data['pkg_actual_path'] = pkg_actual_url
-          let pkg_display_path = [name, 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
-          pkg_search_data['pkg_display_path'] = pkg_display_path
-          arr.push(pkg_search_data)
-        }
+        let pkg_data = pkgs_raw[data[i].package]
+        let pkg_search_data_file = data[i].file
+        let pkg_search_data = data[i]
+        pkg_search_data['owner'] = typeof pkg_data !== 'undefined' && pkg_data.hasOwnProperty('metadata') ? pkg_data.metadata.owner : 'JuliaLang'
+        let search_file_parts = pkg_search_data_file.split('/')
+        let name = search_file_parts[1] == 'julia' ? 'julia' : search_file_parts[1] + '.jl'
+        let version = search_file_parts[3]
+        let pkg_actual_url = [name, 'blob', 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+        pkg_search_data['pkg_actual_path'] = pkg_actual_url
+        let pkg_display_path = [name, 'v' + version].concat(search_file_parts.splice(4, search_file_parts.length - 1)).join('/')
+        pkg_search_data['pkg_display_path'] = pkg_display_path
+        arr.push(pkg_search_data)
+      }
       return arr
     },
     onBlurSearch (val) {
       this.showSearch = false
-      this.searchFocused = this.search != ''
+      this.searchFocused = this.search !== ''
     },
     toggleSearch () {
       let willShow = !this.showSearch
@@ -590,37 +637,58 @@ export default {
         return b.count - a.count
       })
       return sortableTags.map(tag => tag.text)
-    }
+    },
+    lFilterPackages () {
+      this.$data.primaryDrawer.loading = true
+      this.filterPackages().then((result) => {
+        this.$data.filteredPackages = result
+        this.$data.primaryDrawer.loading = false
+      })
+    },
+    dCommitFilter: _.debounce(function () {this.commitFilter()}, 500)
   },
   watch: {
-    'primaryDrawer.pkgtagmodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
-    'primaryDrawer.pkgsearchmodel': _.debounce(function () {
-      this.$data.primaryDrawer.loading = true
-      this.filterPackages().then((result) => {
-        this.$data.filteredPackages = result
-        this.$data.primaryDrawer.loading = false
-      })
-    }, 200),
-    dark: function (val) {
+    dark (val) {
       this.$cookies.set('darkTheme', val)
     }
   },
   computed: {
-      isSearch () {
-          let search_path_parts = this.$route.path.split("/");
-          return search_path_parts[search_path_parts.length - 1] == "search";
+    filterUrlString () {
+      if (this.primaryDrawer.pkgnamemodel ||
+          this.primaryDrawer.pkgownermodel ||
+          this.primaryDrawer.pkgtagmodel.length > 0) {
+        return btoa(JSON.stringify({
+          n: this.primaryDrawer.pkgnamemodel,
+          o: this.primaryDrawer.pkgownermodel,
+          t: this.primaryDrawer.pkgtagmodel,
+        }))
+      }
+      return false
+    },
+    isSearch () {
+      let search_path_parts = this.$route.path.split('/')
+      return search_path_parts[search_path_parts.length - 1] === 'search'
     },
     searchQuery () {
       if (this.isSearch) {
         return this.$route.query.q
       }
       return ''
+    },
+    filterQuery () {
+      let query = ''
+      try {
+        let f = this.$route.query.f
+        if (f) {
+          query = JSON.parse(atob(f))
+        }
+      } catch (err) {
+        console.warn('malformed URL');
+        this.$router.push({
+          path: '/'
+        })
+      }
+      return query
     },
     juliaLogo () {
       return this.$data.dark ? require('./assets/julia-dark.svg') : require('./assets/julia-light.svg')
@@ -634,7 +702,7 @@ export default {
           element.sections.forEach(function (e) {
             let obj = e
             obj['pkgname'] = y.name + '.jl'
-            if (y.name == 'julia') {
+            if (y.name === 'julia') {
               obj['pkgname'] = y.name
             }
             obj['docsfullpath'] = location.protocol + '//' + location.host + '/' + y.docslink
@@ -643,26 +711,28 @@ export default {
           })
         })
       })
-      this.count.docs = searchArr.length
       return searchArr
     },
     codefilteredLists () {
       let codeSearchArr = []
-      var self = this
-      self.codefilterData.forEach(function (ele) {
-        codeSearchArr = self.filterSearchData(ele.data);
+      this.codefilterData.forEach(ele => {
+        codeSearchArr = this.filterSearchData(ele.data)
       })
-      self.count.code = codeSearchArr.length
       return codeSearchArr
     },
-    filterSymbolLists() {
-      let symArr = [];
-      let self = this;
-      self.symbolfilterData.forEach( function(element) {
-        symArr = self.filterSearchData(element.data)
-      });
-      self.count.symbol = symArr.length
+    filterSymbolLists () {
+      let symArr = []
+      this.symbolfilterData.forEach(element => {
+        symArr = this.filterSearchData(element.data)
+      })
       return symArr
+    },
+    count () {
+      return {
+        docs: this.docfilteredLists.length,
+        code: this.codefilteredLists.length,
+        symbol: this.filterSymbolLists.length
+      }
     }
   }
 }
@@ -686,14 +756,5 @@ export default {
     font-size: 80px!important;
     opacity: 0.3;
   }
-}
-
-.v-chip .v-chip__content {
-  height: auto;
-  padding: 3px;
-}
-
-.theme--dark.grey.lighten-4 {
-  background-color: #9e9e9e !important;
 }
 </style>

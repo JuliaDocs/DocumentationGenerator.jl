@@ -5,21 +5,38 @@
         class="pb-0 pt-3"
         primary-title
       >
-        <div>
-          <span>
-            <h3 class="headline mb-0">
-              <span class="pkg-owner">
-                {{ details.metadata.owner }}
-              </span>
-              <span class="pkg-owner">
-                /
-              </span>
-              <span class="pkg-name">
-                {{ details.name }}
-              </span>
-            </h3>
-          </span>
-        </div>
+        <v-layout row>
+          <h3 class="headline mb-0">
+            <span class="pkg-owner">
+              {{ details.metadata.owner }}
+            </span>
+            <span class="pkg-owner">
+              /
+            </span>
+            <span class="pkg-name">
+              {{ details.name }}
+            </span>
+          </h3>
+          <v-spacer />
+          <v-tooltip left>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                flat
+                color="grey"
+                target="_blank"
+                icon
+                small
+                :href="details.repo"
+                v-on="on"
+              >
+                <v-icon small>
+                  info
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Build information</span>
+          </v-tooltip>
+        </v-layout>
       </v-card-title>
 
       <v-card-text class="pb-1">

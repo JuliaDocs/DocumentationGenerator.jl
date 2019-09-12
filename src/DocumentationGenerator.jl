@@ -270,7 +270,7 @@ function install_and_use(pspec)
     pkg_module = try
         @eval(Main, (using $pkg_sym; $pkg_sym))
     catch e
-        @warn("Could not load `$pkg_sym`.")
+        @warn("Could not load `$pkg_sym`.", exception = e)
         nothing
     end
     pkgdir = Base.find_package(pspec.name)
