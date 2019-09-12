@@ -71,11 +71,6 @@
           </template>
         </v-autocomplete>
       </div>
-
-      <!-- <div class="px-4 pt-3">
-        <h4>Sort by</h4>
-        ...
-      </div> -->
     </v-navigation-drawer>
     <v-toolbar
       clipped-left
@@ -343,7 +338,7 @@ import _ from 'underscore'
 import { go as fuzzysort } from 'fuzzysort'
 import axios from 'axios'
 
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://stagingjuliateam.southindia.cloudapp.azure.com'
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '' : 'https://pkg.julialang.org'
 
 let pkgs = []
 let pkgs_raw = {}
@@ -361,7 +356,6 @@ export default {
       showSearch: false,
       searchFocused: false,
       searchLoading: false,
-      drawers: ['Default (no property)', 'Permanent', 'Temporary'],
       primaryDrawer: {
         model: null,
         pkgnamemodel: null,
@@ -392,15 +386,15 @@ export default {
   },
   methods: {
     decodeURL () {
-      if (this.isSearch && this.searchQuery) {
-        this.searchPackages(this.searchQuery)
-        this.search = this.searchQuery
-      }
       let f = this.filterQuery
       if (f) {
         this.primaryDrawer.pkgnamemodel = f.n
         this.primaryDrawer.pkgownermodel = f.o
         this.primaryDrawer.pkgtagmodel = f.t
+      }
+      if (this.isSearch && this.searchQuery) {
+        this.searchPackages(this.searchQuery)
+        this.search = this.searchQuery
       }
     },
     commitSearch () {
@@ -654,23 +648,6 @@ export default {
     dCommitFilter: _.debounce(function () {this.commitFilter()}, 500)
   },
   watch: {
-    'primaryDrawer.pkgtagmodel': function () {
-      this.dCommitFilter()
-    },
-    'primaryDrawer.pkgnamemodel': function () {
-      this.dCommitFilter()
-    },
-    'primaryDrawer.pkgownermodel': function () {
-      this.dCommitFilter()
-    },
-    searchQuery () {
-      this.decodeURL()
-      this.commitSearch()
-    },
-    filterQuery () {
-      this.decodeURL()
-      this.dCommitFilter()
-    },
     dark (val) {
       this.$cookies.set('darkTheme', val)
     }
