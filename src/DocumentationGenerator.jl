@@ -334,7 +334,7 @@ function run_with_timeout(
                     while process_running(process)
                         if time() - start_time > kill_timeout
                             verbose && @info("Killing $name")
-                            kill(process, signum = SIGKILL)
+                            kill(process, signum = Base.SIGKILL)
                         end
                         sleep(5)
                     end
