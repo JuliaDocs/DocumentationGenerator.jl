@@ -74,7 +74,7 @@ end
             name = "ReactionNetworkImporters",
             url = "https://github.com/isaacsas/ReactionNetworkImporters.jl.git",
             uuid = "b4db0fb7-de2a-5028-82bf-5021f5cfa881",
-            versions = [v"0.1.4"],
+            versions = [v"0.1.5"],
             installs = [true],
             doctype = ["default"],
         ),

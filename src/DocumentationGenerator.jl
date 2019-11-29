@@ -4,6 +4,7 @@ using Pkg
 using Pkg.TOML
 using Pkg.Types
 using Documenter
+using GithubMarkdown
 
 """
     default_docs(package, root, pkgroot)
@@ -56,13 +57,7 @@ end
 
 function rendergfm(file, fileout)
     try
-        commonmarker = find_ruby_gem("commonmarker")
-        cmd = `$(commonmarker) $(file)`
-        rendered = read(cmd, String)
-        open(fileout, "w") do io
-            # lots of backticks so the @raw block doesn't end prematurely
-            println(io, "````````````@raw html\n", rendered, "\n````````````")
-        end
+        rendergfm(fileout, file; documenter = true)
     catch err
         cp(file, fileout)
         @error("Rendering GFM failed. Falling back to Julia implementation.", error = err)
