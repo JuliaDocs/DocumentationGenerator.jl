@@ -46,21 +46,17 @@ function handle_readme(pages, pkgroot, doc_source)
             readme = joinpath(pkgroot, file)
             if isfile(readme)
                 newreadmepath = joinpath(doc_source, "index.md")
-                rendergfm(readme, newreadmepath)
+                try
+                    rendergfm(newreadmepath, readme; documenter = true)
+                catch err
+                    cp(readme, newreadmepath)
+                    @error("Rendering GFM failed. Falling back to Julia implementation.", error = err)
+                end
                 copylocallinks(readme, newreadmepath)
                 push!(pages, "Readme" => "index.md")
                 break
             end
         end
-    end
-end
-
-function rendergfm(file, fileout)
-    try
-        rendergfm(fileout, file; documenter = true)
-    catch err
-        cp(file, fileout)
-        @error("Rendering GFM failed. Falling back to Julia implementation.", error = err)
     end
 end
 
