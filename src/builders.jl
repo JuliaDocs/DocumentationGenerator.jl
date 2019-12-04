@@ -35,8 +35,6 @@ function build_hosted_docs(packagespec, buildpath, uri)
     end
     # download search index
     try
-        @show string(uri, "/search_index.js")
-        @show joinpath(buildpath, "search_index.js")
         download(string(uri, "/search_index.js"), joinpath(buildpath, "search_index.js"))
     catch err
         @error("Search index download failed for `$(uri)`.", exception = err)
