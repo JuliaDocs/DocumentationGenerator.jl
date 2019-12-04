@@ -4,7 +4,7 @@ using DocumentationGenerator
 
 Pkg.status()
 
-function build(uuid, name, url, version, buildpath, registry, deployment_url)
+function build(uuid, name, url, version, buildpath, registry, deployment_url, args...)
     packagespec = PackageSpec(uuid = uuid, name = name, version = version)
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
@@ -31,4 +31,32 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url)
     end
 end
 
-build(ARGS...)
+function update_metadata(uuid, name, url, version, buildpath, registry, deployment_url, args...)
+    metapath = joinpath(buildpath, "meta.toml")
+    packagespec = PackageSpec(uuid = uuid, name = name, version = version)
+    withenv(
+        "DOCUMENTATIONGENERATOR" => "true",
+        "CI" => "true",
+        "DOCUMENTATIONGENERATOR_BASE_URL" => DocumentationGenerator.docs_url(deployment_url, name, uuid, version)
+    ) do
+        if isfile(joinpath(buildpath, "meta.toml"))
+            metadata = TOML.parsefile(metapath)
+            updated_metadata = DocumentationGenerator.package_metadata(packagespec, url)
+            merge!(metadata, updated_metadata)
+
+            @info "opening meta.toml"
+            open(metapath, "w") do io
+                @info "writing meta.toml"
+                TOML.print(io, metadata)
+            end
+        else
+            @error("Tried updating metadata, but did not find an existing `meta.toml` at `$(metapath)`.")
+        end
+    end
+end
+
+if ARGS[end] === "update"
+    update_metadata(ARGS...)
+else
+    build(ARGS...)
+end

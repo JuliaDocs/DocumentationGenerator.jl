@@ -64,7 +64,8 @@ function build_documentation(
         envpath = normpath(joinpath(@__DIR__, "..")),
         filter_versions = last,
         sync_registry = true,
-        deployment_url = "pkg.julialang.org/docs"
+        deployment_url = "pkg.julialang.org/docs",
+        update_only = false
     )
 
     regpath = get_registry(basepath, sync = sync_registry)
@@ -83,7 +84,8 @@ function build_documentation(
                                        basepath = basepath,
                                        juliacmd = juliacmd,
                                        registry_path = regpath,
-                                       deployment_url = deployment_url)
+                                       deployment_url = deployment_url,
+                                       update_only = update_only)
                 push!(process_queue, proc)
             end
     end
@@ -98,7 +100,8 @@ function start_builder(package, version;
         basepath = error("`basepath` is a required argument."),
         juliacmd = error("`juliacmd` is a required argument."),
         registry_path = error("`registry_path` is a required argument."),
-        deployment_url = error("`deployment_url` is a required argument.")
+        deployment_url = error("`deployment_url` is a required argument."),
+        update_only = error("`update_only` is a required argument.")
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -133,6 +136,7 @@ function start_builder(package, version;
             $builddir
             $registry_path
             $deployment_url
+            $(update_only ? "update" : "build")
     ```
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for ", name, "@", version, " (", uuid, ")"))
