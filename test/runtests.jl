@@ -150,17 +150,19 @@ end
                 @test isdir(versiondir)
                 toml_path = joinpath(versiondir, "meta.toml")
                 @test isfile(toml_path)
-                toml = Pkg.TOML.parsefile(toml_path)
-                pkginstalls = get(toml, "installable", false)
-                pkgsuccess = get(toml, "success", false)
-                @test pkginstalls == pkg.installs[i]
-                @test pkgsuccess == pkg.success[i]
-                if pkginstalls == true
-                    doctype = get(toml, "doctype", nothing)
-                    @test doctype == pkg.doctype[i]
-                    @test isfile(joinpath(versiondir, "index.html"))
-                    if doctype == "default"
-                        @test isdir(joinpath(versiondir, "autodocs"))
+                if isfile(toml_path)
+                    toml = Pkg.TOML.parsefile(toml_path)
+                    pkginstalls = get(toml, "installable", false)
+                    pkgsuccess = get(toml, "success", false)
+                    @test pkginstalls == pkg.installs[i]
+                    @test pkgsuccess == pkg.success[i]
+                    if pkginstalls == true
+                        doctype = get(toml, "doctype", nothing)
+                        @test doctype == pkg.doctype[i]
+                        @test isfile(joinpath(versiondir, "index.html"))
+                        if doctype == "default"
+                            @test isdir(joinpath(versiondir, "autodocs"))
+                        end
                     end
                 end
             end

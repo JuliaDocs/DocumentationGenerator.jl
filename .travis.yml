@@ -2,7 +2,10 @@ language: julia
 os:
   - linux
 julia:
+  - 1.0
   - 1.1
+  - 1.2
+  - 1.3
   - nightly
 notifications:
   email: false
@@ -12,4 +15,3 @@ matrix:
 before_install:
   - sudo apt-get install ruby bundler cmake pkg-config git libssl-dev
   - gem install --no-ri --no-rdoc licensee
-  - gem install --no-ri --no-rdoc commonmarker
