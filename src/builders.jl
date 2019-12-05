@@ -156,6 +156,7 @@ function build_documenter(packagespec, docdir)
             $(first(Base.julia_cmd()))
                 --project="$(docdir)"
                 $(rundcocumenter)
+                $(docdir)
             ```
 
         makefile = joinpath(docdir, "make.jl")
