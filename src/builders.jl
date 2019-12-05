@@ -139,7 +139,8 @@ function build_legacy_documenter(packagespec, docdir)
 end
 
 function build_documenter(packagespec, docdir)
-    cd(docdir) do
+    pkgdir = normpath(joinpath(docdir, ".."))
+    cd(pkgdir) do
         docsproject = joinpath(docdir, "Project.toml")
         docsmanifest = joinpath(docdir, "Manifest.toml")
         if !isfile(docsproject)
@@ -156,6 +157,7 @@ function build_documenter(packagespec, docdir)
             $(first(Base.julia_cmd()))
                 --project="$(docdir)"
                 $(rundcocumenter)
+                $(pkgdir)
                 $(docdir)
             ```
 

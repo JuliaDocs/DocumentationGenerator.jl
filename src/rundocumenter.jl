@@ -1,23 +1,26 @@
-if length(ARGS) == 1
-    dir = ARGS[1]
+if length(ARGS) == 2
+    pkgdir = ARGS[1]
+    docsdir = ARGS[2]
 else
-    @info("No directory specified. Falling back to `pwd()`.")
-    dir = pwd()
+    docsdir = pwd()
+    pkgdir = normpath(joinpath(pwd(), ".."))
+    @info("No directory specified. Falling back to `$(pkgdir)`/`$(docsdir)`.")
 end
 
 using Pkg
 
 include(joinpath(@__DIR__, "utils", "rewrite.jl"))
 
-Pkg.develop(PackageSpec(path=joinpath(dir, "..")))
+
+@info("Developing $(pkgdir):")
+Pkg.develop(PackageSpec(path=pkgdir))
+@info("Instantiating:")
 Pkg.instantiate()
 Pkg.status()
 
-@info(pwd())
+expr, bpath = fix_makefile(joinpath(docsdir, "make.jl"))
 
-
-expr, bpath = fix_makefile(joinpath(pwd(), "make.jl"))
-
+@info("Evaluating the following `make` expr:")
 @info(expr)
 
 eval(expr)
