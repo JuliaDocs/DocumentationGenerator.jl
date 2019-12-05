@@ -144,7 +144,12 @@ end
             pkgbuild = joinpath(build, DocumentationGenerator.get_docs_dir(pkg.name, pkg.uuid))
             @test isdir(pkgbuild)
             @testset "$(pkg.name): $(version)" for (i, version) in enumerate(pkg.versions)
-                @test isfile(basepath, "logs", string(pkg.name, "-", pkg.uuid, "-", version, ".log"))
+                log = joinpath(basepath, "logs", string(pkg.name, "-", pkg.uuid, "-", version, ".log"))
+                @test isfile(log)
+
+                println("\n---- LOG $(pkg.name)@$(version) START ----\n")
+                println(read(log, String))
+                println("\n---- LOG $(pkg.name)@$(version) END ----\n")
 
                 versiondir = joinpath(pkgbuild, string(version))
                 @test isdir(versiondir)
