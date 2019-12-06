@@ -135,7 +135,7 @@ end
     rm(joinpath(basepath, "build"), force = true, recursive = true)
 
     DocumentationGenerator.build_documentation(
-        packages, basepath = basepath, filter_versions = identity
+        packages, basepath = basepath, filter_versions = identity, processes = 1
     )
 
     build = joinpath(basepath, "build")
