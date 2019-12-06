@@ -128,6 +128,16 @@ end
             success = [true],
             doctype = ["real"]
         ),
+        # Julia
+        (
+            name = "julia",
+            url = "https://github.com/JuliaLang/julia",
+            uuid = "1222c4b2-2114-5bfd-aeef-88e4692bbb3e",
+            versions = [v"1.2.0", v"1.3.0"],
+            installs = ["missing", "missing"],
+            success = [true, true],
+            doctype = ["hosted", "hosted"]
+        )
     ]
 
     basepath = @__DIR__
