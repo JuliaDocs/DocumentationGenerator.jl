@@ -116,7 +116,7 @@ end
             versions = [v"0.2.2", v"0.9.0"],
             installs = [false, true],
             success = [false, true],
-            doctype = [nothing, "documenter"],
+            doctype = ["missing", "documenter"],
         ),
         # with hosted docs
         (
@@ -126,7 +126,8 @@ end
             versions = [v"0.7.0"],
             installs = ["missing"],
             success = [true],
-            doctype = ["real"]
+            hosted_uri = ["https://docs.junolab.org/latest"],
+            doctype = ["hosted"]
         ),
         # Julia
         (
@@ -135,6 +136,7 @@ end
             uuid = "1222c4b2-2114-5bfd-aeef-88e4692bbb3e",
             versions = [v"1.2.0", v"1.3.0"],
             installs = ["missing", "missing"],
+            hosted_uri = ["https://docs.julialang.org", "https://docs.julialang.org"],
             success = [true, true],
             doctype = ["hosted", "hosted"]
         )
@@ -169,8 +171,15 @@ end
                     toml = Pkg.TOML.parsefile(toml_path)
                     pkginstalls = get(toml, "installable", false)
                     pkgsuccess = get(toml, "success", false)
+                    pkgdoctype = get(toml, "doctype", "")
                     @test pkginstalls == pkg.installs[i]
                     @test pkgsuccess == pkg.success[i]
+                    @test pkgdoctype == pkg.doctype[i]
+
+                    if pkg.doctype[i] == "hosted"
+                        @test get(toml, "hosted_uri", "") == pkg.hosted_uri[i]
+                    end
+
                     if pkginstalls == true
                         doctype = get(toml, "doctype", nothing)
                         @test doctype == pkg.doctype[i]

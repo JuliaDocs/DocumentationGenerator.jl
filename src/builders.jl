@@ -41,7 +41,8 @@ function build_hosted_docs(packagespec, buildpath, uri)
     end
     return Dict(
         "doctype" => :hosted,
-        "success" => true
+        "success" => true,
+        "hosted_uri" => uri
     )
 end
 
