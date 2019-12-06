@@ -94,7 +94,7 @@ end
             name = "DynamicHMC",
             url = "https://github.com/tpapp/DynamicHMC.jl.git",
             uuid = "bbc10e6e-7c05-544b-b16e-64fede858acb",
-            versions = [v"2.0.1"],
+            versions = [v"2.1.1"],
             installs = [true],
             success = [true],
             doctype = ["documenter"],

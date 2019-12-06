@@ -156,6 +156,8 @@ function build_documenter(packagespec, docdir)
         cmd = ```
             $(first(Base.julia_cmd()))
                 --project="$(docdir)"
+                --compiled-modules=no
+                -O0
                 $(rundcocumenter)
                 $(pkgdir)
                 $(docdir)

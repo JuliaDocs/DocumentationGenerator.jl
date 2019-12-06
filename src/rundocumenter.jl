@@ -11,11 +11,10 @@ using Pkg
 
 include(joinpath(@__DIR__, "utils", "rewrite.jl"))
 
-
-@info("Developing $(pkgdir):")
-Pkg.develop(PackageSpec(path=pkgdir))
 @info("Instantiating:")
 Pkg.instantiate()
+@info("Developing $(pkgdir):")
+Pkg.develop(PackageSpec(path=pkgdir))
 Pkg.status()
 
 expr, bpath = fix_makefile(joinpath(docsdir, "make.jl"))
