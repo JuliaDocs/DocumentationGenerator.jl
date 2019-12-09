@@ -1,10 +1,11 @@
 function build_git_docs(packagespec, buildpath, uri)
+    pkgname = packagespec.name
     return mktempdir() do dir
         return cd(dir) do
-            run(`git clone --depth=1 $(uri) docsource`)
-            docsproject = joinpath(dir, "docsource")
+            run(`git clone --depth=1 $(uri) $(pkgname)`)
+            docsproject = joinpath(dir, pkgname)
             return cd(docsproject) do
-                return build_local_docs(packagespec, docsproject, "", docsproject)
+                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true)
             end
         end
     end
@@ -46,7 +47,7 @@ function build_hosted_docs(packagespec, buildpath, uri)
     )
 end
 
-function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing)
+function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false)
     uri = something(uri, "docs")
     mktempdir() do envdir
         pkgname = packagespec.name
@@ -67,34 +68,17 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing)
         end
         mod = try_use_package(packagespec)
 
-        # package doesn't load, so let's only use the README
-        if mod === nothing
-            return mktempdir() do docsdir
-                output = build_readme_docs(pkgname, pkgroot, docsdir, mod)
-                if output !== nothing
-                    cp(output, buildpath, force = true)
-                    return Dict(
-                        "doctype" => :fallback,
-                        "installable" => true,
-                        "success" => true
-                    )
-                end
-                return Dict(
-                    "doctype" => :fallback,
-                    "installable" => true,
-                    "success" => false
-                )
-            end
-        end
-
         # actual Documenter docs
         for docdir in joinpath.(pkgroot, (uri, "docs", "doc"))
+            @info("Building vendored Documenter.jl documentation at $(docdir).")
             if isdir(docdir)
                 output = build_documenter(packagespec, docdir)
+                @info("Documentation built at $(output).")
                 if output !== nothing
+                    @info("Copying build documentation from $(output) to $(buildpath)")
                     cp(output, buildpath, force = true)
                     return Dict(
-                        "doctype" => :documenter,
+                        "doctype" => gitdirdocs ? :gitdir : :documenter,
                         "documenter_errored" => documenter_errored,
                         "installable" => true,
                         "success" => true
@@ -104,6 +88,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing)
             end
         end
 
+        @info("Building fallback documentation.")
         # fallback docs (readme & docstrings)
         return mktempdir() do docsdir
             output = build_readme_docs(pkgname, pkgroot, docsdir, mod)

@@ -139,6 +139,16 @@ end
             hosted_uri = ["https://docs.julialang.org", "https://docs.julialang.org"],
             success = [true, true],
             doctype = ["hosted", "hosted"]
+        ),
+        # git-dir docs
+        (
+            name = "DifferentialEquations",
+            url = "https://github.com/JuliaDiffEq/DifferentialEquations.jl.git",
+            uuid = "0c46a032-eb83-5123-abaf-570d42b7fbaa",
+            versions = [v"6.9.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["gitdir"],
         )
     ]
 

@@ -7,10 +7,12 @@ max_packages = if isempty(ARGS)
 else
     parse(Int, ARGS[1])
 end
-max_packages = 2
 
 processes = parse(Int, get(ENV, "NUM_PKG_PROCESSES", "8"))
 docspath = normpath(joinpath(@__DIR__, ".."))
 
 
-DocumentationGenerator.build_documentation(collect(values(packages))[1:max_packages], processes = processes, basepath = docspath)
+DocumentationGenerator.build_documentation(collect(values(packages))[1:max_packages],
+                                            processes = processes,
+                                            basepath = docspath,
+                                            update_only=true)

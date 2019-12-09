@@ -10,14 +10,24 @@ end
 using Pkg
 
 include(joinpath(@__DIR__, "utils", "rewrite.jl"))
-
-@info("Instantiating:")
-Pkg.instantiate()
-@info("Developing $(pkgdir):")
-Pkg.develop(PackageSpec(path=pkgdir))
+try
+    Pkg.instantiate()
+catch err
+    @error("Error while instantiating docs directory:", err)
+end
+try
+    Pkg.develop(PackageSpec(path=pkgdir))
+catch err
+    @error("Error while developing parent directory $(pkgdir):", err)
+end
 Pkg.status()
 
 expr, bpath = fix_makefile(joinpath(docsdir, "make.jl"))
+
+
+
+@info("`cd`ing to `$(docsdir)`.") # so that @__DIR__ points to the right place
+cd(docsdir)
 
 @info("Evaluating the following `make` expr:")
 @info(expr)
