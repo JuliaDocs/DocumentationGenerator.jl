@@ -148,7 +148,7 @@ end
             versions = [v"6.9.0"],
             installs = [true],
             success = [true],
-            doctype = ["gitdir"],
+            doctype = ["git-repo"],
         )
     ]
 

@@ -78,7 +78,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                     @info("Copying build documentation from $(output) to $(buildpath)")
                     cp(output, buildpath, force = true)
                     return Dict(
-                        "doctype" => gitdirdocs ? :gitdir : :documenter,
+                        "doctype" => gitdirdocs ? "git-repo" : "documenter",
                         "documenter_errored" => documenter_errored,
                         "installable" => true,
                         "success" => true
@@ -95,14 +95,14 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
             if output !== nothing
                 cp(output, buildpath, force = true)
                 return Dict(
-                    "doctype" => :fallback_autodocs,
+                    "doctype" => "fallback_autodocs",
                     "documenter_errored" => documenter_errored,
                     "installable" => true,
                     "success" => true
                 )
             end
             return Dict(
-                "doctype" => :fallback_autodocs,
+                "doctype" => "fallback_autodocs",
                 "documenter_errored" => documenter_errored,
                 "installable" => true,
                 "success" => false
