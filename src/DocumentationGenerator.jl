@@ -72,7 +72,7 @@ function build_documentation(
     process_queue = []
 
     # make sure registry is updated *before* we start multiple processes that might try that at the same time
-    Pkg.update()
+    Pkg.Registry.update()
 
     for package in packages
             # make sure we're not queueing new processes over the limit
