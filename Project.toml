@@ -2,7 +2,7 @@ name = "DocumentationGenerator"
 uuid = "8f0d3306-d70b-5309-b898-24bb6ab47850"
 authors = ["Sebastian Pfitzner <pfitzseb@physik.hu-berlin.de>", "Simon Danisch <sdanisch@gmail.com>", "Venkatesh Dayananda <venkatesh@juliacomputing.com>"]
 repo = "https://github.com/JuliaDocs/DocumentationGenerator.jl.git"
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
