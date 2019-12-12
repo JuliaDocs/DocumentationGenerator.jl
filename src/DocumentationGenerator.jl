@@ -123,17 +123,7 @@ function start_builder(package, version;
 
     logfile = joinpath(logpath, "$(name)-$(uuid)-$(version).log")
 
-    thisproject = normpath(joinpath(@__DIR__, ".."))
-
-    current_project = Base.active_project()
-    project_file = joinpath(thisproject, "Project.toml")
-    manifest_file = joinpath(thisproject, "Manifest.toml")
-    if !isfile(manifest_file)
-        Pkg.activate(thisproject);
-        chmod(project_file, 0o660)
-        Pkg.instantiate()
-        Pkg.activate(current_project);
-    end
+    thisproject = Base.active_project()
 
     cmd = ```
         $(juliacmd)
