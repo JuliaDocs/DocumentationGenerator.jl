@@ -123,7 +123,7 @@ function start_builder(package, version;
 
     logfile = joinpath(logpath, "$(name)-$(uuid)-$(version).log")
 
-    thisproject = normpath(joinpath(@__DIR__, ".."))
+    thisproject = Base.active_project()
 
     cmd = ```
         $(juliacmd)
