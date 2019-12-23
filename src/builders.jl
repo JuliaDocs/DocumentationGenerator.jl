@@ -285,6 +285,15 @@ function copy_package_source(packagespec, buildpath)
     outpath = joinpath(buildpath, "_packagesource")
     try
         mktempdir() do envdir
+            if packagespec.name == "julia"
+                download("https://github.com/JuliaLang/julia/releases/download/v$(packagespec.version)/julia-$(packagespec.version).tar.gz", joinpath(envdir, string(packagespec.uuid)*".tar.gz"))
+                run(`tar -xzf $(joinpath(envdir, string(packagespec.uuid)*".tar.gz"))  -C $envdir`)
+                docs_path = joinpath(envdir, packagespec.name*"-"*string(packagespec.version), "doc", "_build", "html", "en")
+                src_path = joinpath(envdir, packagespec.name*"-"*string(packagespec.version))
+                cp(docs_path , joinpath(buildpath, "_docsbuild"), force = true)
+                cp(src_path, outpath, force = true)
+                return
+            end
             pkgname = packagespec.name
             installable = try_install_package(packagespec, envdir)
 
