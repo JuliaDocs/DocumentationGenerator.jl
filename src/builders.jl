@@ -20,7 +20,7 @@ function build_hosted_docs(packagespec, buildpath, uri)
             <!DOCTYPE html>
             <html>
                 <head>
-                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                    <meta http-equiv="Content-Type" content="0; $(uri)" />
                     <script type="text/javascript">
                         window.onload = function () {
                             window.location.replace("$(uri)");
@@ -34,6 +34,10 @@ function build_hosted_docs(packagespec, buildpath, uri)
             """
         )
     end
+
+    # check for meta redirects and follow them
+    uri = maybe_redirect(uri)
+
     # download search index
     try
         download(string(uri, "/search_index.js"), joinpath(buildpath, "search_index.js"))
@@ -45,6 +49,29 @@ function build_hosted_docs(packagespec, buildpath, uri)
         "success" => true,
         "hosted_uri" => uri
     )
+end
+
+using Gumbo, AbstractTrees
+function maybe_redirect(uri)
+    docspage = download(uri)
+    docspage = read(docspage, String)
+
+    try
+        doc = Gumbo.parsehtml(docspage)
+        for el in PreOrderDFS(doc.root)
+            if el isa HTMLElement && Gumbo.tag(el) == :meta
+                content = getattr(el, "content")
+                m = match(r"\d+;\s*url\=(.*)$", content)
+
+                if m !== nothing
+                    return m[1]
+                end
+            end
+        end
+    catch err
+        @error("Failed to determine if there's a redirect in `$(uri)`.", err=err)
+    end
+    return uri
 end
 
 function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false)

@@ -5,6 +5,8 @@ const julia = first(Base.julia_cmd())
 
 @test length(keys(DocumentationGenerator.installable_on_version())) > 1500
 
+@test DocumentationGenerator.maybe_redirect("https://docs.julialang.org/") == "https://docs.julialang.org/en/v1"
+
 @testset "Running code with a timeout" begin
     let
         tempfile = tempname()
@@ -136,7 +138,7 @@ end
             uuid = "1222c4b2-2114-5bfd-aeef-88e4692bbb3e",
             versions = [v"1.2.0", v"1.3.0"],
             installs = ["missing", "missing"],
-            hosted_uri = ["https://docs.julialang.org", "https://docs.julialang.org"],
+            hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
             success = [true, true],
             doctype = ["hosted", "hosted"]
         ),
