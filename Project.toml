@@ -21,6 +21,8 @@ GitHub = "5.1"
 GithubMarkdown = "0.1"
 JSON = "0.21"
 julia = "1.1"
+AbstractTrees = "0.2"
+Gumbo = "0.5"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
