@@ -3,6 +3,7 @@ using Pkg
 
 include("utils/markdown.jl")
 include("utils/misc.jl")
+include("utils/pkgtools.jl")
 include("utils/runners.jl")
 include("utils/license.jl")
 include("builders.jl")
@@ -96,6 +97,23 @@ function build_documentation(
     # wait for all queued processes to finish
     for proc in process_queue
         wait(proc)
+    end
+
+    # record dependency relations specified in registry
+    @info "Generating deps info"
+    deps = dependencies_per_package()
+    rdeps = reverse_dependencies_per_package(deps)
+    for package in packages
+        for version in vcat(filter_versions(package.versions))
+            metatoml = joinpath(basepath, "build", get_docs_dir(package.name, package.uuid), string(version), "meta.toml")
+            meta = Pkg.TOML.parsefile(metatoml)
+            meta["deps"] = collect(alldeps(package.uuid, string(version), deps))
+            meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
+            open(metatoml, "w") do io
+                @info "updating meta.toml with deps info"
+                Pkg.TOML.print(io, meta)
+            end
+        end
     end
 end
 

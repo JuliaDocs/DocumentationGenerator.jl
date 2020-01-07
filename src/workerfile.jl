@@ -16,6 +16,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, ar
         merge!(metadata, build_meta)
 
         pkgsource = DocumentationGenerator.copy_package_source(packagespec, buildpath)
+        DocumentationGenerator.render_readme_html(packagespec, buildpath)
 
         if pkgsource !== nothing && ispath(pkgsource)
             metadata["license"], metadata["license_url"] = DocumentationGenerator.license(joinpath(buildpath, "_packagesource"))

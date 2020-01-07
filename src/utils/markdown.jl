@@ -1,5 +1,6 @@
 using Markdown
 using GithubMarkdown
+using HTMLSanitizer
 
 """
     copylocallinks(originalreadme, readmepath)
@@ -39,9 +40,16 @@ collect_links(md, links) = isdefined(md, :content) && foreach(c -> collect_links
 collect_links(md::Markdown.Link, links) = push!(links, md.url)
 collect_links(md::Markdown.Image, links) = push!(links, md.url)
 
-function rendergfm(file, fileout)
+function rendergfm(file, fileout; documenter = false)
+    io = IOBuffer()
     try
-        GithubMarkdown.rendergfm(fileout, file; documenter = true)
+        GithubMarkdown.rendergfm(io, file; documenter = false)
+        out = sanitize(String(take!(io)), prettyprint = false)
+        open(fileout, "w") do f
+            documenter && println(io, "````````````@raw html")
+            println(f, out)
+            documenter && println(io, "````````````")
+        end
     catch err
         cp(file, fileout)
         @error("Rendering GFM failed. Falling back to Julia implementation.", error = err)
