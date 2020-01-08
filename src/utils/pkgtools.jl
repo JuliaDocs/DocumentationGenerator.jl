@@ -80,7 +80,6 @@ function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".j
     uuid_to_name
 end
 
-# FIXME: this should parse the compat/deps tomls instead of asking the resolver
 function dependencies(packagespec, version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"), uuid_to_name = build_uuid_name_map(version; registry=registry))
     uuid = packagespec.uuid
     try
@@ -216,7 +215,7 @@ function alldeps(uuid, version, deps_per_pkg, deps = Set([]), seen = Set([]), is
 
     push!(seen, uuid)
 
-    for (dep, depdict) in get(get(deps_per_pkg[uuid], :deps, []), version, [])
+    for (dep, depdict) in get(get(deps_per_pkg[uuid], :deps, Dict()), version, [])
         depuuid = depdict[:uuid]
 
         push!(deps, Dict(
@@ -240,7 +239,7 @@ end
 
 directdeps(uuid, version, deps_per_pkg) = alldeps(uuid, version, deps_per_pkg; directonly = true)
 
-function allreversedeps(uuid, version, reversedeps, rdeps = Set([]), seen = Set([]), isdirect=true; directonly = false)
+function allreversedeps(uuid, version, reversedeps, rdeps = Dict(), seen = Set([]), isdirect=true; directonly = false)
     uuid in seen && return rdeps
     haskey(reversedeps, uuid) || return rdeps
 
@@ -249,7 +248,15 @@ function allreversedeps(uuid, version, reversedeps, rdeps = Set([]), seen = Set(
     for (versionrange, deps) in reversedeps[uuid]
         if VersionNumber(version) in Pkg.Types.VersionSpec(versionrange)
             for dep in deps
-                push!(rdeps, merge(dep, Dict(:direct => isdirect)))
+                depentry = get!(rdeps, (dep[:uuid], isdirect), merge(dep, Dict(:direct => isdirect)))
+
+                if depentry[:version] isa Vector
+                    push!(depentry[:version], dep[:version])
+                else
+                    depentry[:version] = [depentry[:version], dep[:version]]
+                end
+                unique!(depentry[:version])
+
                 if !directonly
                     allreversedeps(dep[:uuid], dep[:version], reversedeps, rdeps, seen, false)
                 end
@@ -257,7 +264,7 @@ function allreversedeps(uuid, version, reversedeps, rdeps = Set([]), seen = Set(
         end
     end
 
-    rdeps
+    collect(values(rdeps))
 end
 
 directreversedeps(uuid, version, reversedeps) = allreversedeps(uuid, version, reversedeps; directonly = true)

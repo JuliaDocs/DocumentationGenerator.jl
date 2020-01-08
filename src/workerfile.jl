@@ -16,7 +16,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, ar
         merge!(metadata, build_meta)
 
         pkgsource = DocumentationGenerator.copy_package_source(packagespec, buildpath)
-        if isdir(pkgsource)
+        if pkgsource ≠ nothing && isdir(pkgsource)
             DocumentationGenerator.render_readme_html(pkgsource, buildpath)
         else
             @error("Could not render readme because we don't have the source files.")
