@@ -292,7 +292,7 @@ function copy_package_source(packagespec, buildpath)
                 src_path = joinpath(envdir, packagespec.name*"-"*string(packagespec.version))
                 cp(docs_path , joinpath(buildpath, "_docsbuild"), force = true)
                 cp(src_path, outpath, force = true)
-                return
+                return outpath
             end
             pkgname = packagespec.name
             installable = try_install_package(packagespec, envdir)
@@ -316,33 +316,18 @@ function copy_package_source(packagespec, buildpath)
     end
 end
 
-function render_readme_html(packagespec, buildpath)
+function render_readme_html(pkgroot, buildpath)
     outpath = joinpath(buildpath, "_readme")
     try
-        mktempdir() do envdir
-            pkgname = packagespec.name
-            installable = try_install_package(packagespec, envdir)
+        readme = find_readme(pkgroot)
 
-            if !installable
-                @error("Package not installable. Can't get source code.")
-                return
-            end
+        mkpath(outpath)
+        readmehtml = joinpath(outpath, "readme.html")
+        @info("Rendering readme to HTML.")
+        preprocess_readme(readme, readmehtml; documenter = false)
+        @info("Done rendering readme to HTML.")
 
-            pkgfile = Base.find_package(pkgname)
-            pkgroot = normpath(joinpath(pkgfile, "..", ".."))
-
-            pkgloads = mod !== nothing
-
-            readme = find_readme(pkgroot)
-
-            mkpath(outpath)
-            readmehtml = joinpath(outpath, "readme.html")
-            @info("Rendering readme to HTML.")
-            preprocess_readme(readme, readmehtml; documenter = false)
-            @info("Done rendering readme to HTML.")
-
-            return outpath
-        end
+        return outpath
     catch err
         @error("Error trying to copy package source.", exception=err)
     end
