@@ -209,7 +209,7 @@ function reverse_dependencies_per_package(deps_per_pkg)
     return reversedeps
 end
 
-function alldeps(uuid, version, deps_per_pkg, deps = Set([]), seen = Set([]), isdirect=true; directonly = false)
+function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=true; directonly = false)
     uuid in seen && return deps
     haskey(deps_per_pkg, uuid) || return deps
 
@@ -218,28 +218,35 @@ function alldeps(uuid, version, deps_per_pkg, deps = Set([]), seen = Set([]), is
     for (dep, depdict) in get(get(deps_per_pkg[uuid], :deps, Dict()), version, [])
         depuuid = depdict[:uuid]
 
-        push!(deps, Dict(
+        depentry = get!(deps, (depuuid, isdirect), Dict(
             :uuid => depuuid,
             :name => depdict[:name],
             :direct => isdirect,
-            :versions => depdict[:versions]
+            :versions => vcat(depdict[:versions])
         ))
+
+        sort!(unique!(append!(depentry[:versions], vcat(depdict[:versions]))))
 
         if !directonly && haskey(deps_per_pkg, depuuid)
             ver = last(filter(collect(keys(deps_per_pkg[depuuid][:deps]))) do ver
                 VersionNumber(ver) in Pkg.Types.VersionSpec(depdict[:versions])
             end)
 
-            alldeps(depuuid, ver, deps_per_pkg, deps, seen, false)
+            _alldeps(depuuid, ver, deps_per_pkg, deps, seen, false)
         end
     end
+end
 
-    deps
+function alldeps(uuid, version, deps_per_pkg; directonly = false)
+    deps = Dict()
+    _alldeps(uuid, version, deps_per_pkg, deps; directonly = directonly)
+
+    sort!(collect(values(deps)), by = x -> x[:name])
 end
 
 directdeps(uuid, version, deps_per_pkg) = alldeps(uuid, version, deps_per_pkg; directonly = true)
 
-function allreversedeps(uuid, version, reversedeps, rdeps = Dict(), seen = Set([]), isdirect=true; directonly = false)
+function _allreversedeps(uuid, version, reversedeps, rdeps, seen = Set([]), isdirect=true; directonly = false)
     uuid in seen && return rdeps
     haskey(reversedeps, uuid) || return rdeps
 
@@ -249,22 +256,21 @@ function allreversedeps(uuid, version, reversedeps, rdeps = Dict(), seen = Set([
         if VersionNumber(version) in Pkg.Types.VersionSpec(versionrange)
             for dep in deps
                 depentry = get!(rdeps, (dep[:uuid], isdirect), merge(dep, Dict(:direct => isdirect)))
-
-                if depentry[:version] isa Vector
-                    push!(depentry[:version], dep[:version])
-                else
-                    depentry[:version] = [depentry[:version], dep[:version]]
-                end
-                unique!(depentry[:version])
+                depentry[:version] = sort!(unique!(vcat(depentry[:version], dep[:version])))
 
                 if !directonly
-                    allreversedeps(dep[:uuid], dep[:version], reversedeps, rdeps, seen, false)
+                    _allreversedeps(dep[:uuid], dep[:version], reversedeps, rdeps, seen, false)
                 end
             end
         end
     end
+end
 
-    collect(values(rdeps))
+function allreversedeps(uuid, version, reversedeps; directonly = false)
+    rdeps = Dict()
+    _allreversedeps(uuid, version, reversedeps, rdeps; directonly = directonly)
+
+    sort!(collect(values(rdeps)), by = x -> x[:name])
 end
 
 directreversedeps(uuid, version, reversedeps) = allreversedeps(uuid, version, reversedeps; directonly = true)
