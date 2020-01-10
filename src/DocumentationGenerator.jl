@@ -1,5 +1,6 @@
 module DocumentationGenerator
 using Pkg
+using JSON
 
 include("utils/markdown.jl")
 include("utils/misc.jl")
@@ -106,7 +107,8 @@ function build_documentation(
     for package in packages
         for version in vcat(filter_versions(package.versions))
             try
-                metatoml = joinpath(basepath, "build", get_docs_dir(package.name, package.uuid), string(version), "meta.toml")
+                builddir = joinpath(basepath, "build", get_docs_dir(package.name, package.uuid), string(version))
+                metatoml = joinpath(builddir, "meta.toml")
                 isfile(metatoml) || continue
 
                 meta = Pkg.TOML.parsefile(metatoml)
@@ -114,6 +116,11 @@ function build_documentation(
                 meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
                 open(metatoml, "w") do io
                     Pkg.TOML.print(io, meta)
+                end
+                open(joinpath(builddir, "pkg.json"), "w") do f
+                    readme = joinpath(builddir, "_readme", "readme.html")
+                    isfile(readme) && (meta["readme"] = read(readme, String))
+                    print(f, JSON.json(meta))
                 end
             catch err
                 @error(err)
