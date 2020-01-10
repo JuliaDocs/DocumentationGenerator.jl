@@ -17,13 +17,14 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
+AbstractTrees = "0.2"
 Documenter = "0.24"
 GitHub = "5.1"
 GithubMarkdown = "0.1"
+Gumbo = "0.5"
+HTMLSanitizer = "0.1.1"
 JSON = "0.21"
 julia = "1.1"
-AbstractTrees = "0.2"
-Gumbo = "0.5"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
