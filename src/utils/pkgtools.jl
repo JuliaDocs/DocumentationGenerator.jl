@@ -256,7 +256,7 @@ function _allreversedeps(uuid, version, reversedeps, rdeps, seen = Set([]), isdi
         if VersionNumber(version) in Pkg.Types.VersionSpec(versionrange)
             for dep in deps
                 depentry = get!(rdeps, (dep[:uuid], isdirect), merge(dep, Dict(:direct => isdirect)))
-                depentry[:version] = sort!(unique!(vcat(depentry[:version], dep[:version])))
+                depentry[:version] = unique!(vcat(depentry[:version], dep[:version]))
 
                 if !directonly
                     _allreversedeps(dep[:uuid], dep[:version], reversedeps, rdeps, seen, false)
@@ -269,8 +269,12 @@ end
 function allreversedeps(uuid, version, reversedeps; directonly = false)
     rdeps = Dict()
     _allreversedeps(uuid, version, reversedeps, rdeps; directonly = directonly)
+    rdeps = sort!(collect(values(rdeps)), by = x -> x[:name])
 
-    sort!(collect(values(rdeps)), by = x -> x[:name])
+    foreach(rdeps) do dep
+        sort!(dep[:version], by=VersionNumber)
+    end
+    rdeps
 end
 
 directreversedeps(uuid, version, reversedeps) = allreversedeps(uuid, version, reversedeps; directonly = true)
