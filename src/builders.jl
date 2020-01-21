@@ -247,9 +247,9 @@ function find_readme(pkgroot)
     end
 end
 
-function preprocess_readme(readme, output_path)
+function preprocess_readme(readme, output_path; documenter = true)
     # GFM compatible rendering:
-    rendergfm(readme, output_path)
+    rendergfm(readme, output_path; documenter = documenter)
     # copy local assets
     copylocallinks(readme, output_path)
 end
@@ -292,7 +292,7 @@ function copy_package_source(packagespec, buildpath)
                 src_path = joinpath(envdir, packagespec.name*"-"*string(packagespec.version))
                 cp(docs_path , joinpath(buildpath, "_docsbuild"), force = true)
                 cp(src_path, outpath, force = true)
-                return
+                return outpath
             end
             pkgname = packagespec.name
             installable = try_install_package(packagespec, envdir)
@@ -311,6 +311,23 @@ function copy_package_source(packagespec, buildpath)
             @info("Done copying source code for $(pkgname).")
             return outpath
         end
+    catch err
+        @error("Error trying to copy package source.", exception=err)
+    end
+end
+
+function render_readme_html(pkgroot, buildpath)
+    outpath = joinpath(buildpath, "_readme")
+    try
+        readme = find_readme(pkgroot)
+
+        mkpath(outpath)
+        readmehtml = joinpath(outpath, "readme.html")
+        @info("Rendering readme to HTML.")
+        preprocess_readme(readme, readmehtml; documenter = false)
+        @info("Done rendering readme to HTML.")
+
+        return outpath
     catch err
         @error("Error trying to copy package source.", exception=err)
     end

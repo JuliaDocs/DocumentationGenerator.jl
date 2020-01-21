@@ -199,6 +199,7 @@ end
                         if doctype == "default"
                             @test isdir(joinpath(versiondir, "autodocs"))
                         end
+                        @test isfile(joinpath(versiondir, "_readme", "readme.html"))
                     end
                 end
             end

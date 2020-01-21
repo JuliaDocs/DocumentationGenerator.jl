@@ -10,19 +10,21 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 GitHub = "bc5e4493-9b4d-5f90-b8aa-2b2bcaad7a26"
 GithubMarkdown = "ecb7cac2-dae3-4a6f-a5f6-8274be99c6cb"
 Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
+HTMLSanitizer = "9a15a9f4-ddd5-46ee-89fc-c219f813dd6f"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
+AbstractTrees = "0.2"
 Documenter = "0.24"
 GitHub = "5.1"
 GithubMarkdown = "0.1"
+Gumbo = "0.5"
+HTMLSanitizer = "0.1.1"
 JSON = "0.21"
 julia = "1.1"
-AbstractTrees = "0.2"
-Gumbo = "0.5"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

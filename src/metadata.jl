@@ -27,6 +27,7 @@ function package_metadata(packagespec, url)
         meta["owner"] = rmatch[1]
         meta["name"] = rmatch[2]
     end
+
     merge!(meta, update_metadata(packagespec, url, rmatch[1], rmatch[2]))
 
     return meta
