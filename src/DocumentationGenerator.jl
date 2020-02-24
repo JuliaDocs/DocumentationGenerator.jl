@@ -67,7 +67,8 @@ function build_documentation(
         filter_versions = last,
         sync_registry = true,
         deployment_url = "pkg.julialang.org/docs",
-        update_only = false
+        update_only = false,
+        registry = joinpath(homedir(), ".julia/registries/General")
     )
 
     regpath = get_registry(basepath, sync = sync_registry)
@@ -102,7 +103,7 @@ function build_documentation(
 
     # record dependency relations specified in registry
     @info "Generating deps info"
-    deps = dependencies_per_package()
+    deps = dependencies_per_package(registry)
     rdeps = reverse_dependencies_per_package(deps)
     for package in packages
         for version in vcat(filter_versions(package.versions))
