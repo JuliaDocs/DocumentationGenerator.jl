@@ -46,9 +46,9 @@ function rendergfm(file, fileout; documenter = false)
         GithubMarkdown.rendergfm(io, file; documenter = false)
         out = sanitize(String(take!(io)), prettyprint = false)
         open(fileout, "w") do f
-            documenter && println(io, "````````````@raw html")
+            documenter && println(f, "````````````@raw html")
             println(f, out)
-            documenter && println(io, "````````````")
+            documenter && println(f, "````````````")
         end
     catch err
         cp(file, fileout)
