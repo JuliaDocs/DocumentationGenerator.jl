@@ -146,10 +146,10 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                 for depsver in keys(depstoml)
                     if VersionNumber(version) in Pkg.Types.VersionRange(depsver)
                         for (dep, uuid) in depstoml[depsver]
-                            deps[dep] = Dict{Symbol, Any}(
-                                :name => dep,
-                                :uuid => uuid,
-                                :versions => "*"
+                            deps[dep] = Dict{String, Any}(
+                                "name" => dep,
+                                "uuid" => uuid,
+                                "versions" => "*"
                             )
 
                         end
@@ -160,13 +160,13 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                     if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
                         for (dep, vers) in compattoml[compatver]
                             depdict = get!(deps, dep) do
-                                Dict{Symbol, Any}(
-                                    :name => dep,
-                                    :uuid => string(get(stdlib_to_uuid, dep, ""))
+                                Dict{String, Any}(
+                                    "name" => dep,
+                                    "uuid" => string(get(stdlib_to_uuid, dep, ""))
                                 )
                             end
 
-                            depdict[:versions] = vers
+                            depdict["versions"] = vers
                         end
                     end
                 end
@@ -178,9 +178,9 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
             uuid = pkgtoml["uuid"]
 
             depmap[uuid] = Dict(
-                :uuid => uuid,
-                :name => name,
-                :deps => depsperversion
+                "uuid" => uuid,
+                "name" => name,
+                "deps" => depsperversion
             )
         end
     end
@@ -191,16 +191,16 @@ function reverse_dependencies_per_package(deps_per_pkg)
     reversedeps = Dict()
 
     for (uuid, d) in deps_per_pkg
-        for (ver, deps) in d[:deps]
+        for (ver, deps) in d["deps"]
             for (dep, depdict) in deps
-                depuuid = depdict[:uuid]
+                depuuid = depdict["uuid"]
 
                 rdeps = get!(reversedeps, depuuid, Dict())
 
-                push!(get!(rdeps, depdict[:versions], Set([])), Dict(
-                    :uuid=>uuid,
-                    :name=>d[:name],
-                    :version=>ver
+                push!(get!(rdeps, depdict["versions"], Set([])), Dict(
+                    "uuid"=>uuid,
+                    "name"=>d["name"],
+                    "version"=>ver
                 ))
             end
         end
@@ -215,21 +215,21 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
 
     push!(seen, uuid)
 
-    for (dep, depdict) in get(get(deps_per_pkg[uuid], :deps, Dict()), version, [])
-        depuuid = depdict[:uuid]
+    for (dep, depdict) in get(get(deps_per_pkg[uuid], "deps", Dict()), version, [])
+        depuuid = depdict["uuid"]
 
         depentry = get!(deps, (depuuid, isdirect), Dict(
-            :uuid => depuuid,
-            :name => depdict[:name],
-            :direct => isdirect,
-            :versions => vcat(depdict[:versions])
+            "uuid" => depuuid,
+            "name" => depdict["name"],
+            "direct" => isdirect,
+            "versions" => vcat(depdict["versions"])
         ))
 
-        sort!(unique!(append!(depentry[:versions], vcat(depdict[:versions]))))
+        sort!(unique!(append!(depentry["versions"], vcat(depdict["versions"]))))
 
         if !directonly && haskey(deps_per_pkg, depuuid)
-            ver = last(filter(collect(keys(deps_per_pkg[depuuid][:deps]))) do ver
-                VersionNumber(ver) in Pkg.Types.VersionSpec(depdict[:versions])
+            ver = last(filter(collect(keys(deps_per_pkg[depuuid]["deps"]))) do ver
+                VersionNumber(ver) in Pkg.Types.VersionSpec(depdict["versions"])
             end)
 
             _alldeps(depuuid, ver, deps_per_pkg, deps, seen, false)
@@ -241,7 +241,7 @@ function alldeps(uuid, version, deps_per_pkg; directonly = false)
     deps = Dict()
     _alldeps(uuid, version, deps_per_pkg, deps; directonly = directonly)
 
-    sort!(collect(values(deps)), by = x -> x[:name])
+    sort!(collect(values(deps)), by = x -> x["name"])
 end
 
 directdeps(uuid, version, deps_per_pkg) = alldeps(uuid, version, deps_per_pkg; directonly = true)
@@ -255,11 +255,11 @@ function _allreversedeps(uuid, version, reversedeps, rdeps, seen = Set([]), isdi
     for (versionrange, deps) in reversedeps[uuid]
         if VersionNumber(version) in Pkg.Types.VersionSpec(versionrange)
             for dep in deps
-                depentry = get!(rdeps, (dep[:uuid], isdirect), merge(dep, Dict(:direct => isdirect)))
-                depentry[:version] = unique!(vcat(depentry[:version], dep[:version]))
+                depentry = get!(rdeps, (dep["uuid"], isdirect), merge(dep, Dict("direct" => isdirect)))
+                depentry["version"] = unique!(vcat(depentry["version"], dep["version"]))
 
                 if !directonly
-                    _allreversedeps(dep[:uuid], dep[:version], reversedeps, rdeps, seen, false)
+                    _allreversedeps(dep["uuid"], dep["version"], reversedeps, rdeps, seen, false)
                 end
             end
         end
@@ -269,10 +269,10 @@ end
 function allreversedeps(uuid, version, reversedeps; directonly = false)
     rdeps = Dict()
     _allreversedeps(uuid, version, reversedeps, rdeps; directonly = directonly)
-    rdeps = sort!(collect(values(rdeps)), by = x -> x[:name])
+    rdeps = sort!(collect(values(rdeps)), by = x -> x["name"])
 
     foreach(rdeps) do dep
-        sort!(dep[:version], by=VersionNumber)
+        sort!(dep["version"], by=VersionNumber)
     end
     rdeps
 end
