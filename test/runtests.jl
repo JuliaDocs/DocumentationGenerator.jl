@@ -151,6 +151,15 @@ end
             installs = [true],
             success = [true],
             doctype = ["git-repo"],
+        ),
+        (
+            name = "Phylo",
+            url = "https://github.com/richardreeve/Phylo.jl.git",
+            uuid = "aea672f4-3940-5932-aa44-993d1c3ff149",
+            versions = [v"0.3.3"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
         )
     ]
 
@@ -200,6 +209,7 @@ end
                             @test isdir(joinpath(versiondir, "autodocs"))
                         end
                         @test isfile(joinpath(versiondir, "_readme", "readme.html"))
+                        @test !isempty(toml["deps"])
                     end
                 end
             end
