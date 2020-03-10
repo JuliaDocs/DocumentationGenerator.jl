@@ -149,6 +149,7 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                             deps[dep] = Dict{String, Any}(
                                 "name" => dep,
                                 "uuid" => uuid,
+                                "slug" => Base.package_slug(UUID(uuid), 5),
                                 "versions" => "*"
                             )
 
@@ -160,9 +161,11 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                     if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
                         for (dep, vers) in compattoml[compatver]
                             depdict = get!(deps, dep) do
+                                uuid = string(get(stdlib_to_uuid, dep, ""))
                                 Dict{String, Any}(
                                     "name" => dep,
-                                    "uuid" => string(get(stdlib_to_uuid, dep, ""))
+                                    "uuid" => uuid,
+                                    "slug" => Base.package_slug(UUID(uuid), 5),
                                 )
                             end
 
@@ -180,6 +183,7 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
             depmap[uuid] = Dict(
                 "uuid" => uuid,
                 "name" => name,
+                "slug" => Base.package_slug(UUID(uuid), 5),
                 "deps" => depsperversion
             )
         end
@@ -198,9 +202,10 @@ function reverse_dependencies_per_package(deps_per_pkg)
                 rdeps = get!(reversedeps, depuuid, Dict())
 
                 push!(get!(rdeps, depdict["versions"], Set([])), Dict(
-                    "uuid"=>uuid,
-                    "name"=>d["name"],
-                    "version"=>ver
+                    "uuid" => uuid,
+                    "name" => d["name"],
+                    "slug" => Base.package_slug(UUID(uuid), 5),
+                    "version" => ver
                 ))
             end
         end
@@ -221,6 +226,7 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
         depentry = get!(deps, (depuuid, isdirect), Dict(
             "uuid" => depuuid,
             "name" => depdict["name"],
+            "slug" => depdict["slug"],
             "direct" => isdirect,
             "versions" => vcat(depdict["versions"])
         ))

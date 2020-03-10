@@ -10,6 +10,7 @@ function init_metadata(packagespec, url)
     return Dict(
         "name" => packagespec.name,
         "uuid" => packagespec.uuid,
+        "slug" => Base.package_slug(packagespec.uuid, 5),
         "url" => url,
         "version" => packagespec.version,
         "installable" => missing,
