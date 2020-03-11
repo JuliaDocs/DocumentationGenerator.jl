@@ -1,5 +1,5 @@
-using Pkg.Operations: load_package_data_raw, deps_graph, simplify_graph!, resolve
-using Pkg.Types: Context, Fixed, Requires, UUID, uuid_julia, VersionRange, VersionSpec
+using UUIDs
+using Pkg
 
 const JULIA_UUID = UUID("1222c4b2-2114-5bfd-aeef-88e4692bbb3e")
 
@@ -78,25 +78,6 @@ function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".j
     end
 
     uuid_to_name
-end
-
-function dependencies(packagespec, version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"), uuid_to_name = build_uuid_name_map(version; registry=registry))
-    uuid = packagespec.uuid
-    try
-        graph = deps_graph(
-            Context(),
-            uuid_to_name,
-            Requires(uuid => packagespec.version),
-            Dict(JULIA_UUID => Fixed(version))
-        )
-        simplify_graph!(graph)
-        allpkgs = [PackageSpec(uuid = uuid, name = uuid_to_name[uuid], version = ver) for (uuid, ver) in resolve(graph)]
-
-        return filter!(pkg -> pkg !== packagespec, allpkgs)
-    catch err
-        @error("Could not get dependencies for `$(packagespec.name)`: ", err = err)
-        return []
-    end
 end
 
 """
