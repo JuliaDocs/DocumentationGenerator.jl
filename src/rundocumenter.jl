@@ -1,11 +1,12 @@
 if length(ARGS) == 2
     pkgdir = ARGS[1]
-    docsdir = ARGS[2]
+    makefile = ARGS[2]
 else
-    docsdir = pwd()
+    makefile = joinpath(pwd(), "make.jl")
     pkgdir = normpath(joinpath(pwd(), ".."))
-    @info("No directory specified. Falling back to `$(pkgdir)`/`$(docsdir)`.")
+    @info("No directory specified. Falling back to pkgdir=`$(pkgdir)` and makefile=`$(makefile)`.")
 end
+docsdir = dirname(makefile)
 
 using Pkg
 
@@ -22,8 +23,7 @@ catch err
 end
 Pkg.status()
 
-expr, bpath = fix_makefile(joinpath(docsdir, "make.jl"))
-
+expr, bpath = fix_makefile(makefile)
 
 
 @info("`cd`ing to `$(docsdir)`.") # so that @__DIR__ points to the right place

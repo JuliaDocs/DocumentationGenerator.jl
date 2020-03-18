@@ -59,11 +59,12 @@ function maybe_redirect(uri)
     try
         doc = Gumbo.parsehtml(docspage)
         for el in PreOrderDFS(doc.root)
-            if el isa HTMLElement && Gumbo.tag(el) == :meta
+            if el isa HTMLElement && Gumbo.tag(el) == :meta && "content" in keys(Gumbo.attrs(el))
                 content = getattr(el, "content")
                 m = match(r"\d+;\s*url\=(.*)$", content)
 
                 if m !== nothing
+                    @info("Found redirect from `$(uri)` to `$(m[1])`.")
                     return m[1]
                 end
             end
@@ -97,8 +98,8 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
 
         # actual Documenter docs
         for docdir in joinpath.(pkgroot, (uri, "docs", "doc"))
-            @info("Building vendored Documenter.jl documentation at $(docdir).")
             if isdir(docdir)
+                @info("Building vendored Documenter.jl documentation at $(docdir).")
                 output = build_documenter(packagespec, docdir)
                 @info("Documentation built at $(output).")
                 if output !== nothing
@@ -110,12 +111,16 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                         "installable" => true,
                         "success" => true
                     )
+                else
+                    @error("Errored while trying to generate Documenter docs at $(docdir).")
+                    documenter_errored = true
                 end
-                documenter_errored = true
             end
         end
 
+        documenter_errored && @warn("Building vendored Documenter docs failed.")
         @info("Building fallback documentation.")
+
         # fallback docs (readme & docstrings)
         return mktempdir() do docsdir
             output = build_readme_docs(pkgname, pkgroot, docsdir, mod)
@@ -166,6 +171,19 @@ function build_documenter(packagespec, docdir)
 
         rundcocumenter = joinpath(@__DIR__, "rundocumenter.jl")
 
+        makefile = joinpath(docdir, "make.jl")
+        if !isfile(makefile)
+            @warn("No `make.jl` file found in `$(docdir)`. Trying the first `*.jl` file instead.")
+            jlfiles = filter(file -> endswith(file, ".jl"), readdir(docdir))
+            if isempty(jlfiles)
+                @error("No `*.jl` files found in `$(docdir)`. Aborting.")
+                return nothing
+            end
+            makefile = joinpath(docdir, jlfiles[1])
+            @info("Using $(makefile) to generate Documenter docs.")
+        end
+        _, builddir = fix_makefile(makefile)
+
         cmd = ```
             $(first(Base.julia_cmd()))
                 --project="$(docdir)"
@@ -173,11 +191,8 @@ function build_documenter(packagespec, docdir)
                 -O0
                 $(rundcocumenter)
                 $(pkgdir)
-                $(docdir)
+                $(makefile)
             ```
-
-        makefile = joinpath(docdir, "make.jl")
-        _, builddir = fix_makefile(makefile)
 
         try
             run(cmd)
