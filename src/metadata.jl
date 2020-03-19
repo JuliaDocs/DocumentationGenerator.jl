@@ -1,7 +1,7 @@
 using GitHub
 
-const GIT_TOKEN_FILE = if isfile(joinpath("/config", "sync", "gh_auth.txt"))
-    joinpath("/config/sync", "gh_auth.txt")
+const GIT_TOKEN_FILE = if isfile(ENV["DOCGEN_GITHUB_AUTH_FILE"])
+    ENV["DOCGEN_GITHUB_AUTH_FILE"]
 else
     joinpath(@__DIR__, "gh_auth.txt")
 end
