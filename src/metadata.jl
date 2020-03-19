@@ -1,6 +1,6 @@
 using GitHub
 
-const GIT_TOKEN_FILE = if isfile(ENV["DOCGEN_GITHUB_AUTH_FILE"])
+const GIT_TOKEN_FILE = if haskey(ENV, "DOCGEN_GITHUB_AUTH_FILE") && isfile(ENV["DOCGEN_GITHUB_AUTH_FILE"])
     ENV["DOCGEN_GITHUB_AUTH_FILE"]
 else
     joinpath(@__DIR__, "gh_auth.txt")
