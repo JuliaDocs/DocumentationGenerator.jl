@@ -215,10 +215,11 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
         sort!(unique!(append!(depentry["versions"], vcat(depdict["versions"]))))
 
         if !directonly && haskey(deps_per_pkg, depuuid)
-            ver = last(filter(collect(keys(deps_per_pkg[depuuid]["deps"]))) do ver
+            versions = (filter(collect(keys(deps_per_pkg[depuuid]["deps"]))) do ver
                 VersionNumber(ver) in Pkg.Types.VersionSpec(depdict["versions"])
             end)
-
+            isempty(versions) && continue
+            ver = last(versions)
             _alldeps(depuuid, ver, deps_per_pkg, deps, seen, false)
         end
     end
