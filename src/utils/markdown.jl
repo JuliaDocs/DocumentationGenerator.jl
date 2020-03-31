@@ -31,7 +31,7 @@ function copylocallinks(originalreadme, readmepath)
         # only copy files
         isfile(asset) || continue
         # don't follow symlinks
-        islink(asset) || continue
+        islink(asset) && continue
 
         @info("Copying $(asset) to ($newasset) (specified by `$(link)`).")
 
