@@ -124,7 +124,7 @@ function build_documentation(
                     print(f, JSON.json(meta))
                 end
             catch err
-                @error(err)
+                @error(exception=(err, catch_backtrace()))
             end
         end
     end

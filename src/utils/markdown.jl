@@ -8,6 +8,8 @@ using HTMLSanitizer
 Copy relative link targets in the `originalreadme` such that they are reachable from `readmepath` as well.
 """
 function copylocallinks(originalreadme, readmepath)
+    @info("Copying linked files in $(originalreadme).")
+
     basepath = dirname(originalreadme)
     newbasepath = dirname(readmepath)
     contents = String(read(readmepath))
@@ -19,14 +21,19 @@ function copylocallinks(originalreadme, readmepath)
         occursin(r"^https?\:\/\/.*", link) && continue
         # skip absolute paths
         isabspath(link) && continue
-        asset = joinpath(basepath, link)
+        asset = normpath(basepath, link)
         newasset = joinpath(newbasepath, link)
         # skip relative paths outside of the package dir
-        if startswith(basepath, normpath(asset))
+        if !startswith(basepath, asset)
             @warn("Link outside of package root at `$asset`. Skipping.")
+            continue
         end
         # only copy files
         isfile(asset) || continue
+        # don't follow symlinks
+        islink(asset) && continue
+
+        @info("Copying $(asset) to ($newasset) (specified by `$(link)`).")
 
         ispath(dirname(asset)) || mkpath(dirname(newasset))
         try
