@@ -164,7 +164,6 @@ end
     ]
 
     basepath = @__DIR__
-    rm(joinpath(basepath, "logs"), force = true, recursive = true)
     rm(joinpath(basepath, "build"), force = true, recursive = true)
 
     DocumentationGenerator.build_documentation(
@@ -177,7 +176,7 @@ end
             pkgbuild = joinpath(build, DocumentationGenerator.get_docs_dir(pkg.name, pkg.uuid))
             @test isdir(pkgbuild)
             @testset "$(pkg.name): $(version)" for (i, version) in enumerate(pkg.versions)
-                log = joinpath(basepath, "logs", string(pkg.name, "-", pkg.uuid, "-", version, ".log"))
+                log = joinpath(pkgbuild, "$(version).log")
                 @test isfile(log)
 
                 println("\n---- LOG $(pkg.name)@$(version) START ----\n")
