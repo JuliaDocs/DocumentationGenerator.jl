@@ -160,6 +160,15 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+        ),
+        (
+            name = "OpenSpiel_jll",
+            url = "https://github.com/JuliaBinaryWrappers/OpenSpiel_jll.jl.git",
+            uuid = "bd10a763-4654-5023-a028-c4918c6cd33e",
+            versions = [v"0.1.1+0"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
         )
     ]
 

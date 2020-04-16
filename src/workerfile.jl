@@ -5,7 +5,7 @@ using DocumentationGenerator
 Pkg.status()
 
 function build(uuid, name, url, version, buildpath, registry, deployment_url, args...)
-    packagespec = PackageSpec(uuid = uuid, name = name, version = version)
+    packagespec = PackageSpec(uuid = uuid, name = name, version = VersionNumber(version))
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
         "CI" => "true",
