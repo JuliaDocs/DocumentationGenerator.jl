@@ -26,8 +26,6 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, ar
             metadata["license"], metadata["license_url"] = DocumentationGenerator.license(joinpath(buildpath, "_packagesource"))
         end
 
-        isdir(buildpath) || mkpath(joinpath(buildpath))
-
         @info "opening meta.toml"
         open(joinpath(buildpath, "meta.toml"), "w") do io
             @info "writing meta.toml"

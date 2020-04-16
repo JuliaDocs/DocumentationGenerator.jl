@@ -152,7 +152,7 @@ function start_builder(package, version;
     builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
 
-    logfile = joinpath(logpath, "$(name)-$(uuid)-$(version).log")
+    logfile = joinpath(builddir, "..", "$(version).log")
 
     thisproject = Base.active_project()
 
