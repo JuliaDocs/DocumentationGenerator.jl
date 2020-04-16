@@ -36,6 +36,41 @@ const stdlib_to_uuid = Dict(
     "julia" => JULIA_UUID
 )
 
+const stdlib_uuids = Set([
+    "ade2ca70-3891-5945-98fb-dc099432e06a",
+    "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee",
+    "ea8e919c-243c-51af-8825-aaa63cd721ce",
+    "6462fe0b-24de-5631-8697-dd941f90decc",
+    "8bb1440f-4735-579b-a4ab-409b98df4dab",
+    "9a3f8284-a2c9-5f02-9a11-845980a1fd5c",
+    "8ba89e20-285c-5b6f-9357-94700520ee1b",
+    "37e2e46d-f89d-539d-b4ee-838fcccc9c8e",
+    "a63ad114-7e13-5084-954f-fe012c677804",
+    "2f01184e-e22b-5df5-ae63-d93ebab69eaf",
+    "cf7118a7-6976-5b1a-9a39-7adc72f591a4",
+    "56ddb016-857b-54e1-b83d-db4d58db5568",
+    "10745b16-79ce-11e8-11f9-7d13ad32a3b2",
+    "8bf52ea8-c179-5cab-976a-9e18b702a9bc",
+    "44cfe95a-1eb2-52ea-b672-e2afdf69b78f",
+    "9e88b42a-f829-5b0c-bbe9-9e923198166b",
+    "d6f4376e-aef5-505a-96c1-9c027394607a",
+    "4607b0f0-06f3-5cda-b6b1-a6196a1729e9",
+    "3fa0cd96-eef1-5676-8a61-b3b8758bbffb",
+    "8f399da3-3557-5675-b5ff-fb832c97cbdb",
+    "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f",
+    "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79",
+    "b77e0a4c-d291-57a0-90e8-8db25a27a240",
+    "1a1011a3-84de-559e-8e89-a11a2f7dc383",
+    "de0858da-6303-5e67-8744-51eddeeeb8d7",
+    "9fa8497b-333b-5362-9e8d-4d0656e87820",
+    "76f85450-5226-5b5a-8eaa-529ad045b433",
+    "8dfed614-e22c-5e08-85e1-65c5234f0b40",
+    "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+])
+
+is_stdlib(uuid) = uuid in stdlib_uuids
+is_jll(name) = endswith(name, "_jll")
+
 function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
     allpkgs = installable_on_version(version, registry=registry)
 
@@ -130,6 +165,8 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                             deps[dep] = Dict{String, Any}(
                                 "name" => dep,
                                 "uuid" => uuid,
+                                "is_stdlib" => is_stdlib(uuid),
+                                "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
                                 "versions" => "*"
                             )
@@ -146,6 +183,8 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                                 Dict{String, Any}(
                                     "name" => dep,
                                     "uuid" => uuid,
+                                    "is_stdlib" => is_stdlib(uuid),
+                                    "is_jll" => is_jll(dep),
                                     "slug" => Base.package_slug(UUID(uuid), 5),
                                 )
                             end
