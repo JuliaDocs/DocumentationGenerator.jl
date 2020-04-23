@@ -115,10 +115,10 @@ end
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
             uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c",
-            versions = [v"0.2.2", v"0.9.0"],
-            installs = [false, true],
-            success = [false, true],
-            doctype = ["missing", "documenter"],
+            versions = [v"0.2.2", v"0.9.0", v"0.10.4"],
+            installs = [false, true, true],
+            success = [false, true, true],
+            doctype = ["missing", "documenter", "documenter"],
         ),
         # with hosted docs
         (
@@ -136,11 +136,11 @@ end
             name = "julia",
             url = "https://github.com/JuliaLang/julia",
             uuid = "1222c4b2-2114-5bfd-aeef-88e4692bbb3e",
-            versions = [v"1.2.0", v"1.3.0"],
-            installs = ["missing", "missing"],
-            hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
-            success = [true, true],
-            doctype = ["hosted", "hosted"]
+            versions = [v"1.2.0", v"1.3.0", v"1.4.1"],
+            installs = ["missing", "missing", "missing"],
+            hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
+            success = [true, true, true],
+            doctype = ["hosted", "hosted", "hosted"]
         ),
         # git-dir docs
         (
@@ -157,6 +157,15 @@ end
             url = "https://github.com/richardreeve/Phylo.jl.git",
             uuid = "aea672f4-3940-5932-aa44-993d1c3ff149",
             versions = [v"0.3.3"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+        ),
+        (
+            name = "PlyIO",
+            url = "https://github.com/JuliaGeometry/PlyIO.jl",
+            uuid = "42171d58-473b-503a-8d5f-782019eb09ec",
+            versions = [v"1.1.0"],
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],

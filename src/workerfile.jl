@@ -15,6 +15,8 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, ar
         build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry)
         merge!(metadata, build_meta)
 
+        isdir(buildpath) || mkpath(buildpath)
+
         pkgsource = DocumentationGenerator.copy_package_source(packagespec, buildpath)
         if pkgsource ≠ nothing && isdir(pkgsource)
             DocumentationGenerator.render_readme_html(pkgsource, buildpath)

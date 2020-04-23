@@ -97,25 +97,31 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
         mod = try_use_package(packagespec)
 
         # actual Documenter docs
-        for docdir in joinpath.(pkgroot, (uri, "docs", "doc"))
-            if isdir(docdir)
-                @info("Building vendored Documenter.jl documentation at $(docdir).")
-                output = build_documenter(packagespec, docdir)
-                @info("Documentation built at $(output).")
-                if output !== nothing
-                    @info("Copying build documentation from $(output) to $(buildpath)")
-                    cp(output, buildpath, force = true)
-                    return Dict(
-                        "doctype" => gitdirdocs ? "git-repo" : "documenter",
-                        "documenter_errored" => documenter_errored,
-                        "installable" => true,
-                        "success" => true
-                    )
-                else
-                    @error("Errored while trying to generate Documenter docs at $(docdir).")
-                    documenter_errored = true
+        try
+            for docdir in joinpath.(pkgroot, unique([uri, "docs", "doc"]))
+                if isdir(docdir)
+                    @info("Building vendored Documenter.jl documentation at $(docdir).")
+                    output = build_documenter(packagespec, docdir)
+                    @info("Documentation built at $(output).")
+                    if output !== nothing
+                        @info("Copying build documentation from $(output) to $(buildpath)")
+                        cp(output, buildpath, force = true)
+                        return Dict(
+                            "doctype" => gitdirdocs ? "git-repo" : "documenter",
+                            "documenter_errored" => documenter_errored,
+                            "installable" => true,
+                            "using_failed" => mod ≠ nothing,
+                            "success" => true
+                        )
+                    else
+                        @error("Errored while trying to generate Documenter docs at $(docdir).")
+                        documenter_errored = true
+                    end
                 end
             end
+        catch err
+            @error("Errored while trying to generate Documenter docs at $(docdir).", exception = (err, catch_backtrace()))
+            documenter_errored = true
         end
 
         documenter_errored && @warn("Building vendored Documenter docs failed.")
@@ -130,6 +136,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                     "doctype" => "fallback_autodocs",
                     "documenter_errored" => documenter_errored,
                     "installable" => true,
+                    "using_failed" => mod ≠ nothing,
                     "success" => true
                 )
             end
@@ -137,6 +144,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                 "doctype" => "fallback_autodocs",
                 "documenter_errored" => documenter_errored,
                 "installable" => true,
+                "using_failed" => mod ≠ nothing,
                 "success" => false
             )
         end
