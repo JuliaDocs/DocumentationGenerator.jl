@@ -169,6 +169,24 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+        ),
+        (
+            name = "Documenter",
+            url = "https://github.com/JuliaDocs/Documenter.jl.git",
+            uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4",
+            versions = [v"0.24.10"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+        ),
+        (
+            name = "TSVD",
+            url = "https://github.com/JuliaLinearAlgebra/TSVD.jl.git",
+            uuid = "9449cd9e-2762-5aa3-a617-5413e99d722e",
+            versions = [v"0.4.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
         )
     ]
 
