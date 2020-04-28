@@ -23,11 +23,27 @@ catch err
 end
 Pkg.status()
 
-expr, bpath = fix_makefile(makefile)
+documenter_version = v"0.24.10"
+try
+    manifest = joinpath(docsdir, "Manifest.toml")
+    if isfile(manifest)
+        pm = Pkg.TOML.parsefile(manifest)
+        global documenter_version = VersionNumber(first(pm["Documenter"])["version"])
+    else
+        @warn("No Mainfest.toml found at `$(manifest)`. Defaulting to $(documenter_version).")
+    end
+catch err
+    @error(exception = err)
+end
+
+@info("Detected Documenter version $(documenter_version).")
+
+expr, bpath = fix_makefile(makefile, documenter_version)
 
 
 @info("`cd`ing to `$(docsdir)`.") # so that @__DIR__ points to the right place
 cd(docsdir)
+task_local_storage()[:SOURCE_PATH] = docsdir
 
 @info("Evaluating the following `make` expr:")
 @info(expr)
