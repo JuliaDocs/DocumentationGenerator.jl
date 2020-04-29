@@ -41,14 +41,21 @@ function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, regis
     type, uri = doctype(packagespec, registry)
 
     @info("$(packagespec.name) specifies docs of type $(type).")
-    out = if type == "hosted"
-        build_hosted_docs(packagespec, buildpath, uri)
-    elseif type == "git-repo"
-        build_git_docs(packagespec, buildpath, uri)
-    elseif type == "vendored"
-        build_local_docs(packagespec, buildpath, uri)
-    else
-        @error("Invalid doctype specified: $(type).")
+    out = try
+        if type == "hosted"
+            build_hosted_docs(packagespec, buildpath, uri)
+        elseif type == "git-repo"
+            build_git_docs(packagespec, buildpath, uri)
+        elseif type == "vendored"
+            build_local_docs(packagespec, buildpath, uri)
+        else
+            @error("Invalid doctype specified: $(type).")
+            Dict(
+                "success" => false
+            )
+        end
+    catch err
+        @error("Error while generating docs.", exception=(err, catch_backtrace()))
         Dict(
             "success" => false
         )
