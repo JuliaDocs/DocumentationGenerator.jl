@@ -4,7 +4,7 @@ using DocumentationGenerator
 
 Pkg.status()
 
-function build(uuid, name, url, version, buildpath, registry, deployment_url, args...)
+function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, args...)
     packagespec = PackageSpec(uuid = uuid, name = name, version = VersionNumber(version))
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
@@ -19,7 +19,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, ar
 
         pkgsource = DocumentationGenerator.copy_package_source(packagespec, buildpath)
         if pkgsource ≠ nothing && isdir(pkgsource)
-            DocumentationGenerator.render_readme_html(pkgsource, buildpath)
+            DocumentationGenerator.render_readme_html(pkgsource, buildpath, src_prefix, href_prefix)
         else
             @error("Could not render readme because we don't have the source files.")
         end

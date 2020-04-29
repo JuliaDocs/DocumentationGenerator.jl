@@ -339,7 +339,7 @@ function copy_package_source(packagespec, buildpath)
     end
 end
 
-function render_readme_html(pkgroot, buildpath)
+function render_readme_html(pkgroot, buildpath, src_prefix="", href_prefix="")
     outpath = joinpath(buildpath, "_readme")
     try
         readme = find_readme(pkgroot)
@@ -347,11 +347,78 @@ function render_readme_html(pkgroot, buildpath)
         mkpath(outpath)
         readmehtml = joinpath(outpath, "readme.html")
         @info("Rendering readme to HTML.")
-        preprocess_readme(readme, readmehtml; documenter = false)
+
+        io = IOBuffer()
+        GithubMarkdown.rendergfm(io, readme; documenter = false)
+        out = sanitize(String(take!(io)), prettyprint = false)
+        open(readmehtml*".unprocessed", "w") do io
+            print(io, out)
+        end
+        out = postprocess_html_readme(out; src_prefix = src_prefix, href_prefix = href_prefix)
+        open(readmehtml, "w") do io
+            print(io, out)
+        end
         @info("Done rendering readme to HTML.")
 
         return outpath
     catch err
         @error("Error trying to copy package source.", exception=err)
     end
+end
+
+function is_relative_url(url)
+    if occursin(r"^\.?\.?//?"i, url)
+        return true
+    else
+        return !occursin(r"^\w+://"i, url)
+    end
+end
+
+function replace_url(el, attr, url_prefix)
+    old_src = getattr(el, attr)
+    if is_relative_url(old_src)
+        setattr!(el, attr, string(url_prefix, old_src))
+    end
+end
+
+function postprocess_html_readme(html; src_prefix="", href_prefix="")
+    doc = parsehtml(html, preserve_whitespace = true).root
+
+    if !endswith(src_prefix, '/')
+        src_prefix = string(src_prefix, '/')
+    end
+    if !endswith(href_prefix, '/')
+        href_prefix = string(href_prefix, '/')
+    end
+
+    header_refs = Set([])
+    for el in PreOrderDFS(doc)
+        if el isa HTMLElement
+            if Gumbo.tag(el) in [:h1, :h2, :h3, :h4, :h5]
+                heading = replace(text(el), r"\s" => "-")
+                heading = replace(heading, r"[^\w-]" => "")
+                heading = string("#", heading)
+
+                while heading in header_refs
+                    new_heading = replace(heading, r"_\d+$" => s -> begin
+                        string('_', parse(Int, s[2:end]) + 1)
+                    end)
+                    if new_heading == heading
+                        heading = string(heading, "_1")
+                    else
+                        heading = new_heading
+                    end
+                end
+
+                setattr!(el, "href", heading)
+                push!(header_refs, heading)
+            elseif hasattr(el, "src")
+                replace_url(el, "src", src_prefix)
+            elseif hasattr(el, "href")
+                replace_url(el, "href", href_prefix)
+            end
+        end
+    end
+
+    return doc
 end

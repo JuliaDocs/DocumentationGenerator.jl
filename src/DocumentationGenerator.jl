@@ -142,7 +142,9 @@ function start_builder(package, version;
         juliacmd = error("`juliacmd` is a required argument."),
         registry_path = error("`registry_path` is a required argument."),
         deployment_url = error("`deployment_url` is a required argument."),
-        update_only = error("`update_only` is a required argument.")
+        update_only = error("`update_only` is a required argument."),
+        src_prefix = nothing,
+        href_prefix = nothing
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -155,9 +157,12 @@ function start_builder(package, version;
     name = package.name
     uuid = package.uuid
     url = package.url
+    src_prefix  = hasfield(package, :src_prefix) ? package.src_prefix : string("/docs/", get_docs_dir(name, uuid), '/', string(version), '/')
+    href_prefix = hasfield(package, :href_prefix) ? package.href_prefix : string("/ui/Code/docs/", get_docs_dir(name, uuid), '/', string(version), '/')
 
     builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
+
 
     logfile = joinpath(builddir, "..", "$(version).log")
 
@@ -177,6 +182,8 @@ function start_builder(package, version;
             $builddir
             $registry_path
             $deployment_url
+            $src_prefix
+            $href_prefix
             $(update_only ? "update" : "build")
     ```
 
