@@ -115,9 +115,9 @@ end
             name = "Flux",
             url = "https://github.com/FluxML/Flux.jl.git",
             uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c",
-            versions = [v"0.2.2", v"0.9.0", v"0.10.4"],
-            installs = [false, true, true],
-            success = [false, true, true],
+            versions = [v"0.2.2", v"0.9.0"],
+            installs = [false, true],
+            success = [false, true],
             doctype = ["missing", "documenter", "documenter"],
         ),
         # with hosted docs
