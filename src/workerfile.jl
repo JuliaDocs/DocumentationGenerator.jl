@@ -12,7 +12,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         "DOCUMENTATIONGENERATOR_BASE_URL" => DocumentationGenerator.docs_url(deployment_url, name, uuid, version)
     ) do
         metadata = DocumentationGenerator.package_metadata(packagespec, url)
-        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry)
+        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix)
         merge!(metadata, build_meta)
 
         isdir(buildpath) || mkpath(buildpath)
