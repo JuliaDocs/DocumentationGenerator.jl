@@ -61,6 +61,12 @@ const julia = first(Base.julia_cmd())
     end
 end
 
+@testset "Readme rendering" begin
+    DocumentationGenerator.render_html(joinpath(@__DIR__, "fixtures", "readme.md"), joinpath(@__DIR__, "readme.html"), "/foo/", "/bar/")
+
+    @test read(joinpath(@__DIR__, "fixtures", "readme.html"), String) == read(joinpath(@__DIR__, "readme.html"), String)
+end
+
 @testset "Documentation Generation" begin
     packages = [
         # without docs

@@ -1,6 +1,7 @@
 using Markdown
 using GithubMarkdown
 using HTMLSanitizer
+using Highlights
 
 function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
     pkgname = packagespec.name
@@ -340,15 +341,20 @@ end
 function render_html(input, output, src_prefix="", href_prefix=""; documenter = false)
     io = IOBuffer()
     GithubMarkdown.rendergfm(io, input; documenter = false)
-    out = sanitize(String(take!(io)), prettyprint = false)
+
+    allow_class_on_code = deepcopy(HTMLSanitizer.WHITELIST)
+    allow_class_on_code[:attributes]["code"] = ["class"]
+
+    out = sanitize(String(take!(io)), prettyprint = false, whitelist = allow_class_on_code)
 
     out = postprocess_html_readme(out; src_prefix = src_prefix, href_prefix = href_prefix)
-    print(io, out)
+    out = out.children[2]
 
+    print(io, out)
     out = String(take!(io))
 
-    out = replace(out, r"^<HTML>" => "")
-    out = replace(out, r"</HTML>$" => "")
+    out = replace(out, r"^<body>" => "")
+    out = replace(out, r"</body>$" => "")
 
     open(output, "w") do io
         documenter && println(io, "````````````@raw html")
@@ -434,6 +440,10 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
 
                 setattr!(el, "id", heading)
                 push!(header_refs, heading)
+            elseif Gumbo.tag(el) == :code
+                if Gumbo.tag(el.parent) == :pre && length(el.children) == 1 && typeof(el.children[1]) == HTMLText
+                    highlight_syntax_html(el)
+                end
             elseif hasattr(el, "src")
                 replace_url(el, "src", src_prefix)
             elseif hasattr(el, "href")
@@ -443,4 +453,42 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
     end
 
     return doc
+end
+
+function highlight_syntax_html(el)
+    lexer = nothing
+    content = Gumbo.text(el)
+    m = match(r"language\-(.+)\b", hasattr(el, "class") ? getattr(el, "class") : "")
+    if m ≠ nothing
+        # language specified
+        m = m[1]
+        if m == "julia"
+            lexer = Lexers.JuliaLexer
+        elseif m == "julia-console"
+            lexer = Lexers.JuliaConsoleLexer
+        elseif m == "matlab"
+            lexer = Lexers.MatlabLexer
+        elseif m == "r"
+            lexer = Lexers.RLexer
+        elseif m == "fortran"
+            lexer = Lexers.FortranLexer
+        end
+    else
+        # no language, but looks like REPL content
+        if startswith(content, "julia>")
+            lexer = Lexers.JuliaConsoleLexer
+        else
+            # Julia seems like a sensible default
+            lexer = Lexers.JuliaLexer
+        end
+    end
+
+    if lexer ≠ nothing
+        io = IOBuffer()
+        Highlights.highlight(io, MIME("text/html"), content, lexer)
+        highlighted_content = String(take!(io))
+        parsed = Gumbo.parsehtml(highlighted_content, preserve_whitespace = true).root.children[2].children[1]
+        parsed.parent = el.parent
+        el.children = [parsed]
+    end
 end
