@@ -61,6 +61,12 @@ const julia = first(Base.julia_cmd())
     end
 end
 
+@testset "Readme rendering" begin
+    DocumentationGenerator.render_html(joinpath(@__DIR__, "fixtures", "readme.md"), joinpath(@__DIR__, "readme.html"), "/foo/", "/bar/")
+
+    @test read(joinpath(@__DIR__, "fixtures", "readme.html"), String) == read(joinpath(@__DIR__, "readme.html"), String)
+end
+
 @testset "Documentation Generation" begin
     packages = [
         # without docs
@@ -109,16 +115,6 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
-        ),
-        # with fancy docs
-        (
-            name = "Flux",
-            url = "https://github.com/FluxML/Flux.jl.git",
-            uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c",
-            versions = [v"0.2.2", v"0.9.0"],
-            installs = [false, true],
-            success = [false, true],
-            doctype = ["missing", "documenter", "documenter"],
         ),
         # with hosted docs
         (
@@ -196,6 +192,15 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
+        ),
+        (
+            name = "Crayons",
+            url = "https://github.com/KristofferC/Crayons.jl.git",
+            uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f",
+            versions = [v"4.0.1"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
         )
     ]
 
@@ -246,6 +251,14 @@ end
                         @test isfile(joinpath(versiondir, "_readme", "readme.html"))
                         @test !isempty(toml["deps"])
                     end
+                end
+
+                if pkg.name == "Crayons"
+                    # spot check some of the readme postprocessing
+                    readme = read(joinpath(versiondir, "_readme", "readme.html"), String)
+                    @test occursin("""src="/docs/Crayons/TXPcU/4.0.1/logo.png" """, readme)
+                    @test occursin("""<a href="https://travis-ci.org/KristofferC/Crayons.jl">""", readme)
+                    @test occursin("""<h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a></h2>""", readme)
                 end
             end
         end

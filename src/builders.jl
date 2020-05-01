@@ -1,11 +1,16 @@
-function build_git_docs(packagespec, buildpath, uri)
+using Markdown
+using GithubMarkdown
+using HTMLSanitizer
+using Highlights
+
+function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
     pkgname = packagespec.name
     return mktempdir() do dir
         return cd(dir) do
             run(`git clone --depth=1 $(uri) $(pkgname)`)
             docsproject = joinpath(dir, pkgname)
             return cd(docsproject) do
-                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true)
+                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true; src_prefix=src_prefix, href_prefix=href_prefix)
             end
         end
     end
@@ -75,7 +80,7 @@ function maybe_redirect(uri)
     return uri
 end
 
-function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false)
+function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="")
     uri = something(uri, "docs")
     mktempdir() do envdir
         pkgname = packagespec.name
@@ -129,7 +134,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
 
         # fallback docs (readme & docstrings)
         return mktempdir() do docsdir
-            output = build_readme_docs(pkgname, pkgroot, docsdir, mod)
+            output = build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix)
             if output !== nothing
                 cp(output, buildpath, force = true)
                 return Dict(
@@ -213,7 +218,7 @@ function build_documenter(packagespec, docdir)
     end
 end
 
-function build_readme_docs(pkgname, pkgroot, docsdir, mod)
+function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix)
     @info("Generating readme-only fallback docs.")
 
     if pkgroot === nothing || !ispath(pkgroot)
@@ -227,7 +232,8 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod)
     doc_src = joinpath(docsdir, "src")
     mkpath(doc_src)
     index = joinpath(doc_src, "index.md")
-    preprocess_readme(readme, index)
+
+    render_html(readme, index, src_prefix, href_prefix; documenter = true)
 
     pages = ["Readme" => "index.md"]
     modules = :(Module[Module()])
@@ -268,13 +274,6 @@ function find_readme(pkgroot)
             end
         end
     end
-end
-
-function preprocess_readme(readme, output_path; documenter = true)
-    # GFM compatible rendering:
-    rendergfm(readme, output_path; documenter = documenter)
-    # copy local assets
-    copylocallinks(readme, output_path)
 end
 
 function add_autodocs(docsdir, mod)
@@ -339,19 +338,157 @@ function copy_package_source(packagespec, buildpath)
     end
 end
 
-function render_readme_html(pkgroot, buildpath)
+function render_html(input, output, src_prefix="", href_prefix=""; documenter = false)
+    io = IOBuffer()
+    GithubMarkdown.rendergfm(io, input; documenter = false)
+
+    allow_class_on_code = deepcopy(HTMLSanitizer.WHITELIST)
+    allow_class_on_code[:attributes]["code"] = ["class"]
+
+    out = sanitize(String(take!(io)), prettyprint = false, whitelist = allow_class_on_code)
+
+    out = postprocess_html_readme(out; src_prefix = src_prefix, href_prefix = href_prefix)
+    out = out.children[2]
+
+    print(io, out)
+    out = String(take!(io))
+
+    out = replace(out, r"^<body>" => "")
+    out = replace(out, r"</body>$" => "")
+
+    open(output, "w") do io
+        documenter && println(io, "````````````@raw html")
+        println(io, out)
+        documenter && println(io, "````````````")
+    end
+end
+
+function render_readme_html(pkgroot, buildpath, src_prefix="", href_prefix=""; documenter = false)
     outpath = joinpath(buildpath, "_readme")
     try
         readme = find_readme(pkgroot)
 
         mkpath(outpath)
         readmehtml = joinpath(outpath, "readme.html")
+
         @info("Rendering readme to HTML.")
-        preprocess_readme(readme, readmehtml; documenter = false)
+        render_html(readme, readmehtml, src_prefix, href_prefix; documenter = false)
         @info("Done rendering readme to HTML.")
 
-        return outpath
+        return readmehtml
     catch err
-        @error("Error trying to copy package source.", exception=err)
+        @error("Error trying to render readme to HTML.", exception=err)
+    end
+end
+
+function should_rewrite_url(url)
+    if occursin(r"^\.?\.?//?"i, url)
+        return true
+    elseif startswith(url, '#')
+        return false
+    else
+        return !occursin(r"^\w+://"i, url)
+    end
+end
+
+function replace_url(el, attr, url_prefix)
+    old_src = getattr(el, attr)
+    if should_rewrite_url(old_src)
+        setattr!(el, attr, string(url_prefix, old_src))
+    end
+end
+
+function postprocess_html_readme(html; src_prefix="", href_prefix="")
+    doc = parsehtml(html, preserve_whitespace = true).root
+
+    if !endswith(src_prefix, '/')
+        src_prefix = string(src_prefix, '/')
+    end
+    if !endswith(href_prefix, '/')
+        href_prefix = string(href_prefix, '/')
+    end
+
+    header_refs = Set([])
+    for el in PreOrderDFS(doc)
+        if el isa HTMLElement
+            if Gumbo.tag(el) in [:h1, :h2, :h3, :h4, :h5]
+                heading = replace(text(el), r"\s" => "-")
+                heading = replace(heading, r"[^\w-]" => "")
+
+                while heading in header_refs
+                    new_heading = replace(heading, r"_\d+$" => s -> begin
+                        string('_', parse(Int, s[2:end]) + 1)
+                    end)
+                    if new_heading == heading
+                        heading = string(heading, "_1")
+                    else
+                        heading = new_heading
+                    end
+                end
+
+                orig_content = deepcopy(el.children)
+                a_el = HTMLElement{:a}(orig_content, el, Dict(
+                    "href" => string('#', heading),
+                    "class" => "docs-heading-anchor"
+                ))
+
+                for c in orig_content
+                    c.parent = a_el
+                end
+
+                el.children = [a_el]
+
+                setattr!(el, "id", heading)
+                push!(header_refs, heading)
+            elseif Gumbo.tag(el) == :code
+                if Gumbo.tag(el.parent) == :pre && length(el.children) == 1 && typeof(el.children[1]) == HTMLText
+                    highlight_syntax_html(el)
+                end
+            elseif hasattr(el, "src")
+                replace_url(el, "src", src_prefix)
+            elseif hasattr(el, "href")
+                replace_url(el, "href", href_prefix)
+            end
+        end
+    end
+
+    return doc
+end
+
+function highlight_syntax_html(el)
+    lexer = nothing
+    content = Gumbo.text(el)
+    m = match(r"language\-(.+)\b", hasattr(el, "class") ? getattr(el, "class") : "")
+    if m ≠ nothing
+        # language specified
+        m = m[1]
+        if m == "julia"
+            lexer = Lexers.JuliaLexer
+        elseif m == "julia-console"
+            lexer = Lexers.JuliaConsoleLexer
+        elseif m == "matlab"
+            lexer = Lexers.MatlabLexer
+        elseif m == "r"
+            lexer = Lexers.RLexer
+        elseif m == "fortran"
+            lexer = Lexers.FortranLexer
+        end
+    else
+        # no language, but looks like REPL content
+        if startswith(content, "julia>")
+            lexer = Lexers.JuliaConsoleLexer
+        else
+            # Julia seems like a sensible default
+            lexer = Lexers.JuliaLexer
+        end
+    end
+
+    if lexer ≠ nothing
+        io = IOBuffer()
+        Highlights.highlight(io, MIME("text/html"), content, lexer)
+        highlighted_content = String(take!(io))
+        parsed = Gumbo.parsehtml(highlighted_content, preserve_whitespace = true).root.children[2].children[1]
+        parsed.parent = el.parent
+        el.children = [parsed]
     end
 end
