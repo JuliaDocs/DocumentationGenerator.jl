@@ -197,7 +197,7 @@ function start_builder(package, version;
     ```
 
     if has_xvfb
-        cmd = `xvfb-run $(cmd)`
+        cmd = `xvfb-run -a $(cmd)`
     end
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for ", name, "@", version, " (", uuid, ")"))
