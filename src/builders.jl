@@ -466,6 +466,8 @@ function highlight_syntax_html(el)
             lexer = Lexers.JuliaLexer
         elseif m == "julia-console"
             lexer = Lexers.JuliaConsoleLexer
+        elseif m == "jldoctest"
+            lexer = Lexers.JuliaConsoleLexer
         elseif m == "matlab"
             lexer = Lexers.MatlabLexer
         elseif m == "r"
