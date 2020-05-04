@@ -115,7 +115,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                             "doctype" => gitdirdocs ? "git-repo" : "documenter",
                             "documenter_errored" => documenter_errored,
                             "installable" => true,
-                            "using_failed" => mod ≠ nothing,
+                            "using_failed" => mod == nothing,
                             "success" => true
                         )
                     else
@@ -141,7 +141,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                     "doctype" => "fallback_autodocs",
                     "documenter_errored" => documenter_errored,
                     "installable" => true,
-                    "using_failed" => mod ≠ nothing,
+                    "using_failed" => mod == nothing,
                     "success" => true
                 )
             end
@@ -149,7 +149,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                 "doctype" => "fallback_autodocs",
                 "documenter_errored" => documenter_errored,
                 "installable" => true,
-                "using_failed" => mod ≠ nothing,
+                "using_failed" => mod == nothing,
                 "success" => false
             )
         end

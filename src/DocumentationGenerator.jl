@@ -78,6 +78,13 @@ function build_documentation(
         registry = joinpath(homedir(), ".julia/registries/General")
     )
 
+    has_xvfb = try
+        success(`xvfb-run --help`)
+    catch err
+        @warn("No `xvfb-run` installed. Running without it.")
+        false
+    end
+
     regpath = get_registry(basepath, sync = sync_registry)
     process_queue = []
 
@@ -98,7 +105,8 @@ function build_documentation(
                                        juliacmd = juliacmd,
                                        registry_path = regpath,
                                        deployment_url = deployment_url,
-                                       update_only = update_only)
+                                       update_only = update_only,
+                                       has_xvfb = has_xvfb)
                 push!(process_queue, proc)
             end
     end
@@ -144,7 +152,8 @@ function start_builder(package, version;
         deployment_url = error("`deployment_url` is a required argument."),
         update_only = error("`update_only` is a required argument."),
         src_prefix = nothing,
-        href_prefix = nothing
+        href_prefix = nothing,
+        has_xvfb = false
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -186,6 +195,10 @@ function start_builder(package, version;
             $href_prefix
             $(update_only ? "update" : "build")
     ```
+
+    if has_xvfb
+        cmd = `xvfb-run -a $(cmd)`
+    end
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for ", name, "@", version, " (", uuid, ")"))
 

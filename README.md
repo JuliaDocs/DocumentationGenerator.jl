@@ -5,16 +5,18 @@
 Generate documentation for *all the packages*.
 
 ## Installation
-
 ```
 pkg> add DocumentationGenerator
 ```
-installs this package. Optionally you might want to install the `commonmarker` and `licensee` ruby
-gems for better license detection and GFM rendering:
+installs this package. Optionally you might want to install the `licensee` ruby
+gem for better license detection:
 ```
-$ gem install commonmarker
 $ gem install licensee
 ```
+
+It also makes sense to have `xvfb-run` installed so packages that require a display
+(e.g. Tk.jl) work fine.
+
 ## Usage
 
 Running `./run/makedocs.jl` will generate the documentation for all packages installable on the

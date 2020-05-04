@@ -201,6 +201,17 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+        ),
+        # make sure xvfb-run works:
+        (
+            name = "Tk",
+            url = "https://github.com/JuliaGraphics/Tk.jl.git",
+            uuid = "4225ea8a-3324-57e7-9ddc-5798a2cb9eab",
+            versions = [v"0.7.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
         )
     ]
 
@@ -250,6 +261,10 @@ end
                         end
                         @test isfile(joinpath(versiondir, "_readme", "readme.html"))
                         @test !isempty(toml["deps"])
+                    end
+
+                    if haskey(pkg, :using_failed)
+                        @test pkg.using_failed[i] == toml["using_failed"]
                     end
                 end
 
