@@ -157,8 +157,8 @@ function start_builder(package, version;
     name = package.name
     uuid = package.uuid
     url = package.url
-    src_prefix  = haskey(package, :src_prefix) ? package.src_prefix : string("/docs/", get_docs_dir(name, uuid), '/', string(version), '/')
-    href_prefix = haskey(package, :href_prefix) ? package.href_prefix : string("/ui/Code/docs/", get_docs_dir(name, uuid), '/', string(version), '/')
+    src_prefix  = haskey(package, :src_prefix) ? package.src_prefix : string("/docs/", get_docs_dir(name, uuid), '/', string(version), "/_packagesource/")
+    href_prefix = haskey(package, :href_prefix) ? package.href_prefix : string("/ui/Code/docs/", get_docs_dir(name, uuid), '/', string(version), "/_packagesource/")
 
     builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
