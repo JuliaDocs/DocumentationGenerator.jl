@@ -256,7 +256,7 @@ end
                 if pkg.name == "Crayons"
                     # spot check some of the readme postprocessing
                     readme = read(joinpath(versiondir, "_readme", "readme.html"), String)
-                    @test occursin("""src="/docs/Crayons/TXPcU/4.0.1/logo.png" """, readme)
+                    @test occursin("""src="/docs/Crayons/TXPcU/4.0.1/_packagesource/logo.png" """, readme)
                     @test occursin("""<a href="https://travis-ci.org/KristofferC/Crayons.jl">""", readme)
                     @test occursin("""<h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a></h2>""", readme)
                 end
