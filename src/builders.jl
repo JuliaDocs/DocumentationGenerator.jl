@@ -479,9 +479,6 @@ function highlight_syntax_html(el)
         # no language, but looks like REPL content
         if startswith(content, "julia>")
             lexer = Lexers.JuliaConsoleLexer
-        else
-            # Julia seems like a sensible default
-            lexer = Lexers.JuliaLexer
         end
     end
 
