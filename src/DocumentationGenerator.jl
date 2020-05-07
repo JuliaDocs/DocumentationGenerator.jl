@@ -96,10 +96,12 @@ function build_documentation(
 
     local x_server_proc
     if has_xvfb
-        server_num = find_free_x_servernum()
+        display_server = string(':', find_free_x_servernum())
 
-        x_server_proc = run(`Xvfb $(server_num)`, wait=false)
-        envmod = ["DISPLAY" => ":$(server_num)"]
+        @info("Running Xvfb on display $(display_server).")
+
+        x_server_proc = run(`Xvfb $(display_server)`, wait=false)
+        envmod = ["DISPLAY" => display_server]
     end
 
     withenv(envmod...) do
