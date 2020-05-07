@@ -462,11 +462,9 @@ function highlight_syntax_html(el)
     if m ≠ nothing
         # language specified
         m = m[1]
-        if m == "julia"
+        if m == "julia" || m == "jl"
             lexer = Lexers.JuliaLexer
-        elseif m == "julia-console"
-            lexer = Lexers.JuliaConsoleLexer
-        elseif m == "jldoctest"
+        elseif m == "julia-console" || m == "jldoctest" || m == "jl-doctest" || m == "jl-console" || m == "jl-repl"
             lexer = Lexers.JuliaConsoleLexer
         elseif m == "matlab"
             lexer = Lexers.MatlabLexer
