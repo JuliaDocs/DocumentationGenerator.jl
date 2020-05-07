@@ -81,7 +81,7 @@ function build_documentation(
     has_xvfb = try
         success(`xvfb-run --help`)
     catch err
-        @warn("No `xvfb-run` installed. Running without it.")
+        @warn("No `xvfb` installed. Running without it.")
         false
     end
 
@@ -91,29 +91,47 @@ function build_documentation(
     # make sure registry is updated *before* we start multiple processes that might try that at the same time
     Pkg.Registry.update()
 
-    for package in packages
-            # make sure we're not queueing new processes over the limit
-            while length(process_queue) >= processes
-                filter!(process_running, process_queue)
-                sleep(sleeptime)
-            end
 
-            # separate process for each version of a package
-            for version in vcat(filter_versions(package.versions))
-                proc = start_builder(package, version;
-                                       basepath = basepath,
-                                       juliacmd = juliacmd,
-                                       registry_path = regpath,
-                                       deployment_url = deployment_url,
-                                       update_only = update_only,
-                                       has_xvfb = has_xvfb)
-                push!(process_queue, proc)
-            end
+    envmod = []
+
+    local x_server_proc
+    if has_xvfb
+        display_server = string(':', find_free_x_servernum())
+
+        @info("Running Xvfb on display $(display_server).")
+
+        x_server_proc = run(`Xvfb $(display_server)`, wait=false)
+        envmod = ["DISPLAY" => display_server]
     end
 
-    # wait for all queued processes to finish
-    for proc in process_queue
-        wait(proc)
+    withenv(envmod...) do
+        for package in packages
+                # make sure we're not queueing new processes over the limit
+                while length(process_queue) >= processes
+                    filter!(process_running, process_queue)
+                    sleep(sleeptime)
+                end
+
+                # separate process for each version of a package
+                for version in vcat(filter_versions(package.versions))
+                    proc = start_builder(package, version;
+                                           basepath = basepath,
+                                           juliacmd = juliacmd,
+                                           registry_path = regpath,
+                                           deployment_url = deployment_url,
+                                           update_only = update_only)
+                    push!(process_queue, proc)
+                end
+        end
+
+        # wait for all queued processes to finish
+        for proc in process_queue
+            wait(proc)
+        end
+    end
+
+    if has_xvfb
+        kill(x_server_proc)
     end
 
     # record dependency relations specified in registry
@@ -152,8 +170,7 @@ function start_builder(package, version;
         deployment_url = error("`deployment_url` is a required argument."),
         update_only = error("`update_only` is a required argument."),
         src_prefix = nothing,
-        href_prefix = nothing,
-        has_xvfb = false
+        href_prefix = nothing
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -171,7 +188,6 @@ function start_builder(package, version;
 
     builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
-
 
     logfile = joinpath(builddir, "..", "$(version).log")
 
@@ -195,10 +211,6 @@ function start_builder(package, version;
             $href_prefix
             $(update_only ? "update" : "build")
     ```
-
-    if has_xvfb
-        cmd = `xvfb-run -a $(cmd)`
-    end
 
     process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for ", name, "@", version, " (", uuid, ")"))
 
