@@ -125,7 +125,8 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                 end
             end
         catch err
-            @error("Errored while trying to generate Documenter docs at $(pkgroot).", exception = (err, catch_backtrace()))
+            @error("Errored while trying to generate Documenter of $(pkgname)", exception = (err, catch_backtrace()))
+
             documenter_errored = true
         end
 
