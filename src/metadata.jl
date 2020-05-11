@@ -68,6 +68,8 @@ end
 function contributor_user(dict)
     Dict(
         "name" => dict["contributor"].login,
+        "type" => dict["contributor"].typ,
+        "url" => string(dict["contributor"].html_url),
         "contributions" => dict["contributions"]
     )
 end
