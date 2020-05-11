@@ -12,6 +12,9 @@ function run_with_timeout(
         command; log=stdout, timeout = 20*60, name = "",
         wait_time = 1, verbose = true, kill_timeout = 60
     )
+    print_interval = 60/wait_time
+    print_in = print_interval
+
     out_io = IOBuffer()
     err_io = IOBuffer()
     out_file, err_file = "", ""
@@ -65,8 +68,15 @@ function run_with_timeout(
                 end
 
                 sleep(wait_time)
+                print_in -= 1
+
+                if print_in <= 0 && verbose
+                    print(".")
+                    print_in = print_interval
+                end
             end
 
+            verbose && println()
             verbose && @info("$name completed in $(round(time() - tstart, digits=1)) seconds")
         catch err
             @error "Error while running $(name) with timeout." error=err
