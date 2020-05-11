@@ -69,13 +69,14 @@ function run_with_timeout(
 
                 sleep(wait_time)
                 print_in -= 1
-                
+
                 if print_in <= 0 && verbose
                     print(".")
                     print_in = print_interval
                 end
             end
 
+            verbose && println()
             verbose && @info("$name completed in $(round(time() - tstart, digits=1)) seconds")
         catch err
             @error "Error while running $(name) with timeout." error=err
