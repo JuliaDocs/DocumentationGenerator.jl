@@ -135,6 +135,14 @@ function build_documentation(
     end
 
     # record dependency relations specified in registry
+    generate_dependency_list(packages, basepath = basepath, registry = registry, filter_versions = filter_versions)
+end
+
+function generate_dependency_list(packages;
+        basepath = joinpath(@__DIR__, ".."), 
+        registry = joinpath(homedir(), ".julia/registries/General"),
+        filter_versions = last
+    )
     @info "Generating deps info"
     deps = dependencies_per_package(registry)
     rdeps = reverse_dependencies_per_package(deps)
