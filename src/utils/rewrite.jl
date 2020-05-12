@@ -80,8 +80,21 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             )
             elem = Expr(:call, new_args...)
         end
+
         push!(make_expr.args, elem)
     end
 
+    fix_lnns(make_expr, makefile)
+
     return make_expr, buildpath
+end
+
+function fix_lnns(expr, filepath)
+    for (i, el) in enumerate(expr.args)
+        if el isa LineNumberNode
+            expr.args[i] = LineNumberNode(el.line, Symbol(filepath))
+        elseif el isa Expr
+            fix_lnns(el, filepath)
+        end
+    end
 end

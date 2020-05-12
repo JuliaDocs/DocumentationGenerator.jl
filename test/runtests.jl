@@ -279,7 +279,10 @@ end
                         if doctype == "default"
                             @test isdir(joinpath(versiondir, "autodocs"))
                         end
-                        @test isfile(joinpath(versiondir, "_readme", "readme.html"))
+
+                        if pkg.name !== IntelGEMM
+                            @test isfile(joinpath(versiondir, "_readme", "readme.html"))
+                        end
                         @test !isempty(toml["deps"])
                     end
 
