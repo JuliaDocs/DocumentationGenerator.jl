@@ -27,6 +27,7 @@ Return a tuple of `new_make_expr, buildpath`.
 function fix_makefile(makefile, documenter_version = v"0.24")
     # default output path:
     buildpath = joinpath(dirname(makefile), "build")
+    should_break = false
 
     ast = parseall(read(makefile, String))
     make_expr = Expr(:block)
@@ -35,6 +36,8 @@ function fix_makefile(makefile, documenter_version = v"0.24")
         # skip deploydocs
         Meta.isexpr(elem, :call) && elem.args[1] == :deploydocs && continue
         if Meta.isexpr(elem, :call) && elem.args[1] == :makedocs
+            should_break = true
+
             # rewrite makedoc call to respect our requirements
             new_args = []
 
@@ -82,6 +85,9 @@ function fix_makefile(makefile, documenter_version = v"0.24")
         end
 
         push!(make_expr.args, elem)
+
+        # ignore everything after `makedocs` call
+        should_break && break
     end
 
     fix_lnns(make_expr, makefile)
