@@ -183,6 +183,9 @@ function build_documenter(packagespec, docdir)
         chmod(docsproject, 0o660)
         isfile(docsmanifest) && chmod(docsmanifest, 0o660)
 
+        chmod(joinpath(pkgdir, "Project.toml"), 0o660)
+        isfile(joinpath(pkgdir, "Manifest.toml")) && chmod(joinpath(pkgdir, "Manifest.toml"), 0o660)
+
         rundcocumenter = joinpath(@__DIR__, "rundocumenter.jl")
 
         makefile = joinpath(docdir, "make.jl")
@@ -235,6 +238,14 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
     index = joinpath(doc_src, "index.md")
 
     render_html(readme, index, src_prefix, href_prefix; documenter = true)
+
+    if !isfile(index)
+        open(index, "w") do io
+            println(io, """
+            # $pkgname
+            """)
+        end
+    end
 
     pages = ["Readme" => "index.md"]
     modules = :(Module[Module()])
@@ -340,6 +351,12 @@ function copy_package_source(packagespec, buildpath)
 end
 
 function render_html(input, output, src_prefix="", href_prefix=""; documenter = false)
+    if input === nothing
+        @error("Package doesn't seem to have a readme. ")
+
+        return
+    end
+
     io = IOBuffer()
     GithubMarkdown.rendergfm(io, input; documenter = false)
 

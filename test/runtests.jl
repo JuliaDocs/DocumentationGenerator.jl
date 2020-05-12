@@ -212,6 +212,36 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "Zygote",
+            url = "https://github.com/FluxML/Zygote.jl.git",
+            uuid = "e88e6eb3-aa80-5325-afca-941959d7151f",
+            versions = [v"0.4.20"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
+        ),
+        (
+            name = "IntelGEMM",
+            url = "https://github.com/AStupidBear/IntelGEMM.jl.git",
+            uuid = "46a1a280-e6c3-11e9-0321-d12035ae5ac9",
+            versions = [v"0.1.1"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+            using_failed = [false]
+        ),
+        (
+            name = "CMBLensing",
+            url = "https://github.com/marius311/CMBLensing.jl.git",
+            uuid = "b60c06c0-7e54-11e8-3788-4bd722d65317",
+            versions = [v"0.2.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
         )
     ]
 
@@ -259,7 +289,10 @@ end
                         if doctype == "default"
                             @test isdir(joinpath(versiondir, "autodocs"))
                         end
-                        @test isfile(joinpath(versiondir, "_readme", "readme.html"))
+
+                        if pkg.name !== "IntelGEMM"
+                            @test isfile(joinpath(versiondir, "_readme", "readme.html"))
+                        end
                         @test !isempty(toml["deps"])
                     end
 
