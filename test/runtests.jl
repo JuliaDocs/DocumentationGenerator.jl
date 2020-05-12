@@ -290,7 +290,7 @@ end
                             @test isdir(joinpath(versiondir, "autodocs"))
                         end
 
-                        if pkg.name !== IntelGEMM
+                        if pkg.name !== "IntelGEMM"
                             @test isfile(joinpath(versiondir, "_readme", "readme.html"))
                         end
                         @test !isempty(toml["deps"])
