@@ -212,6 +212,26 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "Zygote",
+            url = "https://github.com/FluxML/Zygote.jl.git",
+            uuid = "e88e6eb3-aa80-5325-afca-941959d7151f",
+            versions = [v"0.4.20"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
+        ),
+        (
+            name = "IntelGEMM",
+            url = "https://github.com/AStupidBear/IntelGEMM.jl.git",
+            uuid = "46a1a280-e6c3-11e9-0321-d12035ae5ac9",
+            versions = [v"0.1.1"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+            using_failed = [false]
         )
     ]
 
