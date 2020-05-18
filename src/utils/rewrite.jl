@@ -45,7 +45,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             has_sitename = false
             html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
 
-            for argument in elem.args
+            fixkwarg = argument -> begin
                 if Meta.isexpr(argument, :kw)
                     name, arg = argument.args
                     # assure that we generate HTML
@@ -65,6 +65,17 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                         has_sitename = true
                     end
                 end
+            end
+
+            for argument in elem.args
+                if Meta.isexpr(argument, :parameters)
+                    for argument in argument.args
+                        fixkwarg(argument)
+                    end
+                else
+                    fixkwarg(argument)
+                end
+
                 push!(new_args, argument)
             end
 
