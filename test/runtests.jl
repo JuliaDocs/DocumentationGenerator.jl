@@ -242,6 +242,16 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "MethodAnalysis",
+            url = "https://github.com/timholy/MethodAnalysis.jl.git",
+            uuid = "85b6ec6f-f7df-4429-9514-a64bcd9ee824",
+            versions = [v"0.2.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
         )
     ]
 
