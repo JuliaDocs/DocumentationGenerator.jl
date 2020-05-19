@@ -2,7 +2,6 @@ module DocumentationGenerator
 using Pkg
 using JSON
 
-include("utils/markdown.jl")
 include("utils/misc.jl")
 include("utils/pkgtools.jl")
 include("utils/runners.jl")

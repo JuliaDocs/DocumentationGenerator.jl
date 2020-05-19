@@ -278,7 +278,18 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
 end
 
 function find_readme(pkgroot)
-    for file in readdir(pkgroot)
+    allfiles = readdir(pkgroot)
+    # look for readme.md/readme first
+    for file in allfiles
+        if lowercase(file) in ("readme.md", "readme")
+            readme = joinpath(pkgroot, file)
+            if isfile(readme)
+                return readme
+            end
+        end
+    end
+    # if we didn't find one of those, take the first file that contains "readme"
+    for file in allfiles
         if occursin("readme", lowercase(file))
             readme = joinpath(pkgroot, file)
             if isfile(readme)
