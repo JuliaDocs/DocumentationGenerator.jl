@@ -68,6 +68,7 @@ end
 end
 
 @testset "Documentation Generation" begin
+    registrypath = joinpath(Pkg.depots()[1], "registries", "General")
     packages = [
         # without docs
         (
@@ -78,6 +79,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         (
             name = "ReactionNetworkImporters",
@@ -87,6 +89,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         # with docs
         (
@@ -97,6 +100,7 @@ end
             installs = [true, true],
             success = [true, true],
             doctype = ["fallback_autodocs", "documenter"],
+            registrypath = registrypath
         ),
         (
             name = "DynamicHMC",
@@ -106,6 +110,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
+            registrypath = registrypath
         ),
         (
             name = "jlpkg",
@@ -115,6 +120,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         # with hosted docs
         (
@@ -125,7 +131,8 @@ end
             installs = ["missing"],
             success = [true],
             hosted_uri = ["https://docs.junolab.org/latest"],
-            doctype = ["hosted"]
+            doctype = ["hosted"],
+            registrypath = registrypath
         ),
         # Julia
         (
@@ -136,7 +143,8 @@ end
             installs = ["missing", "missing", "missing"],
             hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
             success = [true, true, true],
-            doctype = ["hosted", "hosted", "hosted"]
+            doctype = ["hosted", "hosted", "hosted"],
+            registrypath = registrypath
         ),
         # git-dir docs
         (
@@ -147,6 +155,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["git-repo"],
+            registrypath = registrypath
         ),
         (
             name = "Phylo",
@@ -156,6 +165,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         (
             name = "PlyIO",
@@ -165,6 +175,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         (
             name = "OpenSpiel_jll",
@@ -174,6 +185,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         (
             name = "Documenter",
@@ -183,6 +195,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
+            registrypath = registrypath
         ),
         (
             name = "TSVD",
@@ -192,6 +205,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
+            registrypath = registrypath
         ),
         (
             name = "Crayons",
@@ -201,6 +215,7 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
+            registrypath = registrypath
         ),
         # make sure xvfb-run works:
         (
@@ -211,7 +226,8 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
-            using_failed = [false]
+            using_failed = [false],
+            registrypath = registrypath
         ),
         (
             name = "Zygote",
@@ -221,7 +237,8 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
-            using_failed = [false]
+            using_failed = [false],
+            registrypath = registrypath
         ),
         (
             name = "IntelGEMM",
@@ -231,7 +248,8 @@ end
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
-            using_failed = [false]
+            using_failed = [false],
+            registrypath = registrypath
         ),
         (
             name = "CMBLensing",
@@ -241,7 +259,8 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
-            using_failed = [false]
+            using_failed = [false],
+            registrypath = registrypath
         ),
         (
             name = "MethodAnalysis",
@@ -251,7 +270,8 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
-            using_failed = [false]
+            using_failed = [false],
+            registrypath = registrypath
         )
     ]
 

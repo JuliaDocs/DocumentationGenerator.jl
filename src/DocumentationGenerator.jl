@@ -74,7 +74,6 @@ function build_documentation(
         sync_registry = true,
         deployment_url = "pkg.julialang.org/docs",
         update_only = false,
-        registry = joinpath(homedir(), ".julia/registries/General")
     )
 
     has_xvfb = try
@@ -116,7 +115,7 @@ function build_documentation(
                     proc = start_builder(package, version;
                                            basepath = basepath,
                                            juliacmd = juliacmd,
-                                           registry_path = regpath,
+                                           registry_path = package.registrypath,
                                            deployment_url = deployment_url,
                                            update_only = update_only)
                     push!(process_queue, proc)
@@ -134,19 +133,24 @@ function build_documentation(
     end
 
     # record dependency relations specified in registry
-    generate_dependency_list(packages, basepath = basepath, registry = registry, filter_versions = filter_versions)
+    generate_dependency_list(packages, basepath = basepath,  filter_versions = filter_versions)
 end
 
 function generate_dependency_list(packages;
-        basepath = joinpath(@__DIR__, ".."), 
-        registry = joinpath(homedir(), ".julia/registries/General"),
+        basepath = joinpath(@__DIR__, ".."),
         filter_versions = last
     )
     @info "Generating deps info"
-    deps = dependencies_per_package(registry)
-    rdeps = reverse_dependencies_per_package(deps)
+    deps_map = Dict()
+    rdeps_map = Dict()
     for package in packages
         for version in vcat(filter_versions(package.versions))
+            deps = get!(deps_map, package.registrypath) do
+                dependencies_per_package(package.registrypath)
+            end
+            rdeps = get!(rdeps_map, package.registrypath) do
+                reverse_dependencies_per_package(deps)
+            end
             try
                 builddir = joinpath(basepath, "build", get_docs_dir(package.name, package.uuid), string(version))
                 metatoml = joinpath(builddir, "meta.toml")
