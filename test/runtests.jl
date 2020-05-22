@@ -68,7 +68,7 @@ end
 end
 
 @testset "Documentation Generation" begin
-    registrypath = joinpath(Pkg.depots()[1], "registries", "General")
+    registrypath = joinpath(Pkg.depots()[1], "registries", "General", "Registry.toml")
     packages = [
         # without docs
         (
