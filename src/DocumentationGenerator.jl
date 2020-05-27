@@ -1,6 +1,6 @@
 module DocumentationGenerator
 using Pkg
-using JSON
+using JSON, HTTP
 
 include("utils/misc.jl")
 include("utils/pkgtools.jl")
@@ -137,12 +137,41 @@ function build_documentation(
     generate_dependency_list(packages, basepath = basepath, registry = registry, filter_versions = filter_versions)
 end
 
+function get_pkg_eval_data()
+    pkg_eval = Dict()
+
+    resp = HTTP.get("https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/latest")
+
+    if resp.status == 200
+        latest_date = String(resp.body)
+
+        if occursin(r"\d{4}\-\d{2}/\d{2}", latest_date)
+            last_db_url = "https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/$(latest_date)/db.json"
+
+            resp = HTTP.get(last_db_url)
+
+            if resp.status == 200
+                return JSON.parse(String(resp.body))
+            end
+        end
+    end
+
+    return Dict(
+        "build" => Dict(),
+        "date" => "",
+        "tests" => Dict()
+    )
+end
+
 function generate_dependency_list(packages;
         basepath = joinpath(@__DIR__, ".."), 
         registry = joinpath(homedir(), ".julia/registries/General"),
         filter_versions = last
     )
     @info "Generating deps info"
+
+    pkg_eval_data = get_pkg_eval_data()
+
     deps = dependencies_per_package(registry)
     rdeps = reverse_dependencies_per_package(deps)
     for package in packages
@@ -153,6 +182,7 @@ function generate_dependency_list(packages;
                 isfile(metatoml) || continue
 
                 meta = Pkg.TOML.parsefile(metatoml)
+                meta["pkgeval"] = get(pkg_eval_data["tests"], package.uuid, Dict())
                 meta["deps"] = collect(alldeps(package.uuid, string(version), deps))
                 meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
                 open(metatoml, "w") do io
