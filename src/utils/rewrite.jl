@@ -43,6 +43,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
 
             has_fmt = false
             has_sitename = false
+            has_linkcheck = false
             html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
 
             fixkwarg = argument -> begin
@@ -63,6 +64,10 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                     end
                     if name == :sitename
                         has_sitename = true
+                    end
+                    if name == :linkcheck
+                        has_linkcheck = true
+                        argument.args[2] = false
                     end
                 end
             end
@@ -86,6 +91,10 @@ function fix_makefile(makefile, documenter_version = v"0.24")
 
             if !has_fmt
                 push!(new_args, Expr(:kw, :format, html))
+            end
+            
+            if !has_linkcheck
+                push!(new_args, Expr(:kw, :linkcheck, false))
             end
 
             # make sure to overwrite `root`:
