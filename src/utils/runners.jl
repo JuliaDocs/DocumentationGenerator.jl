@@ -9,7 +9,7 @@ Runs `command` and pipes all output to `log`. The process will be terminated aft
 and `verbose` determines whether meta-logs ("process started" etc.) will be printed.
 """
 function run_with_timeout(
-        command; log=stdout, timeout = 20*60, name = "",
+        command; log=stdout, timeout = 40*60, name = "",
         wait_time = 1, verbose = true, kill_timeout = 60
     )
     print_interval = 60/wait_time
