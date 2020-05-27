@@ -120,9 +120,7 @@ end
 
 Find all declared (direct) dependencies for each package in `registry`.
 """
-function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"))
-    depmap = Dict()
-
+function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict())
     uuid_name_map = build_uuid_name_map(registry = registry)
 
     for dir in readdir(registry)
@@ -209,6 +207,14 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
         end
     end
     return depmap
+end
+
+function dependencies_per_package(registries::Vector)
+    deps = Dict()
+    for reg in registries
+        dependencies_per_package(reg, deps)
+    end
+    return deps
 end
 
 function reverse_dependencies_per_package(deps_per_pkg)
