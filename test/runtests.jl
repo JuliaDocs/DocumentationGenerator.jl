@@ -234,16 +234,6 @@ end
             using_failed = [false]
         ),
         (
-            name = "CMBLensing",
-            url = "https://github.com/marius311/CMBLensing.jl.git",
-            uuid = "b60c06c0-7e54-11e8-3788-4bd722d65317",
-            versions = [v"0.2.0"],
-            installs = [true],
-            success = [true],
-            doctype = ["documenter"],
-            using_failed = [false]
-        ),
-        (
             name = "MethodAnalysis",
             url = "https://github.com/timholy/MethodAnalysis.jl.git",
             uuid = "85b6ec6f-f7df-4429-9514-a64bcd9ee824",

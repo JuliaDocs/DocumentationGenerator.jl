@@ -147,10 +147,13 @@ function get_pkg_eval_data()
 
         if occursin(r"\d{4}\-\d{2}/\d{2}", latest_date)
             last_db_url = "https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/$(latest_date)/db.json"
-
-            resp = HTTP.get(last_db_url)
-
-            if resp.status == 200
+            resp = try
+                 HTTP.get(last_db_url)
+            catch ex
+                @warn "Failed to fetch Nanosoldier report" ex
+                nothing
+            end
+            if resp != nothing && resp.status == 200
                 return JSON.parse(String(resp.body))
             end
         end
