@@ -420,11 +420,23 @@ function should_rewrite_url(url)
     end
 end
 
-function replace_url(el, attr, url_prefix)
+function replace_url(el, attr, url_prefix; fix_github = false)
     old_src = getattr(el, attr)
     if should_rewrite_url(old_src)
         setattr!(el, attr, string(url_prefix, old_src))
     end
+    if fix_github
+        url = getattr(el, attr)
+        setattr!(el, attr, github_to_raw(url))
+    end
+end
+
+function github_to_raw(url)
+    m = match(r"(https?)\:\/\/(?:www\.)?github.com/(.*?)/(.*?)/blob/(.*)", url)
+    if m !== nothing
+        return string(m[1], "://raw.githubusercontent.com/", m[2], "/", m[3], "/", m[4])
+    end
+    return url
 end
 
 function postprocess_html_readme(html; src_prefix="", href_prefix="")
@@ -474,7 +486,7 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
                     highlight_syntax_html(el)
                 end
             elseif hasattr(el, "src")
-                replace_url(el, "src", src_prefix)
+                replace_url(el, "src", src_prefix, fix_github = true)
             elseif hasattr(el, "href")
                 replace_url(el, "href", href_prefix)
             end
