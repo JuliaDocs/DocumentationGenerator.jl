@@ -324,3 +324,10 @@ end
         @test junosettings["method"] == "hosted"
     end
 end
+
+@testset "GitHub URL rewriting" begin
+    @test DocumentationGenerator.github_to_raw("https://github.com/migarstka/COSMO_assets/blob/master/COSMO_logo_only.png") == "https://raw.githubusercontent.com/migarstka/COSMO_assets/master/COSMO_logo_only.png"
+    @test DocumentationGenerator.github_to_raw("https://raw.githubusercontent.com/migarstka/COSMO_assets/master/COSMO_logo_only.png") == "https://raw.githubusercontent.com/migarstka/COSMO_assets/master/COSMO_logo_only.png"
+    @test DocumentationGenerator.github_to_raw("https://www.github.com/migarstka/COSMO_assets/blob/master/COSMO_logo_only.png") == "https://raw.githubusercontent.com/migarstka/COSMO_assets/master/COSMO_logo_only.png"
+    @test DocumentationGenerator.github_to_raw("https://github.com/migarstka/COSMO_assets/master/COSMO_logo_only.png") == "https://github.com/migarstka/COSMO_assets/master/COSMO_logo_only.png"
+end
