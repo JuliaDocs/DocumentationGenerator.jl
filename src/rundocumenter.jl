@@ -1,6 +1,9 @@
-if length(ARGS) == 2
+if length(ARGS) >= 2
     pkgdir = ARGS[1]
     makefile = ARGS[2]
+    if length(ARGS) == 3
+        build_pdf = ARGS[3] === "true"
+    end
 else
     makefile = joinpath(pwd(), "make.jl")
     pkgdir = normpath(joinpath(pwd(), ".."))
@@ -38,7 +41,7 @@ end
 
 @info("Detected Documenter version $(documenter_version).")
 
-expr, bpath = fix_makefile(makefile, documenter_version)
+expr, bpath = fix_makefile(makefile, documenter_version, build_pdf)
 
 
 @info("`cd`ing to `$(docsdir)` and setting `tls[:SOURCE_PATH]` to `$(makefile)`.")

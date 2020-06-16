@@ -36,7 +36,7 @@ function try_use_package(packagespec)
     return pkg_module
 end
 
-function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="")
+function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="", build_pdf=false)
     type, uri = doctype(packagespec, registry)
 
     @info("$(packagespec.name) specifies docs of type $(type).")
@@ -44,9 +44,9 @@ function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, regis
         if type == "hosted"
             build_hosted_docs(packagespec, buildpath, uri)
         elseif type == "git-repo"
-            build_git_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix)
+            build_git_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix, build_pdf=build_pdf)
         elseif type == "vendored"
-            build_local_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix)
+            build_local_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix, build_pdf=build_pdf)
         else
             @error("Invalid doctype specified: $(type).")
             Dict(
@@ -74,7 +74,8 @@ function build_documentation(
         sync_registry = true,
         deployment_url = "pkg.julialang.org/docs",
         update_only = false,
-        registry = joinpath(homedir(), ".julia/registries/General")
+        registry = joinpath(homedir(), ".julia/registries/General"),
+        build_pdf = false
     )
 
     has_xvfb = try
@@ -118,7 +119,8 @@ function build_documentation(
                                            juliacmd = juliacmd,
                                            registry_path = regpath,
                                            deployment_url = deployment_url,
-                                           update_only = update_only)
+                                           update_only = update_only,
+                                           build_pdf = build_pdf)
                     push!(process_queue, proc)
                 end
         end
@@ -167,7 +169,7 @@ function get_pkg_eval_data()
 end
 
 function generate_dependency_list(packages;
-        basepath = joinpath(@__DIR__, ".."), 
+        basepath = joinpath(@__DIR__, ".."),
         registry = joinpath(homedir(), ".julia/registries/General"),
         filter_versions = last
     )
@@ -210,7 +212,8 @@ function start_builder(package, version;
         deployment_url = error("`deployment_url` is a required argument."),
         update_only = error("`update_only` is a required argument."),
         src_prefix = nothing,
-        href_prefix = nothing
+        href_prefix = nothing,
+        build_pdf = false
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -226,7 +229,7 @@ function start_builder(package, version;
     src_prefix  = haskey(package, :src_prefix) ? package.src_prefix : string("/docs/", get_docs_dir(name, uuid), '/', string(version), "/_packagesource/")
     href_prefix = haskey(package, :href_prefix) ? package.href_prefix : string("/ui/Code/docs/", get_docs_dir(name, uuid), '/', string(version), "/_packagesource/")
 
-    builddir = joinpath(buildpath, get_docs_dir(name, uuid), string(version))
+    builddir = build_pdf ? joinpath(buildpath, get_docs_dir(name, uuid), "pdf", string(version)) : joinpath(buildpath, get_docs_dir(name, uuid), string(version))
     isdir(builddir) || mkpath(builddir)
 
     logfile = joinpath(builddir, "..", "$(version).log")
@@ -249,6 +252,7 @@ function start_builder(package, version;
             $deployment_url
             $src_prefix
             $href_prefix
+            $build_pdf
             $(update_only ? "update" : "build")
     ```
 

@@ -3,14 +3,14 @@ using GithubMarkdown
 using HTMLSanitizer
 using Highlights
 
-function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
+function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="", build_pdf=build_pdf)
     pkgname = packagespec.name
     return mktempdir() do dir
         return cd(dir) do
             run(`git clone --depth=1 $(uri) $(pkgname)`)
             docsproject = joinpath(dir, pkgname)
             return cd(docsproject) do
-                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true; src_prefix=src_prefix, href_prefix=href_prefix)
+                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true; src_prefix=src_prefix, href_prefix=href_prefix, build_pdf=build_pdf)
             end
         end
     end
@@ -80,7 +80,7 @@ function maybe_redirect(uri)
     return uri
 end
 
-function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="")
+function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="", build_pdf=false)
     uri = something(uri, "docs")
     mktempdir() do envdir
         pkgname = packagespec.name
@@ -106,7 +106,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
             for docdir in joinpath.(pkgroot, unique([uri, "docs", "doc"]))
                 if isdir(docdir)
                     @info("Building vendored Documenter.jl documentation at $(docdir).")
-                    output = build_documenter(packagespec, docdir)
+                    output = build_documenter(packagespec, docdir, build_pdf)
                     @info("Documentation built at $(output).")
                     if output !== nothing
                         @info("Copying build documentation from $(output) to $(buildpath)")
@@ -115,7 +115,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                             "doctype" => gitdirdocs ? "git-repo" : "documenter",
                             "documenter_errored" => documenter_errored,
                             "installable" => true,
-                            "using_failed" => mod == nothing,
+                            "using_failed" => mod === nothing,
                             "success" => true
                         )
                     else
@@ -135,14 +135,14 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
 
         # fallback docs (readme & docstrings)
         return mktempdir() do docsdir
-            output = build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix)
+            output = build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix, build_pdf)
             if output !== nothing
                 cp(output, buildpath, force = true)
                 return Dict(
                     "doctype" => "fallback_autodocs",
                     "documenter_errored" => documenter_errored,
                     "installable" => true,
-                    "using_failed" => mod == nothing,
+                    "using_failed" => mod === nothing,
                     "success" => true
                 )
             end
@@ -150,14 +150,14 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                 "doctype" => "fallback_autodocs",
                 "documenter_errored" => documenter_errored,
                 "installable" => true,
-                "using_failed" => mod == nothing,
+                "using_failed" => mod === nothing,
                 "success" => false
             )
         end
     end
 end
 
-function build_legacy_documenter(packagespec, docdir)
+function build_legacy_documenter(packagespec, docdir, build_pdf)
     open(joinpath(docdir, "Project.toml"), "w") do io
         println(io, """
             [deps]
@@ -167,16 +167,16 @@ function build_legacy_documenter(packagespec, docdir)
             Documenter = "~0.20"
         """)
     end
-    build_documenter(packagespec, docdir)
+    build_documenter(packagespec, docdir, build_pdf)
 end
 
-function build_documenter(packagespec, docdir)
+function build_documenter(packagespec, docdir, build_pdf)
     pkgdir = normpath(joinpath(docdir, ".."))
     cd(pkgdir) do
         docsproject = joinpath(docdir, "Project.toml")
         docsmanifest = joinpath(docdir, "Manifest.toml")
         if !isfile(docsproject)
-            return build_legacy_documenter(packagespec, docdir)
+            return build_legacy_documenter(packagespec, docdir, build_pdf)
         end
 
         # fix permissions to allow us to add the main pacakge to the docs project
@@ -209,6 +209,7 @@ function build_documenter(packagespec, docdir)
                 $(rundcocumenter)
                 $(pkgdir)
                 $(makefile)
+                $(build_pdf)
             ```
 
         try
@@ -222,7 +223,7 @@ function build_documenter(packagespec, docdir)
     end
 end
 
-function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix)
+function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix, build_pdf = false)
     @info("Generating readme-only fallback docs.")
 
     if pkgroot === nothing || !ispath(pkgroot)
@@ -257,17 +258,34 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
         modules = :(Module[$mod])
     end
 
-    @eval Module() begin
-        using Pkg
-        Pkg.add("Documenter")
-        using Documenter
-        makedocs(
-            format = Documenter.HTML(),
-            sitename = "$($pkgname).jl",
-            modules = $(modules),
-            root = $(docsdir),
-            pages = $(pages)
-        )
+    if build_pdf
+        @eval Module() begin
+            using Pkg
+            Pkg.add("Documenter")
+            Pkg.add("DocumenterLaTeX")
+            using Documenter
+            using DocumenterLaTeX
+            makedocs(
+                format = LaTeX(platform = "docker"),
+                sitename = "$($pkgname).jl",
+                modules = $(modules),
+                root = $(docsdir),
+                pages = $(pages)
+            )
+        end
+    else
+        @eval Module() begin
+            using Pkg
+            Pkg.add("Documenter")
+            using Documenter
+            makedocs(
+                format = Documenter.HTML(),
+                sitename = "$($pkgname).jl",
+                modules = $(modules),
+                root = $(docsdir),
+                pages = $(pages)
+            )
+        end
     end
 
     build_dir = joinpath(docsdir, "build")

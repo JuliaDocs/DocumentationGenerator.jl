@@ -24,7 +24,7 @@ Takes in the path to a Documenter.jl-compatible `make.jl` file and
 
 Return a tuple of `new_make_expr, buildpath`.
 """
-function fix_makefile(makefile, documenter_version = v"0.24")
+function fix_makefile(makefile, documenter_version = v"0.24", is_pdf = false)
     # default output path:
     buildpath = joinpath(dirname(makefile), "build")
     should_break = false
@@ -44,7 +44,11 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             has_fmt = false
             has_sitename = false
             has_linkcheck = false
-            html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
+            fmt = if is_pdf
+                :(LaTeX(platform = "docker"))
+            else
+                documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
+            end
 
             fixkwarg = argument -> begin
                 if Meta.isexpr(argument, :kw)
@@ -52,10 +56,10 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                     # assure that we generate HTML
                     if name == :format
                         has_fmt = true
-                        if Meta.isexpr(arg, :call) && arg.args[1] == :(Documenter.HTML)
-                            append!(html.args, arg.args[2:end])
+                        if Meta.isexpr(arg, :call) && arg.args[1] == :(Documenter.HTML) && is_pdf
+                            append!(fmt.args, arg.args[2:end])
                         end
-                        argument.args[2] = html
+                        argument.args[2] = fmt
                     end
                     # filter out root + build dir
                     if name == :build
@@ -92,7 +96,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             if !has_fmt
                 push!(new_args, Expr(:kw, :format, html))
             end
-            
+
             if !has_linkcheck
                 push!(new_args, Expr(:kw, :linkcheck, false))
             end
@@ -111,6 +115,10 @@ function fix_makefile(makefile, documenter_version = v"0.24")
     end
 
     fix_lnns(make_expr, makefile)
+
+    if is_pdf
+        pushfirst!(make_expr.args, :(using DocumenterLaTeX))
+    end
 
     return make_expr, buildpath
 end

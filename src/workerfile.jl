@@ -4,7 +4,8 @@ using DocumentationGenerator
 
 Pkg.status()
 
-function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, args...)
+function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, build_pdf, args...)
+    build_pdf = build_pdf == "true"
     packagespec = PackageSpec(uuid = uuid, name = name, version = VersionNumber(version))
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
@@ -12,8 +13,12 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         "DOCUMENTATIONGENERATOR_BASE_URL" => DocumentationGenerator.docs_url(deployment_url, name, uuid, version)
     ) do
         metadata = DocumentationGenerator.package_metadata(packagespec, url)
-        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix)
-        merge!(metadata, build_meta)
+        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix, build_pdf=build_pdf)
+        if build_pdf
+            merge!(metadata, Dict("pdf" => build_meta))
+        else
+            merge!(metadata, build_meta)
+        end
 
         isdir(buildpath) || mkpath(buildpath)
 
