@@ -315,8 +315,8 @@ end
 
                 @testset "pdf generation" begin
                     if pkg == packages[end]
-                        @test isfile(joinpath(pkgbuild, pkg.name, ".jl", ".pdf"))
-                        @test isfile(joinpath(pkgbuild, "..", version, "-pdf", ".log"))
+                        @test isfile(joinpath(pkgbuild, "pdf", version, string(pkg.name, ".jl", ".pdf")))
+                        @test isfile(joinpath(pkgbuild, "pdf", string(version, ".log")))
                     end
                 end
             end
