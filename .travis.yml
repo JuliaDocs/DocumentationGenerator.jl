@@ -3,6 +3,7 @@ os:
   - linux
 services:
   - xvfb
+  - docker
 julia:
   - 1.3
   - 1.4
