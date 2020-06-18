@@ -313,9 +313,9 @@ end
                     @test occursin("""<h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a></h2>""", readme)
                 end
 
-                @testset "pdf generation" begin
-                    if pkg == packages[end]
-                        @test isfile(joinpath(pkgbuild, "pdf", version, string(pkg.name, ".jl", ".pdf")))
+                if pkg == packages[end]
+                    @testset "pdf generation" begin
+                        @test isfile(joinpath(pkgbuild, "pdf", string(version), string(pkg.name, ".jl", ".pdf")))
                         @test isfile(joinpath(pkgbuild, "pdf", string(version, ".log")))
                     end
                 end
