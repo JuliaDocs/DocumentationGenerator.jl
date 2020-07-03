@@ -154,20 +154,16 @@ function get_pkg_eval_data()
                 nothing
             end
             if resp != nothing && resp.status == 200
-                return JSON.parse(String(resp.body))
+                pkg_eval = JSON.parse(String(resp.body))
             end
         end
     end
 
-    return Dict(
-        "build" => Dict(),
-        "date" => "",
-        "tests" => Dict()
-    )
+    return pkg_eval
 end
 
 function generate_dependency_list(packages;
-        basepath = joinpath(@__DIR__, ".."), 
+        basepath = joinpath(@__DIR__, ".."),
         registry = joinpath(homedir(), ".julia/registries/General"),
         filter_versions = last
     )
@@ -185,7 +181,10 @@ function generate_dependency_list(packages;
                 isfile(metatoml) || continue
 
                 meta = Pkg.TOML.parsefile(metatoml)
-                meta["pkgeval"] = get(pkg_eval_data["tests"], package.uuid, Dict())
+                if !isempty(pkg_eval_data)
+                    tests = get(pkg_eval_data, "tests", Dict())
+                    meta["pkgeval"] = get(tests, package.uuid, Dict())
+                end
                 meta["deps"] = collect(alldeps(package.uuid, string(version), deps))
                 meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
                 open(metatoml, "w") do io
