@@ -181,9 +181,8 @@ function generate_dependency_list(packages;
                 isfile(metatoml) || continue
 
                 meta = Pkg.TOML.parsefile(metatoml)
-                if !isempty(pkg_eval_data)
-                    tests = get(pkg_eval_data, "tests", Dict())
-                    meta["pkgeval"] = get(tests, package.uuid, Dict())
+                 if haskey(pkg_eval_data, "tests") && haskey(pkg_eval_data["tests"], package.uuid)
+                    meta["pkgeval"] = pkg_eval_data["tests"][package.uuid]
                 end
                 meta["deps"] = collect(alldeps(package.uuid, string(version), deps))
                 meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
