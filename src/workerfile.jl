@@ -11,7 +11,14 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         "CI" => "true",
         "DOCUMENTATIONGENERATOR_BASE_URL" => DocumentationGenerator.docs_url(deployment_url, name, uuid, version)
     ) do
-        metadata = DocumentationGenerator.package_metadata(packagespec, url)
+        metapath = joinpath(buildpath, "meta.toml")
+        metadata = if isfile(metapath)
+            TOML.parsefile(metapath)
+        else
+            Dict()
+        end
+        new_metadata = DocumentationGenerator.package_metadata(packagespec, url)
+        merge!(metadata, new_metadata)
         build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix)
         merge!(metadata, build_meta)
 
