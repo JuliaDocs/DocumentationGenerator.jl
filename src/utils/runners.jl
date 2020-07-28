@@ -10,7 +10,8 @@ and `verbose` determines whether meta-logs ("process started" etc.) will be prin
 """
 function run_with_timeout(
         command; log=stdout, timeout = 40*60, name = "",
-        wait_time = 1, verbose = true, kill_timeout = 60
+        wait_time = 1, verbose = true, kill_timeout = 60,
+        max_timeout = 3*60*60
     )
     print_interval = 60/wait_time
     print_in = print_interval
@@ -28,7 +29,7 @@ function run_with_timeout(
         out_io = open(out_file)
         err_io = open(err_file)
     end
-    timeout_start = time()
+    job_start = timeout_start = time()
     task = @async begin
         logfallback = false
         io = try
@@ -42,8 +43,9 @@ function run_with_timeout(
             tstart = time()
             verbose && @info("starting $name")
             while process_running(process)
-                elapsed = (time() - timeout_start)
-                if elapsed > timeout
+                elapsed = time() - timeout_start
+                total = time() - job_start
+                if elapsed > timeout || total > max_timeout
                     verbose && @info("Terminating $name")
                     kill(process)
                     # Handle scenarios where SIGTERM is blocked/ignored/handled by the process
