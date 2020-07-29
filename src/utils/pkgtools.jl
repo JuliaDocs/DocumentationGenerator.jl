@@ -144,7 +144,7 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                         for (dep, vers) in compattoml[compatver]
                             depdict = get!(deps, dep) do
                                 uuid  = if haskey(name_uuid_map, dep)
-                                    string(name_uuid_map, dep)
+                                    string(name_uuid_map[dep])
                                 else
                                     error("UUID not found for $dep")
                                 end
