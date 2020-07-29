@@ -143,11 +143,11 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                     if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
                         for (dep, vers) in compattoml[compatver]
                             depdict = get!(deps, dep) do
-                                uuid  = if haskey(name_uuid_map, dep)
-                                    string(name_uuid_map[dep])
-                                else
-                                    error("UUID not found for $dep")
+                                if !haskey(name_uuid_map, dep)
+                                    @error "UUID not found for" dep
+                                    continue
                                 end
+                                uuid = string(name_uuid_map[dep])
                                 Dict{String, Any}(
                                     "name" => dep,
                                     "uuid" => uuid,
