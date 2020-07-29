@@ -75,7 +75,7 @@ function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".j
     allpkgs = installable_on_version(version, registry=registry)
     name_to_uuid = Dict()
     for (uuid, pkg) in allpkgs
-        name_to_uuid[UUID(uuid)] = pkg.name
+        name_to_uuid[pkg.name] = UUID(uuid)
     end
     merge!(name_to_uuid, stdlib_to_uuid)
     name_to_uuid
