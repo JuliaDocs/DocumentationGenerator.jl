@@ -267,8 +267,8 @@ function start_builder(package, version;
     process, task = run_with_timeout(cmd,
                                      log=logfile,
                                      name = string("docs build for ", name, "@", version, " (", uuid, ")"),
-                                     timeout=timeout,
-                                     max_timeout=max_timeout,
+                                     timeout = timeout,
+                                     max_timeout = max_timeout,
                                      kill_timeout = kill_timeout)
     return process
 end
