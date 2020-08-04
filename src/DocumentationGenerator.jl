@@ -10,6 +10,14 @@ include("builders.jl")
 include("metadata.jl")
 include("registry.jl")
 
+## when job doesn't log anything to stdout
+const RUNNER_TIMEOUT = 60*60
+## maxtime a job is allowed to run
+const RUNNER_MAX_TIMEOUT = 3*60*60
+## graceful termination timeout
+const RUNNER_KILL_TIMEOUT = 60
+
+
 function try_install_package(packagespec, envdir)
     @assert ispath(envdir)
     success = false
@@ -74,7 +82,10 @@ function build_documentation(
         sync_registry = true,
         deployment_url = "pkg.julialang.org/docs",
         update_only = false,
-        registry = joinpath(homedir(), ".julia/registries/General")
+        registry = joinpath(homedir(), ".julia/registries/General"),
+        timeout = RUNNER_TIMEOUT,
+        max_timeout = RUNNER_MAX_TIMEOUT,
+        kill_timeout = RUNNER_KILL_TIMEOUT
     )
 
     has_xvfb = try
@@ -118,7 +129,10 @@ function build_documentation(
                                            juliacmd = juliacmd,
                                            registry_path = regpath,
                                            deployment_url = deployment_url,
-                                           update_only = update_only)
+                                           update_only = update_only,
+                                           timeout = timeout,
+                                           max_timeout = max_timeout,
+                                           kill_timeout = kill_timeout)
                     push!(process_queue, proc)
                 end
         end
@@ -168,9 +182,7 @@ function generate_dependency_list(packages;
         filter_versions = last
     )
     @info "Generating deps info"
-
     pkg_eval_data = get_pkg_eval_data()
-
     deps = dependencies_per_package(registry)
     rdeps = reverse_dependencies_per_package(deps)
     for package in packages
@@ -208,7 +220,10 @@ function start_builder(package, version;
         deployment_url = error("`deployment_url` is a required argument."),
         update_only = error("`update_only` is a required argument."),
         src_prefix = nothing,
-        href_prefix = nothing
+        href_prefix = nothing,
+        timeout = RUNNER_TIMEOUT,
+        max_timeout = RUNNER_MAX_TIMEOUT,
+        kill_timeout = RUNNER_KILL_TIMEOUT
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -249,9 +264,12 @@ function start_builder(package, version;
             $href_prefix
             $(update_only ? "update" : "build")
     ```
-
-    process, task = run_with_timeout(cmd, log=logfile, name = string("docs build for ", name, "@", version, " (", uuid, ")"))
-
+    process, task = run_with_timeout(cmd,
+                                     log=logfile,
+                                     name = string("docs build for ", name, "@", version, " (", uuid, ")"),
+                                     timeout = timeout,
+                                     max_timeout = max_timeout,
+                                     kill_timeout = kill_timeout)
     return process
 end
 end
