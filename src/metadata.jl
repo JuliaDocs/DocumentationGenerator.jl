@@ -48,17 +48,21 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
     end
 
     @info("Querying metadata.")
+    meta["metadata_error"] = false
     try
         gh_auth = authenticate(readchomp(authpath))
-        repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
-        meta["description"] = something(repo_info.description, "")
-        meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
-        meta["homepage"]  = something(repo_info.homepage, 0)
-        topics_dict, page = topics(repo_info, auth = gh_auth)
-        meta["tags"] = something(topics_dict["names"], [])
-        meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
+        repo = repo_owner * "/" * repo_name
+        repo_info = repo_dict(repo, auth = gh_auth)
+        meta["description"] = something(repo_info["description"], "")
+        meta["archived"] = something(repo_info["archived"], false)
+        meta["private"] = something(repo_info["private"], false)
+        meta["stargazers_count"]  = something(repo_info["stargazers_count"], 0)
+        meta["homepage"]  = something(repo_info["homepage"], 0)
+        meta["tags"] = topics(repo, auth = gh_auth)
+        meta["contributors"] = contributors_dict(repo, auth = gh_auth)
     catch err
-        @error(string("Couldn't get info for ", url), error = err)
+        meta["metadata_error"] = true
+        @error(string("Couldn't get info for ", url), exception = (err, catch_backtrace()))
     end
     @info("Done querying metadata.")
 
@@ -67,15 +71,24 @@ end
 
 function contributor_user(dict)
     Dict(
-        "name" => dict["contributor"].login,
-        "type" => dict["contributor"].typ,
-        "url" => string(dict["contributor"].html_url),
+        "name" => dict["login"],
+        "type" => dict["type"],
+        "url" => dict["html_url"],
         "contributions" => dict["contributions"]
     )
 end
 
-function topics(repo, api = GitHub.DEFAULT_API; options...)
-    results, page_data = GitHub.gh_get_paged_json(api, "/repos/$(GitHub.name(repo))/topics";
-                                                  headers = Dict("Accept" => "application/vnd.github.mercy-preview+json"), options...)
-    return results, page_data
+function topics(name, api = GitHub.DEFAULT_API; options...)
+    return GitHub.gh_get_json(api, "/repos/$(name)/topics";
+                              headers = Dict(
+                                "Accept" => "application/vnd.github.mercy-preview+json"
+                              ), options...)["names"]
+end
+
+function repo_dict(name, api = GitHub.DEFAULT_API; options...)
+    return GitHub.gh_get_json(api, string("/repos/", name); options...)
+end
+
+function contributors_dict(name, api = GitHub.DEFAULT_API; options...)
+    return contributor_user.(GitHub.gh_get_json(api, "/repos/$(name)/contributors"; options...))
 end

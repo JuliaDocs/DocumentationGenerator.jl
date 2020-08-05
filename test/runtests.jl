@@ -242,6 +242,26 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "Gumbo",
+            url = "https://github.com/JuliaWeb/Gumbo.jl.git",
+            uuid = "708ec375-b3d6-5a57-a7ce-8257bf98657a",
+            versions = [v"0.8.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+            using_failed = [false]
+        ),
+        (
+            name = "Graphs",
+            url = "https://github.com/JuliaAttic/Graphs.jl.git",
+            uuid = "86223c79-3864-5bf0-83f7-82e725a168b6",
+            versions = [v"0.10.3"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+            using_failed = [false]
         )
     ]
 
@@ -298,6 +318,18 @@ end
 
                     if haskey(pkg, :using_failed)
                         @test pkg.using_failed[i] == toml["using_failed"]
+                    end
+
+                    @test toml["metadata_error"] == false
+
+                    if pkg.name == "Graphs"
+                        # properly mark archived packages
+                        @test toml["archived"] == true
+                        @test length(toml["contributors"]) > 0
+                    end
+                    if pkg.name == "Zygote"
+                        # properly mark archived packages
+                        @test length(toml["tags"]) > 0
                     end
                 end
 
