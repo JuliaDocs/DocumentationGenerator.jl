@@ -71,8 +71,11 @@ const stdlib_uuids = Set([
 is_stdlib(uuid) = uuid in stdlib_uuids
 is_jll(name) = endswith(name, "_jll")
 
-function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
-    allpkgs = installable_on_version(version, registry=registry)
+function build_uuid_name_map(version = VERSION; registries=[joinpath(homedir(), ".julia/registries/General")])
+    allpkgs = Dict()
+    for registry in registries
+        merge!(allpkgs, installable_on_version(version, registry=registry))
+    end
     name_to_uuid = Dict()
     for (uuid, pkg) in allpkgs
         name_to_uuid[pkg.name] = UUID(uuid)
@@ -86,8 +89,7 @@ end
 
 Find all declared (direct) dependencies for each package in `registry`.
 """
-function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict())
-    name_uuid_map = build_uuid_name_map(registry = registry)
+function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict(), uuid_to_name = Dict())
 
     for dir in readdir(registry)
         startswith(dir, ".") && continue
@@ -181,8 +183,9 @@ end
 
 function dependencies_per_package(registries::Vector)
     deps = Dict()
+    uuid_to_name = build_uuid_name_map(registries = registries)
     for reg in registries
-        dependencies_per_package(reg, deps)
+        dependencies_per_package(reg, deps, uuid_to_name)
     end
     return deps
 end
