@@ -87,7 +87,7 @@ end
 Find all declared (direct) dependencies for each package in `registry`.
 """
 function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict(), name_uuid_map = Dict())
-    merge!(name_uuid_map, build_uuid_name_map(registry=registry))
+    merge!(name_uuid_map, build_uuid_name_map(registry = registry))
     for dir in readdir(registry)
         startswith(dir, ".") && continue
 
@@ -142,7 +142,7 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                     if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
                         for (dep, vers) in compattoml[compatver]
                             if !haskey(name_uuid_map, dep)
-                                #@error "UUID not found for" dep
+                                @error "UUID not found for" dep
                                 continue
                             end
                             depdict = get!(deps, dep) do
