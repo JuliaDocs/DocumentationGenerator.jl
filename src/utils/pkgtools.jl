@@ -86,6 +86,7 @@ function build_uuid_name_map(registry::Vector{String}, version = VERSION)
     for reg in registry
         merge!(name_to_uuid, build_uuid_name_map(reg, version))
     end
+    name_to_uuid
 end
 
 """
