@@ -71,16 +71,6 @@ const stdlib_uuids = Set([
 is_stdlib(uuid) = uuid in stdlib_uuids
 is_jll(name) = endswith(name, "_jll")
 
-function build_uuid_name_map(;version = VERSION, registry=joinpath(homedir(), ".julia/registries/General"))
-    allpkgs = installable_on_version(version, registry=registry)
-    name_to_uuid = Dict()
-    for (uuid, pkg) in allpkgs
-        name_to_uuid[pkg.name] = UUID(uuid)
-    end
-    merge!(name_to_uuid, stdlib_to_uuid)
-    name_to_uuid
-end
-
 function build_uuid_name_map(registry::String, version = VERSION)
     allpkgs = installable_on_version(version, registry=registry)
     name_to_uuid = Dict()
