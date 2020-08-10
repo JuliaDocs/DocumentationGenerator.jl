@@ -81,13 +81,32 @@ function build_uuid_name_map(;version = VERSION, registry=joinpath(homedir(), ".
     name_to_uuid
 end
 
+function build_uuid_name_map(registry::String, version = VERSION)
+    allpkgs = installable_on_version(version, registry=registry)
+    name_to_uuid = Dict()
+    for (uuid, pkg) in allpkgs
+        name_to_uuid[pkg.name] = UUID(uuid)
+    end
+    merge!(name_to_uuid, stdlib_to_uuid)
+    name_to_uuid
+end
+
+function build_uuid_name_map(registry::Vector{String}, version = VERSION)
+    name_to_uuid = Dict()
+    for reg in registry
+        merge!(name_to_uuid, build_uuid_name_map(reg, version))
+    end
+end
+
 """
     dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"))
 
 Find all declared (direct) dependencies for each package in `registry`.
 """
 function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict(), name_uuid_map = Dict())
-    merge!(name_uuid_map, build_uuid_name_map(registry = registry))
+    if isempty(name_uuid_map)
+        name_uuid_map = build_uuid_name_map(registry)
+    end
     for dir in readdir(registry)
         startswith(dir, ".") && continue
 
@@ -179,9 +198,10 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
 end
 
 function dependencies_per_package(registries::Vector)
+    name_to_uuid = build_uuid_name_map(registries)
     deps = Dict()
     for reg in registries
-        dependencies_per_package(reg, deps)
+        dependencies_per_package(reg, deps, name_to_uuid)
     end
     return deps
 end
