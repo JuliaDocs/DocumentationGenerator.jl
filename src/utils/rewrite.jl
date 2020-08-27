@@ -92,7 +92,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             if !has_fmt
                 push!(new_args, Expr(:kw, :format, html))
             end
-            
+
             if !has_linkcheck
                 push!(new_args, Expr(:kw, :linkcheck, false))
             end
@@ -105,6 +105,9 @@ function fix_makefile(makefile, documenter_version = v"0.24")
         end
 
         push!(make_expr.args, elem)
+
+        # it's possible a make.jl-file doesn't have `using Documenter` at all, so let's just unconditionally add that here
+        pushfirst!(make_expr.args, Expr(:using, Expr(:., :Documenter)))
 
         # ignore everything after `makedocs` call
         should_break && break
