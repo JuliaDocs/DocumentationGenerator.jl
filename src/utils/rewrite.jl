@@ -52,15 +52,20 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                     # assure that we generate HTML
                     if name == :format
                         has_fmt = true
-                        if Meta.isexpr(arg, :call) && arg.args[1] == :(Documenter.HTML)
+                        if Meta.isexpr(arg, :call) && arg.args[1] == :(Documenter.HTML) && !(html isa QuoteNode)
                             append!(html.args, arg.args[2:end])
                         end
                         argument.args[2] = html
                     end
                     # filter out root + build dir
                     if name == :build
-                        # record custom output dir
-                        buildpath = joinpath(dirname(makefile), arg)
+                        # record custom output dir if we can infer it statically, otherwise just use `build`
+                        if arg isa String
+                            buildpath = joinpath(dirname(makefile), arg)
+                        else
+                            argument.args[2] = "build"
+                            buildpath = joinpath(dirname(makefile), "build")
+                        end
                     end
                     if name == :sitename
                         has_sitename = true
@@ -92,7 +97,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             if !has_fmt
                 push!(new_args, Expr(:kw, :format, html))
             end
-            
+
             if !has_linkcheck
                 push!(new_args, Expr(:kw, :linkcheck, false))
             end

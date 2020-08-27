@@ -242,6 +242,16 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "Octo",
+            url = "https://github.com/wookay/Octo.jl.git",
+            uuid = "16905944-f982-529b-abb2-b839f98f160b",
+            versions = [v"0.2.6"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
         )
     ]
 
