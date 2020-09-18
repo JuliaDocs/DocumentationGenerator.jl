@@ -154,7 +154,7 @@ end
 function get_pkg_eval_data()
     pkg_eval = Dict()
 
-    resp = HTTP.get("https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/latest")
+    resp = HTTP.get("https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/latest", status_exception = false)
 
     if resp.status == 200
         latest_date = String(resp.body)
