@@ -252,6 +252,15 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "Tetris",
+            uuid = "d02b474b-c6a0-45b1-beee-9a2049fa00e6",
+            url = "https://github.com/mossr/Tetris.jl/",
+            versions = [v"1.0.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
         )
     ]
 

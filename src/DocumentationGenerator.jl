@@ -55,6 +55,8 @@ function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, regis
             build_git_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix)
         elseif type == "vendored"
             build_local_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix)
+        elseif type == "vendored-no-load"
+            build_local_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix, load_package=false)
         else
             @error("Invalid doctype specified: $(type).")
             Dict(

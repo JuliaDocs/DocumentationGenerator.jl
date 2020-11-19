@@ -80,7 +80,7 @@ function maybe_redirect(uri)
     return uri
 end
 
-function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="")
+function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="", load_package = true)
     uri = something(uri, "docs")
     mktempdir() do envdir
         pkgname = packagespec.name
@@ -99,8 +99,11 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
             pkgfile = Base.find_package(pkgname)
             pkgroot = normpath(joinpath(pkgfile, "..", ".."))
         end
-        mod = try_use_package(packagespec)
-
+        mod = if load_package
+            try_use_package(packagespec)
+        else
+            nothing
+        end
         # actual Documenter docs
         try
             for docdir in joinpath.(pkgroot, unique([uri, "docs", "doc"]))
