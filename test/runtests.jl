@@ -244,6 +244,16 @@ end
             using_failed = [false]
         ),
         (
+            name = "Octo",
+            url = "https://github.com/wookay/Octo.jl.git",
+            uuid = "16905944-f982-529b-abb2-b839f98f160b",
+            versions = [v"0.2.6"],
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
+        ),
+        (
             name = "QML",
             url = "https://github.com/barche/QML.jl.git",
             uuid = "2db162a6-7e43-52c3-8d84-290c1c42d82a",
