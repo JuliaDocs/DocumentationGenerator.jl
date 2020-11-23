@@ -252,6 +252,28 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        # loads, runs a game, then calls `exit()`:
+        (
+            name = "Tetris",
+            uuid = "d02b474b-c6a0-45b1-beee-9a2049fa00e6",
+            url = "https://github.com/mossr/Tetris.jl/",
+            versions = [v"1.0.0"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+            using_failded = [true]
+            ),
+            # segfaults:
+            (
+                name = "Glibc_jll",
+            uuid = "452aa2e7-e185-58db-8ff9-d3c1fa4bc997",
+            url = "https://github.com/JuliaBinaryWrappers/Glibc_jll.jl",
+            versions = [v"2.29.0+0"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
+            using_failded = [true]
         )
     ]
 
