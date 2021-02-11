@@ -262,7 +262,7 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
-        )
+        ),
         (
             name = "Electron",
             url = "https://github.com/davidanthoff/Electron.jl.git",
