@@ -107,7 +107,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                 push!(new_args, Expr(:kw, :linkcheck, false))
             end
 
-            if !has_linkcheck
+            if !has_doctest
                 push!(new_args, Expr(:kw, :doctest, false))
             end
 
