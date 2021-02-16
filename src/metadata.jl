@@ -1,11 +1,5 @@
 using GitHub
 
-const GIT_TOKEN_FILE = if haskey(ENV, "DOCGEN_GITHUB_AUTH_FILE") && isfile(ENV["DOCGEN_GITHUB_AUTH_FILE"])
-    ENV["DOCGEN_GITHUB_AUTH_FILE"]
-else
-    joinpath(@__DIR__, "gh_auth.txt")
-end
-
 function init_metadata(packagespec, url)
     return Dict(
         "name" => packagespec.name,
@@ -37,11 +31,17 @@ end
 function update_metadata(packagespec, url, repo_owner, repo_name)
     meta = Dict{String, Any}()
 
-    authpath = GIT_TOKEN_FILE
+    authpath = if haskey(ENV, "DOCGEN_GITHUB_AUTH_FILE")
+        ENV["DOCGEN_GITHUB_AUTH_FILE"]
+    else
+        joinpath(@__DIR__, "gh_auth.txt")
+    end
+
     if !isfile(authpath)
         @warn("No GitHub token found. Skipping metadata retrieval.")
         return meta
     end
+
     if !occursin("github.com", url)
         @warn("Can't retrieve metadata (not hosted on GitHub).")
         return meta
