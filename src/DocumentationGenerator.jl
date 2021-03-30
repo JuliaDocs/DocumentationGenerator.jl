@@ -1,6 +1,6 @@
 module DocumentationGenerator
 using Pkg
-using JSON, HTTP
+using JSON, Downloads
 
 include("utils/misc.jl")
 include("utils/pkgtools.jl")
@@ -151,29 +151,35 @@ function build_documentation(
     generate_dependency_list(packages, basepath = basepath, registry = registry, filter_versions = filter_versions)
 end
 
+function http_get_request(url)
+    output = IOBuffer()
+    response = Downloads.request(url, output = output, method = "GET")
+    (response, String(take!(output)))
+end
+
 function get_pkg_eval_data()
     pkg_eval = Dict()
 
-    resp = try
-        HTTP.get("https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/latest", status_exception = false)
+    resp, bodystring = try
+        http_get_request("https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/latest")
     catch ex
         @warn "Failed to fetch latest Nanosoldier report" ex
         return pkg_eval
     end
 
     if resp.status == 200
-        latest_date = String(resp.body)
+        latest_date = bodystring
 
         if occursin(r"\d{4}\-\d{2}/\d{2}", latest_date)
             last_db_url = "https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/$(latest_date)/db.json"
-            resp = try
-                 HTTP.get(last_db_url)
+            resp, body_string = try
+                 http_get_request(last_db_url)
             catch ex
                 @warn "Failed to fetch Nanosoldier report" ex
                 nothing
             end
             if resp != nothing && resp.status == 200
-                pkg_eval = JSON.parse(String(resp.body))
+                pkg_eval = JSON.parse(body_string)
             end
         end
     end
