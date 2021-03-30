@@ -38,7 +38,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         @info "opening meta.toml"
         open(joinpath(buildpath, "meta.toml"), "w") do io
             @info "writing meta.toml"
-            TOML.print(io, metadata)
+            TOML.print(x -> string(x), io, metadata)
         end
     end
 end
@@ -59,7 +59,7 @@ function update_metadata(uuid, name, url, version, buildpath, registry, deployme
             @info "opening meta.toml"
             open(metapath, "w") do io
                 @info "writing meta.toml"
-                TOML.print(io, metadata)
+                TOML.print(x -> string(x), io, metadata)
             end
         else
             @error("Tried updating metadata, but did not find an existing `meta.toml` at `$(metapath)`.")
