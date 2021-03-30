@@ -132,11 +132,11 @@ end
             name = "julia",
             url = "https://github.com/JuliaLang/julia",
             uuid = "1222c4b2-2114-5bfd-aeef-88e4692bbb3e",
-            versions = [v"1.2.0", v"1.3.0", v"1.4.1"],
-            installs = ["missing", "missing", "missing"],
-            hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
-            success = [true, true, true],
-            doctype = ["hosted", "hosted", "hosted"]
+            versions = [v"1.2.0", v"1.3.0", v"1.4.1", v"1.5.3"],
+            installs = ["missing", "missing", "missing", "missing"],
+            hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
+            success = [true, true, true, true],
+            doctype = ["hosted", "hosted", "hosted", "hosted"]
         ),
         # git-dir docs
         (
@@ -261,6 +261,16 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
+            using_failed = [false]
+        ),
+        (
+            name = "Electron",
+            url = "https://github.com/davidanthoff/Electron.jl.git",
+            uuid = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3",
+            versions = [v"3.1.1"],
+            installs = [true],
+            success = [true],
+            doctype = ["fallback_autodocs"],
             using_failed = [false]
         )
     ]
