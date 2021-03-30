@@ -210,7 +210,11 @@ function generate_dependency_list(packages;
                 meta["deps"] = collect(alldeps(package.uuid, string(version), deps))
                 meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
                 open(metatoml, "w") do io
-                    Pkg.TOML.print(x -> string(x), io, meta)
+                    if VERSION < v"1.6"
+                        Pkg.TOML.print(io, meta)
+                    else
+                        Pkg.TOML.print(x -> string(x), io, meta)
+                    end
                 end
                 open(joinpath(builddir, "pkg.json"), "w") do f
                     readme = joinpath(builddir, "_readme", "readme.html")
