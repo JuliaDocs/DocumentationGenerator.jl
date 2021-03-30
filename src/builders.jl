@@ -2,6 +2,7 @@ using Markdown
 using GithubMarkdown
 using HTMLSanitizer
 using Highlights
+using Downloads
 
 function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
     pkgname = packagespec.name
@@ -45,7 +46,7 @@ function build_hosted_docs(packagespec, buildpath, uri)
 
     # download search index
     try
-        download(string(uri, "/search_index.js"), joinpath(buildpath, "search_index.js"))
+        Downloads.download(string(uri, "/search_index.js"), joinpath(buildpath, "search_index.js"))
     catch err
         @error("Search index download failed for `$(uri)`.", exception = err)
     end
@@ -58,7 +59,7 @@ end
 
 using Gumbo, AbstractTrees
 function maybe_redirect(uri)
-    docspage = download(uri)
+    docspage = Downloads.download(uri)
     docspage = read(docspage, String)
 
     try
@@ -331,7 +332,7 @@ function copy_package_source(packagespec, buildpath)
     try
         mktempdir() do envdir
             if packagespec.name == "julia"
-                download("https://github.com/JuliaLang/julia/releases/download/v$(packagespec.version)/julia-$(packagespec.version).tar.gz", joinpath(envdir, string(packagespec.uuid)*".tar.gz"))
+                Downloads.download("https://github.com/JuliaLang/julia/releases/download/v$(packagespec.version)/julia-$(packagespec.version).tar.gz", joinpath(envdir, string(packagespec.uuid)*".tar.gz"))
                 run(`tar -xzf $(joinpath(envdir, string(packagespec.uuid)*".tar.gz"))  -C $envdir`)
                 docs_path = joinpath(envdir, packagespec.name*"-"*string(packagespec.version), "doc", "_build", "html", "en")
                 src_path = joinpath(envdir, packagespec.name*"-"*string(packagespec.version))

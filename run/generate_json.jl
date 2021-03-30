@@ -1,4 +1,4 @@
-using Pkg, DocumentationGenerator
+using Pkg, DocumentationGenerator, Downloads
 docspath = normpath(joinpath(@__DIR__, ".."))
 packages = sort!(readdir(joinpath(docspath, "build")), by=x->lowercase(x))
 
@@ -14,7 +14,7 @@ known_badges = [
 
 function badge_value(badge)
     try
-        svg = read(download(badge), String)
+        svg = read(Downloads.download(badge), String)
         if occursin("passing", svg)
             return "passes"
         elseif occursin("failing", svg)
