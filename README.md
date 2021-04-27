@@ -8,11 +8,7 @@ Generate documentation for *all the packages*.
 ```
 pkg> add DocumentationGenerator
 ```
-installs this package. Optionally you might want to install the `licensee` ruby
-gem for better license detection:
-```
-$ gem install licensee
-```
+installs this package.
 
 It also makes sense to have `xvfb-run` installed so packages that require a display
 (e.g. Tk.jl) work fine.
