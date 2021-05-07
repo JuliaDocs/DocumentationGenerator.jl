@@ -120,12 +120,12 @@ function fix_makefile(makefile, documenter_version = v"0.24")
 
         push!(make_expr.args, elem)
 
-        # it's possible a make.jl-file doesn't have `using Documenter` at all, so let's just unconditionally add that here
-        pushfirst!(make_expr.args, Expr(:using, Expr(:., :Documenter)))
-
         # ignore everything after `makedocs` call
         should_break && break
     end
+
+    # it's possible a make.jl-file doesn't have `using Documenter` at all, so let's just unconditionally add that here
+    pushfirst!(make_expr.args, Expr(:using, Expr(:., :Documenter)))
 
     fix_lnns(make_expr, makefile)
 
