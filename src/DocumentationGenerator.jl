@@ -5,7 +5,6 @@ using JSON, Downloads
 include("utils/misc.jl")
 include("utils/pkgtools.jl")
 include("utils/runners.jl")
-include("utils/license.jl")
 include("builders.jl")
 include("metadata.jl")
 include("registry.jl")

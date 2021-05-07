@@ -31,9 +31,8 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
             @error("Could not render readme because we don't have the source files.")
         end
 
-        if pkgsource !== nothing && ispath(pkgsource)
-            metadata["license"], metadata["license_url"] = DocumentationGenerator.license(joinpath(buildpath, "_packagesource"))
-        end
+        metadata["license"] = ""
+        metadata["license_url"] = ""
 
         @info "opening meta.toml"
         open(joinpath(buildpath, "meta.toml"), "w") do io
