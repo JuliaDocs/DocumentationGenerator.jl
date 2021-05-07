@@ -1,6 +1,6 @@
 # DocumentationGenerator.jl
 
-[![Build Status](https://travis-ci.org/JuliaDocs/DocumentationGenerator.jl.svg?branch=master)](https://travis-ci.org/JuliaDocs/DocumentationGenerator.jl)
+[![CI](https://github.com/JuliaDocs/DocumentationGenerator.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaDocs/DocumentationGenerator.jl/actions/workflows/CI.yml)
 
 Generate documentation for *all the packages*.
 
