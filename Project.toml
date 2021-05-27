@@ -2,7 +2,7 @@ name = "DocumentationGenerator"
 uuid = "8f0d3306-d70b-5309-b898-24bb6ab47850"
 authors = ["Sebastian Pfitzner <pfitzseb@physik.hu-berlin.de>", "Simon Danisch <sdanisch@gmail.com>", "Venkatesh Dayananda <venkatesh@juliacomputing.com>"]
 repo = "https://github.com/JuliaDocs/DocumentationGenerator.jl.git"
-version = "0.4.5"
+version = "0.4.6"
 
 [deps]
 AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
@@ -20,12 +20,12 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
 AbstractTrees = "0.2, 0.3"
-Documenter = "0.24"
-GitHub = "5.1"
+Documenter = "0.24, 0.25, 0.26"
+GitHub = "5.1, 5.2, 5.3, 5.4"
 GithubMarkdown = "0.1"
 Gumbo = "0.8"
 HTMLSanitizer = "0.2"
-Highlights = "0.4"
+Highlights = "0.4, 0.5"
 JSON = "0.21"
 julia = "1.1"
 
