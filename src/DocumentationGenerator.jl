@@ -153,17 +153,18 @@ end
 function http_get_request(url)
     output = IOBuffer()
     response = Downloads.request(url, output = output, method = "GET")
-    (response, String(take!(output)))
+    return (response, String(take!(output)))
 end
 
 function get_pkg_eval_data()
     pkg_eval = Dict()
+    latest_date = ""
 
     resp, bodystring = try
         http_get_request("https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/latest")
     catch ex
         @warn "Failed to fetch latest Nanosoldier report" ex
-        return pkg_eval
+        return pkg_eval, latest_date
     end
 
     if resp.status == 200
@@ -175,15 +176,15 @@ function get_pkg_eval_data()
                  http_get_request(last_db_url)
             catch ex
                 @warn "Failed to fetch Nanosoldier report" ex
-                nothing
+                nothing, ""
             end
-            if resp != nothing && resp.status == 200
+            if resp !== nothing && resp.status == 200
                 pkg_eval = JSON.parse(body_string)
             end
         end
     end
 
-    return pkg_eval
+    return pkg_eval, latest_date
 end
 
 function generate_dependency_list(packages;
@@ -192,7 +193,7 @@ function generate_dependency_list(packages;
         filter_versions = last
     )
     @info "Generating deps info"
-    pkg_eval_data = get_pkg_eval_data()
+    pkg_eval_data, pkg_eval_fetch_date = get_pkg_eval_data()
     deps = dependencies_per_package(registry)
     rdeps = reverse_dependencies_per_package(deps)
     for package in packages
@@ -205,6 +206,10 @@ function generate_dependency_list(packages;
                 meta = Pkg.TOML.parsefile(metatoml)
                  if haskey(pkg_eval_data, "tests") && haskey(pkg_eval_data["tests"], package.uuid)
                     meta["pkgeval"] = pkg_eval_data["tests"][package.uuid]
+                    if pkg_eval_fetch_date != ""
+                        meta["pkgeval"]["report_url"] = "https://github.com/JuliaCI/NanosoldierReports/blob/master/pkgeval/by_date/$(pkg_eval_fetch_date)/report.md"
+                        meta["pkgeval"]["log_url"] = "https://s3.amazonaws.com/julialang-reports/nanosoldier/pkgeval/by_date/$(pkg_eval_fetch_date)/$(meta["name"]).primary.log"
+                    end
                 end
                 meta["deps"] = collect(alldeps(package.uuid, string(version), deps))
                 meta["reversedeps"] = collect(allreversedeps(package.uuid, string(version), rdeps))
