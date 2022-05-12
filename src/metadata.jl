@@ -37,8 +37,14 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
         joinpath(@__DIR__, "gh_auth.txt")
     end
 
-    if !isfile(authpath)
-        @warn("No GitHub token found. Skipping metadata retrieval.")
+    token = if isfile(authpath)
+        readchomp(authpath)
+    else
+        get(ENV, "DOCGEN_GITHUB_AUTH_TOKEN", "")
+    end
+
+    if isempty(token)
+        @warn("No GitHub token found. Skipping metadata retrieval")
         return meta
     end
 
@@ -46,10 +52,9 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
         @warn("Can't retrieve metadata (not hosted on GitHub).")
         return meta
     end
-
     @info("Querying metadata.")
     try
-        gh_auth = authenticate(readchomp(authpath))
+        gh_auth = authenticate(token)
         repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
         meta["description"] = something(repo_info.description, "")
         meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
