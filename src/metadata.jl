@@ -40,13 +40,14 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
     token = if isfile(authpath)
         readchomp(authpath)
     else
-        get(ENV,"DOCGEN_GITHUB_AUTH_TOKEN", "")
+        get(ENV, "DOCGEN_GITHUB_AUTH_TOKEN", "")
     end
 
     if isempty(token)
         @warn("No GitHub token found. Skipping metadata retrieval")
         return meta
     end
+
     if !occursin("github.com", url)
         @warn("Can't retrieve metadata (not hosted on GitHub).")
         return meta
