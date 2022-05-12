@@ -37,7 +37,7 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
         joinpath(@__DIR__, "gh_auth.txt")
     end
 
-    token if isfile(authpath)
+    token = if isfile(authpath)
         readchomp(authpath)
     else
         get(ENV,"DOCGEN_GITHUB_AUTH_TOKEN", "")
