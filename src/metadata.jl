@@ -22,9 +22,13 @@ function package_metadata(packagespec, url)
         meta["owner"] = rmatch[1]
         meta["name"] = rmatch[2]
     end
-
-    merge!(meta, update_metadata(packagespec, url, rmatch[1], rmatch[2]))
-
+    updated_metadata = try
+        update_metadata(packagespec, url, rmatch[1], rmatch[2])
+    catch ex
+        @error(string("Couldn't get info for ", url), error = ex)
+        Dict()
+    end
+    merge!(meta, updated_metadata)
     return meta
 end
 
@@ -53,18 +57,13 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
         return meta
     end
     @info("Querying metadata.")
-    try
-        gh_auth = authenticate(token)
-        repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
-        meta["description"] = something(repo_info.description, "")
-        meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
-        meta["homepage"]  = string(something(repo_info.homepage, ""))
-        topics_dict, page = topics(repo_info, auth = gh_auth)
-        meta["tags"] = something(topics_dict["names"], [])
-        meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
-    catch err
-        @error(string("Couldn't get info for ", url), error = err)
-    end
+    repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
+    meta["description"] = something(repo_info.description, "")
+    meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
+    meta["homepage"]  = string(something(repo_info.homepage, ""))
+    topics_dict, page = topics(repo_info, auth = gh_auth)
+    meta["tags"] = something(topics_dict["names"], [])
+    meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
     @info("Done querying metadata.")
 
     return meta
