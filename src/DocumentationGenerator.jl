@@ -169,7 +169,6 @@ function get_pkg_eval_data()
 
     if resp.status == 200
         latest_date = bodystring
-
         if occursin(r"\d{4}\-\d{2}/\d{2}", latest_date)
             last_db_url = "https://raw.githubusercontent.com/JuliaCI/NanosoldierReports/master/pkgeval/by_date/$(latest_date)/db.json"
             resp, body_string = try
@@ -204,8 +203,22 @@ function generate_dependency_list(packages;
                 isfile(metatoml) || continue
 
                 meta = Pkg.TOML.parsefile(metatoml)
-                 if haskey(pkg_eval_data, "tests") && haskey(pkg_eval_data["tests"], package.uuid)
-                    meta["pkgeval"] = pkg_eval_data["tests"][package.uuid]
+
+                ## older db.json formats were indexed by package UUID but new ones use name
+                pkgeval = if haskey(pkg_eval_data, "tests")
+                    if haskey(pkg_eval_data["tests"], package.uuid)
+                        pkg_eval_data["tests"][package.uuid]
+                    elseif haskey(pkg_eval_data["tests"], package.name)
+                        pkg_eval_data["tests"][package.name]
+                    else
+                        Dict()
+                    end
+                else
+                    Dict()
+                end
+
+                if !isempty(pkgeval)
+                    meta["pkgeval"] = pkgeval
                     if pkg_eval_fetch_date != ""
                         meta["pkgeval"]["report_url"] = "https://github.com/JuliaCI/NanosoldierReports/blob/master/pkgeval/by_date/$(pkg_eval_fetch_date)/report.md"
                         meta["pkgeval"]["log_url"] = "https://s3.amazonaws.com/julialang-reports/nanosoldier/pkgeval/by_date/$(pkg_eval_fetch_date)/$(meta["name"]).primary.log"
