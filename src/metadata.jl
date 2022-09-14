@@ -59,6 +59,7 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
         return meta
     end
     @info("Querying metadata.")
+    gh_auth = authenticate(token)
     repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
     meta["description"] = something(repo_info.description, "")
     meta["stargazers_count"]  = something(repo_info.stargazers_count, 0)
