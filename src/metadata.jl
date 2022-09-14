@@ -1,7 +1,7 @@
 using GitHub
 
 function init_metadata(packagespec, url)
-    return Dict(
+    meta = Dict(
         "name" => packagespec.name,
         "uuid" => packagespec.uuid,
         "slug" => Base.package_slug(packagespec.uuid, 5),
@@ -12,26 +12,23 @@ function init_metadata(packagespec, url)
         "success" => false,
         "documenter_errored" => missing
     )
-end
-
-function package_metadata(packagespec, url)
-    meta = init_metadata(packagespec, url)
-    new_metadata = try
-        fetch_updated_metadata(packagespec, url)
-    catch ex
-        @error(string("Couldn't get info for ", url), error = ex)
-        Dict()
-    end
-    return merge!(meta, new_metadata)
-end
-
-function fetch_updated_metadata(packagespec, url)
     rmatch = match(r".*/(.*)/(.*?(?:\.jl)?)(?:.git)?$", url)
     if rmatch !== nothing
         meta["owner"] = rmatch[1]
         meta["name"] = rmatch[2]
     end
-    return update_metadata(packagespec, url, rmatch[1], rmatch[2])
+    return meta
+end
+
+function package_metadata(packagespec, url)
+    meta = init_metadata(packagespec, url)
+    new_metadata = try
+        update_metadata(packagespec, url, meta["owner"], meta["name"])
+    catch ex
+        @error(string("Couldn't get info for ", url), error = ex)
+        Dict()
+    end
+    return merge!(meta, new_metadata)
 end
 
 function update_metadata(packagespec, url, repo_owner, repo_name)
