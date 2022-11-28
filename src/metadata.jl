@@ -55,7 +55,7 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
         @warn("Can't retrieve metadata (not hosted on GitHub).")
         return meta
     end
-    @info("Querying metadata.")
+    @debug("Querying metadata.")
     gh_auth = authenticate(token)
     repo_info = repo(repo_owner * "/" * repo_name, auth = gh_auth)
     meta["description"] = something(repo_info.description, "")
@@ -64,7 +64,7 @@ function update_metadata(packagespec, url, repo_owner, repo_name)
     topics_dict, page = topics(repo_info, auth = gh_auth)
     meta["tags"] = something(topics_dict["names"], [])
     meta["contributors"] = contributor_user.(contributors(repo_info, auth = gh_auth)[1])
-    @info("Done querying metadata.")
+    @debug("Done querying metadata.")
 
     return meta
 end
