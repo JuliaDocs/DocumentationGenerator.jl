@@ -13,9 +13,7 @@ function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
     if sync
         try
             rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
-            cd(basepath) do
-                run(`git clone --depth=1 $(registry) DocumentationGeneratorRegistry`)
-            end
+            run(`git clone --depth=1 $(registry) $(joinpath(basepath, "DocumentationGeneratorRegistry"))`)
             @assert isfile(tomlpath)
             return tomlpath
         catch err
