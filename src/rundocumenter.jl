@@ -43,9 +43,8 @@ expr, bpath = fix_makefile(makefile, documenter_version)
 
 @info("`cd`ing to `$(docsdir)` and setting `tls[:SOURCE_PATH]` to `$(makefile)`.")
 task_local_storage()[:SOURCE_PATH] = makefile
-cd(docsdir)
-
-@info("Evaluating the following `make` expr:")
-@info(expr)
-
-eval(expr)
+cd(docsdir) do
+    @info("Evaluating the following `make` expr:")
+    @info(expr)
+    eval(expr)
+end
