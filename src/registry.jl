@@ -19,9 +19,10 @@ function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
         catch err
             @warn("Couldn't download docs registry.", exception = err)
         end
-    elseif isfile(tomlpath)
+    end
+    if isfile(tomlpath)
         return tomlpath
-    else
+    elseif !sync
         @warn("No registry found at `$(tomlpath)`. Cloning again.")
         return get_registry(basepath; registry = registry, sync = true)
     end
