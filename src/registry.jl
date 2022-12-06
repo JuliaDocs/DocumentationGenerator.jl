@@ -22,6 +22,7 @@ function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
     elseif isfile(tomlpath)
         return tomlpath
     else
+        @warn("No registry found at `$(tomlpath)`. Cloning again.")
         return get_registry(basepath; registry = registry, sync = true)
     end
     return nothing
