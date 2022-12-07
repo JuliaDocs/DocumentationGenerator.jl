@@ -17,20 +17,19 @@ function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
             mktempdir() do temp
                 tempclone = joinpath(temp, "registry")
                 run(`git clone --depth=1 $(registry) $(tempclone)`)
-                @assert isfile(tomlpath)
+                @assert isfile(joinpath(tempclone, "Registry.toml"))
                 mv(tempclone, destdir, force = true)
             end
             return tomlpath
         catch err
             @warn("Couldn't download docs registry.", exception = err)
         end
-    else
-        if isfile(tomlpath)
-            return tomlpath
-        else
-            @warn("No registry found at `$(tomlpath)`. Cloning again.")
-            return get_registry(basepath; registry = registry, sync = true)
-        end
+    end
+    if isfile(tomlpath)
+        return tomlpath
+    elseif !sync
+        @warn("No registry found at `$(tomlpath)`. Cloning again.")
+        return get_registry(basepath; registry = registry, sync = true)
     end
     return nothing
 end
