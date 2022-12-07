@@ -12,9 +12,14 @@ function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
     tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
     if sync
         try
-            rm(joinpath(basepath, "DocumentationGeneratorRegistry"), force = true, recursive = true)
-            run(`git clone --depth=1 $(registry) $(joinpath(basepath, "DocumentationGeneratorRegistry"))`)
-            @assert isfile(tomlpath)
+
+            destdir = joinpath(basepath, "DocumentationGeneratorRegistry")
+            mktempdir() do temp
+                tempclone = joinpath(temp, "registry")
+                run(`git clone --depth=1 $(registry) $(tempclone)`)
+                @assert isfile(tomlpath)
+                mv(tempclone, destdir, force = true)
+            end
             return tomlpath
         catch err
             @warn("Couldn't download docs registry.", exception = err)
