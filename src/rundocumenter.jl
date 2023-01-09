@@ -46,5 +46,5 @@ task_local_storage()[:SOURCE_PATH] = makefile
 cd(docsdir) do
     @info("Evaluating the following `make` expr:")
     @info(expr)
-    eval(expr)
+    Base.eval(Module(), expr)
 end
