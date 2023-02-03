@@ -77,6 +77,8 @@ end
             versions = [v"0.8.4"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["fallback_autodocs"],
         ),
         (
@@ -86,6 +88,8 @@ end
             versions = [v"0.7.0"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["fallback_autodocs"],
         ),
         # with docs
@@ -96,6 +100,8 @@ end
             versions = [v"0.5.1", v"0.5.3"],
             installs = [true, true],
             success = [true, true],
+            server_type = "github",
+            api_url="",
             doctype = ["fallback_autodocs", "documenter"],
         ),
         (
@@ -105,6 +111,8 @@ end
             versions = [v"3.1.0"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["documenter"],
         ),
         (
@@ -114,6 +122,8 @@ end
             versions = [v"1.3.2"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["fallback_autodocs"],
         ),
         # with hosted docs
@@ -125,6 +135,8 @@ end
             installs = ["missing"],
             success = [true],
             hosted_uri = ["https://docs.junolab.org/latest"],
+            server_type = "github",
+            api_url="",
             doctype = ["hosted"]
         ),
         # Julia
@@ -136,6 +148,8 @@ end
             installs = ["missing", "missing", "missing", "missing"],
             hosted_uri = ["https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1", "https://docs.julialang.org/en/v1"],
             success = [true, true, true, true],
+            server_type = "github",
+            api_url="",
             doctype = ["hosted", "hosted", "hosted", "hosted"]
         ),
         # git-dir docs
@@ -146,6 +160,8 @@ end
             versions = [v"0.4.19"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["documenter"],
         ),
         (
@@ -155,6 +171,8 @@ end
             versions = [v"0.3.6+0"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["fallback_autodocs"],
         ),
         (
@@ -164,6 +182,8 @@ end
             versions = [v"0.4.2"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["documenter"],
         ),
         (
@@ -173,6 +193,8 @@ end
             versions = [v"4.0.1"],
             installs = [true],
             success = [true],
+            server_type = "github",
+            api_url="",
             doctype = ["fallback_autodocs"],
         ),
         # make sure xvfb-run works:
@@ -182,6 +204,8 @@ end
             uuid = "4225ea8a-3324-57e7-9ddc-5798a2cb9eab",
             versions = [v"0.7.0"],
             installs = [true],
+            server_type = "github",
+            api_url="",
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
@@ -192,6 +216,8 @@ end
             uuid = "e88e6eb3-aa80-5325-afca-941959d7151f",
             versions = [v"0.6.10"],
             installs = [true],
+            server_type = "github",
+            api_url="",
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
@@ -201,6 +227,8 @@ end
             url = "https://github.com/AStupidBear/IntelGEMM.jl.git",
             uuid = "46a1a280-e6c3-11e9-0321-d12035ae5ac9",
             versions = [v"0.1.1"],
+            server_type = "github",
+            api_url="",
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],
@@ -211,6 +239,8 @@ end
             url = "https://github.com/timholy/MethodAnalysis.jl.git",
             uuid = "85b6ec6f-f7df-4429-9514-a64bcd9ee824",
             versions = [v"0.4.4"],
+            server_type = "github",
+            api_url="",
             installs = [true],
             success = [true],
             doctype = ["documenter"],
@@ -221,6 +251,8 @@ end
             url = "https://github.com/wookay/Octo.jl.git",
             uuid = "16905944-f982-529b-abb2-b839f98f160b",
             versions = [v"0.2.9"],
+            server_type = "github",
+            api_url="",
             installs = [true],
             success = [true],
             doctype = ["documenter"],
@@ -231,6 +263,8 @@ end
             url = "https://github.com/davidanthoff/Electron.jl.git",
             uuid = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3",
             versions = [v"3.1.2"],
+            server_type = "github",
+            api_url="",
             installs = [true],
             success = [true],
             doctype = ["fallback_autodocs"],

@@ -4,8 +4,9 @@ using DocumentationGenerator
 
 Pkg.status()
 
-function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, args...)
+function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, server_type, api_url, args...)
     packagespec = PackageSpec(uuid = uuid, name = name, version = VersionNumber(version))
+    api_url = api_url == "-" ? "" : api_url
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
         "CI" => "true",
@@ -17,7 +18,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         else
             Dict()
         end
-        new_metadata = DocumentationGenerator.package_metadata(packagespec, url)
+        new_metadata = DocumentationGenerator.package_metadata(packagespec, url, server_type; api_url = api_url)
         merge!(metadata, new_metadata)
         build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix)
         merge!(metadata, build_meta)
@@ -46,7 +47,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
     end
 end
 
-function update_metadata(uuid, name, url, version, buildpath, registry, deployment_url, args...)
+function update_metadata(uuid, name, url, version, buildpath, registry, deployment_url, server_type, api_url; args...)
     metapath = joinpath(buildpath, "meta.toml")
     packagespec = PackageSpec(uuid = uuid, name = name, version = version)
     withenv(
@@ -56,7 +57,7 @@ function update_metadata(uuid, name, url, version, buildpath, registry, deployme
     ) do
         if isfile(joinpath(buildpath, "meta.toml"))
             metadata = TOML.parsefile(metapath)
-            updated_metadata = DocumentationGenerator.package_metadata(packagespec, url)
+            updated_metadata = DocumentationGenerator.package_metadata(packagespec, url, server_type; api_url)
             merge!(metadata, updated_metadata)
 
             @info "opening meta.toml"
