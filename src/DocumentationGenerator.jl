@@ -255,7 +255,7 @@ function start_builder(package, version;
         href_prefix = nothing,
         timeout = RUNNER_TIMEOUT,
         max_timeout = RUNNER_MAX_TIMEOUT,
-        kill_timeout = RUNNER_KILL_TIMEOUT
+        kill_timeout = RUNNER_KILL_TIMEOUT,
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -268,6 +268,8 @@ function start_builder(package, version;
     name = package.name
     uuid = package.uuid
     url = package.url
+    server_type = package.server_type
+    api_url = package.api_url
     src_prefix  = haskey(package, :src_prefix) ? package.src_prefix : string("/docs/", get_docs_dir(name, uuid), '/', string(version), "/_packagesource/")
     href_prefix = haskey(package, :href_prefix) ? package.href_prefix : string("/ui/Code/docs/", get_docs_dir(name, uuid), '/', string(version), "/_packagesource/")
 
@@ -278,6 +280,7 @@ function start_builder(package, version;
 
     thisproject = Base.active_project()
 
+    ## api_url needs to be set to "-", since empty string should not be passed as CLI argument
     cmd = ```
         $(juliacmd)
             --project="$(thisproject)"
@@ -294,6 +297,8 @@ function start_builder(package, version;
             $deployment_url
             $src_prefix
             $href_prefix
+            $(server_type)
+            $(isempty(api_url) ? "-" : api_url)
             $(update_only ? "update" : "build")
     ```
     process, task = run_with_timeout(cmd,
