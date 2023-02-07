@@ -86,11 +86,12 @@ end
             url = "https://github.com/isaacsas/ReactionNetworkImporters.jl.git",
             uuid = "b4db0fb7-de2a-5028-82bf-5021f5cfa881",
             versions = [v"0.13.5"],
-            installs = [true],
+            installs = ["missing"],
             success = [true],
             server_type = "github",
             api_url="",
-            doctype = ["fallback_autodocs"],
+            hosted_uri=["https://docs.sciml.ai/Overview/"],
+            doctype = ["hosted"],
         ),
         # with docs
         (
@@ -257,20 +258,7 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
-        ),
-        (
-            name = "Electron",
-            url = "https://github.com/davidanthoff/Electron.jl.git",
-            uuid = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3",
-            versions = [v"4.1.1"],
-            server_type = "github",
-            api_url="",
-            installs = [true],
-            success = [true],
-            doctype = ["fallback_autodocs"],
-            using_failed = [false]
-        )
-    ]
+        )    ]
 
     basepath = @__DIR__
     rm(joinpath(basepath, "build"), force = true, recursive = true)
