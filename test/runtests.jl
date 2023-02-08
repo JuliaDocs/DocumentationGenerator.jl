@@ -103,7 +103,7 @@ end
             success = [true, true],
             server_type = "github",
             api_url="",
-            doctype = ["fallback_autodocs", "documenter"],
+            doctype = ["fallback_autodocs", "fallback_autodocs"],
         ),
         (
             name = "DynamicHMC",
