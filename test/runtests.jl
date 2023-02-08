@@ -86,11 +86,12 @@ end
             url = "https://github.com/isaacsas/ReactionNetworkImporters.jl.git",
             uuid = "b4db0fb7-de2a-5028-82bf-5021f5cfa881",
             versions = [v"0.13.5"],
-            installs = [true],
+            installs = ["missing"],
             success = [true],
             server_type = "github",
             api_url="",
-            doctype = ["fallback_autodocs"],
+            hosted_uri=["https://docs.sciml.ai/Overview/"],
+            doctype = ["hosted"],
         ),
         # with docs
         (
@@ -102,7 +103,7 @@ end
             success = [true, true],
             server_type = "github",
             api_url="",
-            doctype = ["fallback_autodocs", "documenter"],
+            doctype = ["fallback_autodocs", "fallback_autodocs"],
         ),
         (
             name = "DynamicHMC",
@@ -244,30 +245,6 @@ end
             installs = [true],
             success = [true],
             doctype = ["documenter"],
-            using_failed = [false]
-        ),
-        (
-            name = "Octo",
-            url = "https://github.com/wookay/Octo.jl.git",
-            uuid = "16905944-f982-529b-abb2-b839f98f160b",
-            versions = [v"0.2.12"],
-            server_type = "github",
-            api_url="",
-            installs = [true],
-            success = [true],
-            doctype = ["documenter"],
-            using_failed = [false]
-        ),
-        (
-            name = "Electron",
-            url = "https://github.com/davidanthoff/Electron.jl.git",
-            uuid = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3",
-            versions = [v"4.1.1"],
-            server_type = "github",
-            api_url="",
-            installs = [true],
-            success = [true],
-            doctype = ["fallback_autodocs"],
             using_failed = [false]
         )
     ]

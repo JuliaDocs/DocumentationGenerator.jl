@@ -68,10 +68,13 @@ function maybe_redirect(uri)
             if el isa HTMLElement && Gumbo.tag(el) == :meta && "content" in keys(Gumbo.attrs(el))
                 content = getattr(el, "content")
                 m = match(r"\d+;\s*url\=(.*)$", content)
-
                 if m !== nothing
-                    @info("Found redirect from `$(uri)` to `$(m[1])`.")
-                    return m[1]
+                    new = m[1]
+                    if startswith(new, "./")
+                        new =  joinpath(uri, new[3:end])
+                    end
+                    @info "Found redirect from $(uri) to $(new)"
+                    return new
                 end
             end
         end
