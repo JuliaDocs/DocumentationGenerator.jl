@@ -304,10 +304,11 @@ function find_readme(pkgroot)
 end
 
 function add_autodocs(docsdir, mod)
+    module_list = join((string(m) for m in Documenter.submodules(PACKAGE_MODULE)), ", ")
     open(joinpath(docsdir, "autodocs.md"), "w") do io
         println(io, """
         ```@autodocs
-        Modules = [$(Symbol(mod))]
+        Modules = [$module_list]
         ```
         """)
     end
