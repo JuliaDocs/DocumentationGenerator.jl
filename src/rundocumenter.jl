@@ -17,6 +17,11 @@ catch err
     @error("Error while instantiating docs directory:", err)
 end
 try
+    Pkg.build()
+catch err
+    @error("Error while instantiating docs directory:", err)
+end
+try
     Pkg.develop(PackageSpec(path=pkgdir))
 catch err
     @error("Error while developing parent directory $(pkgdir):", err)
