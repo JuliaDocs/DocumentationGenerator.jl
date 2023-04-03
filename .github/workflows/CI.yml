@@ -29,6 +29,7 @@ jobs:
       - uses: actions/cache@v1
         env:
           cache-name: cache-artifacts
+          JULIA_PKG_UNPACK_REGISTRY: true
         with:
           path: ~/.julia/artifacts
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
