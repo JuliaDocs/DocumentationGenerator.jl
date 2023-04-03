@@ -88,93 +88,91 @@ Find all declared (direct) dependencies for each package in `registry`.
 """
 function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict())
     name_uuid_map = build_uuid_name_map(registry = registry)
+    registryfile = joinpath(registry, "Registry.toml")
+    !isfile(registryfile) && return depmap
+    regconf = try
+        Pkg.TOML.parsefile(registryfile)
+    catch ex
+        @warn "Failed to parse registry file" ex
+        Dict()
+    end
+    isempty(regconf) && return depmap
 
-    for dir in readdir(registry)
-        startswith(dir, ".") && continue
+    for (_, conf) in regconf["packages"]
+        pkgpath = joinpath(registry, conf["path"])
+        isdir(pkgpath) || continue
+        startswith(pkgpath, ".") && continue
+        pkgtoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Package.toml"))
+        versionstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Versions.toml"))
 
-        dirpath = joinpath(registry, dir)
+        depsperversion = Dict{String, Dict}()
 
-        isdir(dirpath) || continue
+        if isfile(joinpath(pkgpath, "Deps.toml"))
+            depstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Deps.toml"))
+        else
+            depstoml = Dict()
+        end
 
-        for pkg in readdir(dirpath)
-            startswith(dir, ".") && continue
+        if isfile(joinpath(pkgpath, "Compat.toml"))
+            compattoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Compat.toml"))
+        else
+            compattoml = Dict()
+        end
 
-            pkgpath = joinpath(dirpath, pkg)
+        for version in keys(versionstoml)
+            deps = Dict{String, Dict}()
 
-            isdir(pkgpath) || continue
+            for depsver in keys(depstoml)
+                if VersionNumber(version) in Pkg.Types.VersionRange(depsver)
+                    for (dep, uuid) in depstoml[depsver]
+                        deps[dep] = Dict{String, Any}(
+                            "name" => dep,
+                            "uuid" => uuid,
+                            "is_stdlib" => is_stdlib(uuid),
+                            "is_jll" => is_jll(dep),
+                            "slug" => Base.package_slug(UUID(uuid), 5),
+                            "versions" => "*"
+                        )
 
-            pkgtoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Package.toml"))
-            versionstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Versions.toml"))
-
-            depsperversion = Dict{String, Dict}()
-
-            if isfile(joinpath(pkgpath, "Deps.toml"))
-                depstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Deps.toml"))
-            else
-                depstoml = Dict()
+                    end
+                end
             end
 
-            if isfile(joinpath(pkgpath, "Compat.toml"))
-                compattoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Compat.toml"))
-            else
-                compattoml = Dict()
-            end
-
-            for version in keys(versionstoml)
-                deps = Dict{String, Dict}()
-
-                for depsver in keys(depstoml)
-                    if VersionNumber(version) in Pkg.Types.VersionRange(depsver)
-                        for (dep, uuid) in depstoml[depsver]
-                            deps[dep] = Dict{String, Any}(
+            for compatver in keys(compattoml)
+                if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
+                    for (dep, vers) in compattoml[compatver]
+                        if !haskey(name_uuid_map, dep)
+                            @error "UUID not found for" dep
+                            continue
+                        end
+                        depdict = get!(deps, dep) do
+                            uuid = string(name_uuid_map[dep])
+                            Dict{String, Any}(
                                 "name" => dep,
                                 "uuid" => uuid,
                                 "is_stdlib" => is_stdlib(uuid),
                                 "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
-                                "versions" => "*"
                             )
-
                         end
+
+                        depdict["versions"] = vers
                     end
                 end
-
-                for compatver in keys(compattoml)
-                    if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
-                        for (dep, vers) in compattoml[compatver]
-                            if !haskey(name_uuid_map, dep)
-                                @error "UUID not found for" dep
-                                continue
-                            end
-                            depdict = get!(deps, dep) do
-                                uuid = string(name_uuid_map[dep])
-                                Dict{String, Any}(
-                                    "name" => dep,
-                                    "uuid" => uuid,
-                                    "is_stdlib" => is_stdlib(uuid),
-                                    "is_jll" => is_jll(dep),
-                                    "slug" => Base.package_slug(UUID(uuid), 5),
-                                )
-                            end
-
-                            depdict["versions"] = vers
-                        end
-                    end
-                end
-
-                depsperversion[version] = deps
             end
 
-            name = pkgtoml["name"]
-            uuid = pkgtoml["uuid"]
-
-            depmap[uuid] = Dict(
-                "uuid" => uuid,
-                "name" => name,
-                "slug" => Base.package_slug(UUID(uuid), 5),
-                "deps" => depsperversion
-            )
+            depsperversion[version] = deps
         end
+
+        name = pkgtoml["name"]
+        uuid = pkgtoml["uuid"]
+
+        depmap[uuid] = Dict(
+            "uuid" => uuid,
+            "name" => name,
+            "slug" => Base.package_slug(UUID(uuid), 5),
+            "deps" => depsperversion
+        )
     end
     return depmap
 end
