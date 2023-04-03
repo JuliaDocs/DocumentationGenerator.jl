@@ -289,7 +289,7 @@ of packages in `registry` compatible with Julia version `version`.
 function installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
     allpkgs = Dict()
     registryfile = joinpath(registry, "Registry.toml")
-    !isfile(registryfile) && return depmap
+    !isfile(registryfile) && return allpkgs
     regconf = try
         Pkg.TOML.parsefile(registryfile)
     catch ex
@@ -297,7 +297,7 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
         Dict()
     end
     isempty(regconf) && return allpkgs
-    pkgpaths = map(collect(regconf["packages"])) do uuid, conf
+    pkgpaths = map(collect(regconf["packages"])) do (_, conf)
         return joinpath(registry, conf["path"])
     end
     filter!(isdir, pkgpaths)
@@ -333,46 +333,6 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
             path = pkg,
             versions = compatible_versions
         )
-    end
-    allpkgs
-end
-
-function installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
-    allpkgs = Dict()
-    for initial in filter!(isdir, joinpath.(registry, readdir(registry)))
-        for pkg in filter!(isdir, joinpath.(registry, initial, readdir(initial)))
-            "Compat.toml" in readdir(pkg) || continue
-            pkgtoml = Pkg.TOML.parsefile(joinpath(pkg, "Package.toml"))
-            versions = Pkg.TOML.parsefile(joinpath(pkg, "Versions.toml"))
-            compat = Pkg.TOML.parsefile(joinpath(pkg, "Compat.toml"))
-            compatible_versions = VersionNumber[]
-            for pkgver in keys(compat)
-                try
-                    if haskey(compat[pkgver], "julia")
-                        if any(in.(version, Pkg.Types.VersionRange.(compat[pkgver]["julia"])))
-                            append!(compatible_versions, [
-                                                VersionNumber(v) for v in keys(versions) if
-                                                    VersionNumber(v) in Pkg.Types.VersionRange(pkgver)
-                                               ])
-                        end
-                    else
-                        append!(compatible_versions, [
-                                            VersionNumber(v) for v in keys(versions) if
-                                                VersionNumber(v) in Pkg.Types.VersionRange(pkgver)
-                                           ])
-                    end
-                catch err
-                    @error err
-                end
-            end
-            allpkgs[pkgtoml["uuid"]] = (
-                name = pkgtoml["name"],
-                url = pkgtoml["repo"],
-                uuid = pkgtoml["uuid"],
-                path = pkg,
-                versions = compatible_versions
-            )
-        end
     end
     allpkgs
 end
