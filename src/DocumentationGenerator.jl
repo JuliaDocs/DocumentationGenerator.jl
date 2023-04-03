@@ -2,6 +2,8 @@ module DocumentationGenerator
 using Pkg
 using JSON, Downloads
 
+ENV[JULIA_PKG_UNPACK_REGISTRY]=true
+
 include("utils/misc.jl")
 include("utils/pkgtools.jl")
 include("utils/runners.jl")
