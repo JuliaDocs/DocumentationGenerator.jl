@@ -289,7 +289,10 @@ of packages in `registry` compatible with Julia version `version`.
 function installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
     allpkgs = Dict()
     registryfile = joinpath(registry, "Registry.toml")
-    !isfile(registryfile) && return allpkgs
+    if !isfile(registryfile)
+        @error "Registry file is missing at $registry"
+        return allpkgs
+    end
     regconf = try
         Pkg.TOML.parsefile(registryfile)
     catch ex
@@ -301,6 +304,10 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
         return joinpath(registry, conf["path"])
     end
     filter!(isdir, pkgpaths)
+    if isempty(pkgpaths)
+        @error "No package folders found inside the registry"
+        return allpkgs
+    end
     for pkg in pkgpaths
         "Compat.toml" in readdir(pkg) || continue
         pkgtoml = Pkg.TOML.parsefile(joinpath(pkg, "Package.toml"))
