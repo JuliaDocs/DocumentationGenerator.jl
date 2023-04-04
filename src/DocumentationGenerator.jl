@@ -1,7 +1,6 @@
 module DocumentationGenerator
 using Pkg
 using JSON, Downloads
-
 include("utils/misc.jl")
 include("utils/pkgtools.jl")
 include("utils/runners.jl")
