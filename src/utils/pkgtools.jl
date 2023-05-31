@@ -131,7 +131,8 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                             "is_stdlib" => is_stdlib(uuid),
                             "is_jll" => is_jll(dep),
                             "slug" => Base.package_slug(UUID(uuid), 5),
-                            "versions" => "*"
+                            "versions" => "*",
+                            "registry" => regconf["name"]
                         )
 
                     end
@@ -153,6 +154,7 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                                 "is_stdlib" => is_stdlib(uuid),
                                 "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
+                                "registry" => regconf["name"]
                             )
                         end
 
@@ -171,7 +173,8 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
             "uuid" => uuid,
             "name" => name,
             "slug" => Base.package_slug(UUID(uuid), 5),
-            "deps" => depsperversion
+            "deps" => depsperversion,
+                            "registry" => regconf["name"]
         )
     end
     return depmap
@@ -194,12 +197,12 @@ function reverse_dependencies_per_package(deps_per_pkg)
                 depuuid = depdict["uuid"]
 
                 rdeps = get!(reversedeps, depuuid, Dict())
-
                 push!(get!(rdeps, depdict["versions"], Set([])), Dict(
                     "uuid" => uuid,
                     "name" => d["name"],
                     "slug" => Base.package_slug(UUID(uuid), 5),
-                    "version" => ver
+                    "version" => ver,
+                    "registry" => d["registry"]
                 ))
             end
         end
@@ -222,7 +225,8 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
             "name" => depdict["name"],
             "slug" => depdict["slug"],
             "direct" => isdirect,
-            "versions" => vcat(depdict["versions"])
+            "versions" => vcat(depdict["versions"]),
+            "registry" => depdict["registry"],
         ))
 
         sort!(unique!(append!(depentry["versions"], vcat(depdict["versions"]))))
