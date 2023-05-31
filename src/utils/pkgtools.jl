@@ -67,12 +67,16 @@ const stdlib_uuids = Set([
     "8dfed614-e22c-5e08-85e1-65c5234f0b40",
     "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 ])
+struct RegistryInfo
+    path::AbstractString
+    config::Dict
+end
 
 is_stdlib(uuid) = uuid in stdlib_uuids
 is_jll(name) = endswith(name, "_jll")
 
-function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
-    allpkgs = installable_on_version(version, registry=registry)
+function build_uuid_name_map(registry::RegistryInfo, version = VERSION)
+    allpkgs = installable_on_version(registry, version)
     name_to_uuid = Dict()
     for (uuid, pkg) in allpkgs
         name_to_uuid[pkg.name] = UUID(uuid)
@@ -86,18 +90,10 @@ end
 
 Find all declared (direct) dependencies for each package in `registry`.
 """
-function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict())
-    name_uuid_map = build_uuid_name_map(registry = registry)
-    registryfile = joinpath(registry, "Registry.toml")
-    !isfile(registryfile) && return depmap
-    regconf = try
-        Pkg.TOML.parsefile(registryfile)
-    catch ex
-        @warn "Failed to parse registry file" ex
-        Dict()
-    end
-    isempty(regconf) && return depmap
-
+function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
+    regconf = reg.config
+    registry = reg.path
+    name_uuid_map = build_uuid_name_map(reg)
     for (_, conf) in regconf["packages"]
         pkgpath = joinpath(registry, conf["path"])
         isdir(pkgpath) || continue
@@ -132,7 +128,6 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                             "is_jll" => is_jll(dep),
                             "slug" => Base.package_slug(UUID(uuid), 5),
                             "versions" => "*",
-                            "registry" => regconf["name"]
                         )
 
                     end
@@ -154,7 +149,6 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
                                 "is_stdlib" => is_stdlib(uuid),
                                 "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
-                                "registry" => regconf["name"]
                             )
                         end
 
@@ -174,16 +168,27 @@ function dependencies_per_package(registry=joinpath(homedir(), ".julia/registrie
             "name" => name,
             "slug" => Base.package_slug(UUID(uuid), 5),
             "deps" => depsperversion,
-                            "registry" => regconf["name"]
         )
     end
     return depmap
 end
 
-function dependencies_per_package(registries::Vector)
+dependencies_per_package(registry::AbstractString) = dependencies_per_package([registry])
+function dependencies_per_package(registrydirs::Vector)
     deps = Dict()
-    for reg in registries
-        dependencies_per_package(reg, deps)
+    for reg in registrydirs
+        registryfile = joinpath(reg, "Registry.toml")
+        if !isfile(registryfile)
+            @warn "No registry file found at $(registryfile). Skipping checking for deps"
+        end
+        regconf = try
+            Pkg.TOML.parsefile(registryfile)
+        catch ex
+            @warn "Failed to parse registry file" ex
+            Dict()
+        end
+        isempty(regconf) && continue
+        dependencies_per_package(RegistryInfo(reg, regconf), deps)
     end
     return deps
 end
@@ -201,8 +206,7 @@ function reverse_dependencies_per_package(deps_per_pkg)
                     "uuid" => uuid,
                     "name" => d["name"],
                     "slug" => Base.package_slug(UUID(uuid), 5),
-                    "version" => ver,
-                    "registry" => d["registry"]
+                    "version" => ver
                 ))
             end
         end
@@ -226,7 +230,6 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
             "slug" => depdict["slug"],
             "direct" => isdirect,
             "versions" => vcat(depdict["versions"]),
-            "registry" => depdict["registry"],
         ))
 
         sort!(unique!(append!(depentry["versions"], vcat(depdict["versions"]))))
@@ -290,20 +293,11 @@ directreversedeps(uuid, version, reversedeps) = allreversedeps(uuid, version, re
 Returns a Dict mapping from `uuid` to named tuples containing `(name, url, uuid, path, versions)`
 of packages in `registry` compatible with Julia version `version`.
 """
-function installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
+
+function installable_on_version(reg::RegistryInfo, version)
     allpkgs = Dict()
-    registryfile = joinpath(registry, "Registry.toml")
-    if !isfile(registryfile)
-        @error "Registry file is missing at $registry"
-        return allpkgs
-    end
-    regconf = try
-        Pkg.TOML.parsefile(registryfile)
-    catch ex
-        @warn "Failed to parse registry file" ex
-        Dict()
-    end
-    isempty(regconf) && return allpkgs
+    regconf = reg.config
+    registry = reg.path
     pkgpaths = map(collect(regconf["packages"])) do (_, conf)
         return joinpath(registry, conf["path"])
     end
@@ -342,7 +336,7 @@ function installable_on_version(version = VERSION; registry=joinpath(homedir(), 
             url = pkgtoml["repo"],
             uuid = pkgtoml["uuid"],
             path = pkg,
-            versions = compatible_versions
+            versions = compatible_versions,
         )
     end
     allpkgs
