@@ -128,6 +128,7 @@ function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
                             "is_jll" => is_jll(dep),
                             "slug" => Base.package_slug(UUID(uuid), 5),
                             "versions" => "*",
+                            "registry" => ""
                         )
 
                     end
@@ -149,6 +150,7 @@ function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
                                 "is_stdlib" => is_stdlib(uuid),
                                 "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
+                                "registry" => ""
                             )
                         end
 
@@ -176,6 +178,7 @@ end
 dependencies_per_package(registry::AbstractString) = dependencies_per_package([registry])
 function dependencies_per_package(registrydirs::Vector)
     deps = Dict()
+    regs = []
     for reg in registrydirs
         registryfile = joinpath(reg, "Registry.toml")
         if !isfile(registryfile)
@@ -188,7 +191,16 @@ function dependencies_per_package(registrydirs::Vector)
             Dict()
         end
         isempty(regconf) && continue
+        push!(regs, regconf)
         dependencies_per_package(RegistryInfo(reg, regconf), deps)
+    end
+    for (uuid, info) in deps
+        for conf in regs
+            if haskey(conf["packages"], uuid)
+                info["registry"] = conf["name"]
+                break
+            end
+        end
     end
     return deps
 end
@@ -206,7 +218,8 @@ function reverse_dependencies_per_package(deps_per_pkg)
                     "uuid" => uuid,
                     "name" => d["name"],
                     "slug" => Base.package_slug(UUID(uuid), 5),
-                    "version" => ver
+                    "version" => ver,
+                    "registry"=> d["registry"]
                 ))
             end
         end
@@ -230,6 +243,7 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
             "slug" => depdict["slug"],
             "direct" => isdirect,
             "versions" => vcat(depdict["versions"]),
+            "registry"=> depdict["registry"]
         ))
 
         sort!(unique!(append!(depentry["versions"], vcat(depdict["versions"]))))
