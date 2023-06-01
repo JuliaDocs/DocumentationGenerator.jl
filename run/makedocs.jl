@@ -1,6 +1,6 @@
 using DocumentationGenerator
 
-packages = DocumentationGenerator.installable_on_version(VERSION)
+packages = DocumentationGenerator.installable_on_version(joinpath(homedir(), ".julia", "registries", "General"), VERSION)
 
 max_packages = if isempty(ARGS)
     length(packages)

@@ -3,7 +3,7 @@ using Pkg
 
 const julia = first(Base.julia_cmd())
 
-@test length(keys(DocumentationGenerator.installable_on_version())) > 1500
+@test length(keys(DocumentationGenerator.installable_on_version(joinpath(homedir(), ".julia", "registries", "General"), VERSION))) > 1500
 
 @test DocumentationGenerator.maybe_redirect("https://docs.julialang.org/") == "https://docs.julialang.org/en/v1"
 
