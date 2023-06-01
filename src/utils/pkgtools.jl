@@ -67,15 +67,39 @@ const stdlib_uuids = Set([
     "8dfed614-e22c-5e08-85e1-65c5234f0b40",
     "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 ])
-struct RegistryInfo
-    path::AbstractString
-    config::Dict
+
+struct UnifiedRegistryInfo
+    info::Dict
+end
+
+function UnifiedRegistryInfo(regs::Vector)
+    pkgpaths = Dict()
+    for reg in regs
+        registryfile = joinpath(reg, "Registry.toml")
+        if !isfile(registryfile)
+            @warn "No registry file found at $(registryfile). Skipping checking for deps"
+        end
+        regconf = try
+            Pkg.TOML.parsefile(registryfile)
+        catch ex
+            @warn "Failed to parse registry file" ex
+            Dict()
+        end
+        isempty(regconf) && continue
+        for (uuid, info) in regconf["packages"]
+            if haskey(pkgpaths, uuid)
+                @warn "$(uuid) present in multiple registries. Overiding it"
+            end
+            pkgpaths[uuid] = (registry=regconf["name"], metadir=joinpath(reg, info["path"]),)
+        end
+    end
+    UnifiedRegistryInfo(pkgpaths)
 end
 
 is_stdlib(uuid) = uuid in stdlib_uuids
 is_jll(name) = endswith(name, "_jll")
 
-function build_uuid_name_map(registry::RegistryInfo, version = VERSION)
+function build_uuid_name_map(registry::UnifiedRegistryInfo, version = VERSION)
     allpkgs = installable_on_version(registry, version)
     name_to_uuid = Dict()
     for (uuid, pkg) in allpkgs
@@ -90,12 +114,10 @@ end
 
 Find all declared (direct) dependencies for each package in `registry`.
 """
-function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
-    regconf = reg.config
-    registry = reg.path
+function dependencies_per_package(reg::UnifiedRegistryInfo, depmap = Dict())
     name_uuid_map = build_uuid_name_map(reg)
-    for (_, conf) in regconf["packages"]
-        pkgpath = joinpath(registry, conf["path"])
+    for (_, conf) in reg.info
+        pkgpath = conf.metadir
         isdir(pkgpath) || continue
         startswith(pkgpath, ".") && continue
         pkgtoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Package.toml"))
@@ -128,7 +150,7 @@ function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
                             "is_jll" => is_jll(dep),
                             "slug" => Base.package_slug(UUID(uuid), 5),
                             "versions" => "*",
-                            "registry" => ""
+                            "registry" => !haskey(reg.info, uuid) ? "" : reg.info[uuid].registry
                         )
 
                     end
@@ -150,7 +172,7 @@ function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
                                 "is_stdlib" => is_stdlib(uuid),
                                 "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
-                                "registry" => ""
+                                "registry" => !haskey(reg.info, uuid) ? "" : reg.info[uuid].registry
                             )
                         end
 
@@ -170,6 +192,7 @@ function dependencies_per_package(reg::RegistryInfo, depmap = Dict())
             "name" => name,
             "slug" => Base.package_slug(UUID(uuid), 5),
             "deps" => depsperversion,
+            "registry" => !haskey(reg.info, uuid) ? "" : reg.info[uuid].registry
         )
     end
     return depmap
@@ -178,30 +201,7 @@ end
 dependencies_per_package(registry::AbstractString) = dependencies_per_package([registry])
 function dependencies_per_package(registrydirs::Vector)
     deps = Dict()
-    regs = []
-    for reg in registrydirs
-        registryfile = joinpath(reg, "Registry.toml")
-        if !isfile(registryfile)
-            @warn "No registry file found at $(registryfile). Skipping checking for deps"
-        end
-        regconf = try
-            Pkg.TOML.parsefile(registryfile)
-        catch ex
-            @warn "Failed to parse registry file" ex
-            Dict()
-        end
-        isempty(regconf) && continue
-        push!(regs, regconf)
-        dependencies_per_package(RegistryInfo(reg, regconf), deps)
-    end
-    for (uuid, info) in deps
-        for conf in regs
-            if haskey(conf["packages"], uuid)
-                info["registry"] = conf["name"]
-                break
-            end
-        end
-    end
+    dependencies_per_package(UnifiedRegistryInfo(registrydirs), deps)
     return deps
 end
 
@@ -308,13 +308,9 @@ Returns a Dict mapping from `uuid` to named tuples containing `(name, url, uuid,
 of packages in `registry` compatible with Julia version `version`.
 """
 
-function installable_on_version(reg::RegistryInfo, version)
+function installable_on_version(reg::UnifiedRegistryInfo, version)
     allpkgs = Dict()
-    regconf = reg.config
-    registry = reg.path
-    pkgpaths = map(collect(regconf["packages"])) do (_, conf)
-        return joinpath(registry, conf["path"])
-    end
+    pkgpaths = map(x -> x.metadir, collect(values(reg.info)))
     filter!(isdir, pkgpaths)
     if isempty(pkgpaths)
         @error "No package folders found inside the registry"
