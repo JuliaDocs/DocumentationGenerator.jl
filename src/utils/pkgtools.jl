@@ -308,6 +308,7 @@ Returns a Dict mapping from `uuid` to named tuples containing `(name, url, uuid,
 of packages in `registry` compatible with Julia version `version`.
 """
 
+installable_on_version(reg::AbstractString, version) = installable_on_version(UnifiedRegistryInfo([reg]), version)
 function installable_on_version(reg::UnifiedRegistryInfo, version)
     allpkgs = Dict()
     pkgpaths = map(x -> x.metadir, collect(values(reg.info)))
