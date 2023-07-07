@@ -42,8 +42,9 @@ function try_use_package(packagespec)
     return pkg_module
 end
 
-function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="")
-    type, uri = doctype(packagespec, registry)
+function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="", url=nothing)
+    orgname = !isnothing(url) ? get_owner(url) : nothing
+    type, uri = doctype(packagespec, registry;orgname=orgname)
 
     @info("$(packagespec.name) specifies docs of type $(type).")
     out = try

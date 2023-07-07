@@ -2,6 +2,14 @@ using GitHub
 using GitForge.Bitbucket: BitbucketAPI, Token, get_repo
 using Base64
 
+function get_orgname(url::AbstractString)
+    rmatch = match(r".*/(.*)/(.*?(?:\.jl)?)(?:.git)?$", url)
+    if rmatch !== nothing
+        return rmatch[1]
+    end
+    return nothing
+end
+
 function init_metadata(packagespec, url)
     meta = Dict(
         "name" => packagespec.name,

@@ -9,10 +9,9 @@ and the registry already exists.
 Returns the path to the `Registry.toml` (or `nothing` if an error occured).
 """
 function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
-    tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
+    tomldir = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
     if sync
         try
-
             destdir = joinpath(basepath, "DocumentationGeneratorRegistry")
             mktempdir() do temp
                 tempclone = joinpath(temp, "registry")
@@ -20,15 +19,15 @@ function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
                 @assert isfile(joinpath(tempclone, "Registry.toml"))
                 mv(tempclone, destdir, force = true)
             end
-            return tomlpath
+            return tomldir
         catch err
             @warn("Couldn't download docs registry.", exception = err)
         end
     end
-    if isfile(tomlpath)
-        return tomlpath
+    if isdir(tomldir)
+        return tomldir
     elseif !sync
-        @warn("No registry found at `$(tomlpath)`. Cloning again.")
+        @warn("No registry found at `$(tomldir)`. Cloning again.")
         return get_registry(basepath; registry = registry, sync = true)
     end
     return nothing
@@ -43,16 +42,30 @@ Returns a tuple of `(doctype, uri)`, where `doctype` can be
 - `git-repo` -- Source code for the docs is located in the git-repo at `uri`.
 - `hosted` -- Built docs are available at `uri`. We won't attempt to build/host them ourselves.
 """
-function doctype(packagespec::Pkg.Types.PackageSpec, registry)
-    if isfile(registry)
+function doctype(packagespec::Pkg.Types.PackageSpec, registry; orgname=nothing)
+    if isdir(registry)
         uuid = string(packagespec.uuid)
-        toml = Pkg.TOML.parsefile(registry)
+        registryfile = joinpath(registry, "Registry.toml")
+        orgregistryfile = joinpath(registry, "OrgRegistry.toml")
+        toml = Pkg.TOML.parsefile(registryfile)
         if haskey(toml, uuid)
             pkg = toml[uuid]
             if haskey(pkg, "method") && haskey(pkg, "location")
                 return (pkg["method"], pkg["location"])
             else
                 @warn("Invalid registry entry for $(packagespec.name).")
+            end
+        end
+        if isnothing(orgname) && isfile(orgregistryfile)
+            orgtoml = try
+                Pkg.TOML.parsefile(orgregistryfile)
+            catch ex
+                @warn("", exception = (ex, catch_backtrace()))
+                Dict()
+            end
+            if haskey(orgtoml, orgname)
+                urlpattern = orgtoml[orgname]["urlpattern"]
+                return ("hosted", replace(urlpattern, "<packagename>" => string(packagespec.name)))
             end
         end
     else

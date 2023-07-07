@@ -20,7 +20,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         end
         new_metadata = DocumentationGenerator.package_metadata(packagespec, url, server_type; api_url = api_url)
         merge!(metadata, new_metadata)
-        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix)
+        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix,url=url)
         merge!(metadata, build_meta)
 
         isdir(buildpath) || mkpath(buildpath)
