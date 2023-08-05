@@ -21,6 +21,11 @@ try
 catch err
     @error("Error while developing parent directory $(pkgdir):", err)
 end
+try
+    Pkg.build()
+catch err
+    @error("Error while building packages:", err)
+end
 Pkg.status()
 
 documenter_version = v"0.24.10"
