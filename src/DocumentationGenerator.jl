@@ -285,6 +285,7 @@ function start_builder(package, version;
             --project="$(thisproject)"
             --color=no
             --compiled-modules=no
+            --pkgimages=no
             -O0
             $workerfile
             $uuid
