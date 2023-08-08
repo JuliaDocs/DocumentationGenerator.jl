@@ -204,7 +204,7 @@ function build_documenter(packagespec, docdir)
             @info("Using $(makefile) to generate Documenter docs.")
         end
         _, builddir = fix_makefile(makefile)
-        pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no\n": ""
+        pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no\n" : ""
         cmd = ```
             $(first(Base.julia_cmd()))
                 --project="$(docdir)"

@@ -280,7 +280,7 @@ function start_builder(package, version;
     thisproject = Base.active_project()
 
     ## api_url needs to be set to "-", since empty string should not be passed as CLI argument
-    pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no\n": ""
+    pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no\n" : ""
     cmd = ```
         $(juliacmd)
             --project="$(thisproject)"
