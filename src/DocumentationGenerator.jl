@@ -287,7 +287,7 @@ function start_builder(package, version;
             --project="$(thisproject)"
             --color=no
             --compiled-modules=no
-            $([pkgimagesopt])
+            $(isempty(pkgimagesopt) ? [] : pkgimagesopt)
             -O0
             $workerfile
             $uuid
