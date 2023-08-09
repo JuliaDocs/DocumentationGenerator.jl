@@ -209,7 +209,7 @@ function build_documenter(packagespec, docdir)
             $(first(Base.julia_cmd()))
                 --project="$(docdir)"
                 --compiled-modules=no
-                $(split(pkgimagesopt))
+                $([pkgimagesopt])
                 -O0
                 $(rundcocumenter)
                 $(pkgdir)
