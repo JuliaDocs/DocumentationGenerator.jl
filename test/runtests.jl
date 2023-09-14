@@ -246,6 +246,18 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            name = "HDF5",
+            url = "https://github.com/JuliaIO/HDF5.jl.git",
+            uuid = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f",
+            versions = [v"0.17.0"],
+            server_type = "github",
+            api_url="",
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
         )
     ]
 
