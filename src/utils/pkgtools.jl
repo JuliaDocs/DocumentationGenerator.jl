@@ -68,11 +68,39 @@ const stdlib_uuids = Set([
     "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 ])
 
+struct UnifiedRegistryInfo
+    info::Dict
+end
+
+function UnifiedRegistryInfo(regs::Vector)
+    pkgpaths = Dict()
+    for reg in regs
+        registryfile = joinpath(reg, "Registry.toml")
+        if !isfile(registryfile)
+            @warn "No registry file found at $(registryfile). Skipping checking for deps"
+        end
+        regconf = try
+            Pkg.TOML.parsefile(registryfile)
+        catch ex
+            @warn "Failed to parse registry file" ex
+            Dict()
+        end
+        isempty(regconf) && continue
+        for (uuid, info) in regconf["packages"]
+            if haskey(pkgpaths, uuid)
+                @warn "$(uuid) present in multiple registries. Overiding it"
+            end
+            pkgpaths[uuid] = (registry=regconf["name"], metadir=joinpath(reg, info["path"]),)
+        end
+    end
+    UnifiedRegistryInfo(pkgpaths)
+end
+
 is_stdlib(uuid) = uuid in stdlib_uuids
 is_jll(name) = endswith(name, "_jll")
 
-function build_uuid_name_map(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
-    allpkgs = installable_on_version(version, registry=registry)
+function build_uuid_name_map(registry::UnifiedRegistryInfo, version = VERSION)
+    allpkgs = installable_on_version(registry, version)
     name_to_uuid = Dict()
     for (uuid, pkg) in allpkgs
         name_to_uuid[pkg.name] = UUID(uuid)
@@ -86,104 +114,94 @@ end
 
 Find all declared (direct) dependencies for each package in `registry`.
 """
-function dependencies_per_package(registry=joinpath(homedir(), ".julia/registries/General"), depmap = Dict())
-    name_uuid_map = build_uuid_name_map(registry = registry)
+function dependencies_per_package(reg::UnifiedRegistryInfo, depmap = Dict())
+    name_uuid_map = build_uuid_name_map(reg)
+    for (_, conf) in reg.info
+        pkgpath = conf.metadir
+        isdir(pkgpath) || continue
+        startswith(pkgpath, ".") && continue
+        pkgtoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Package.toml"))
+        versionstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Versions.toml"))
 
-    for dir in readdir(registry)
-        startswith(dir, ".") && continue
+        depsperversion = Dict{String, Dict}()
 
-        dirpath = joinpath(registry, dir)
+        if isfile(joinpath(pkgpath, "Deps.toml"))
+            depstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Deps.toml"))
+        else
+            depstoml = Dict()
+        end
 
-        isdir(dirpath) || continue
+        if isfile(joinpath(pkgpath, "Compat.toml"))
+            compattoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Compat.toml"))
+        else
+            compattoml = Dict()
+        end
 
-        for pkg in readdir(dirpath)
-            startswith(dir, ".") && continue
+        for version in keys(versionstoml)
+            deps = Dict{String, Dict}()
 
-            pkgpath = joinpath(dirpath, pkg)
+            for depsver in keys(depstoml)
+                if VersionNumber(version) in Pkg.Types.VersionRange(depsver)
+                    for (dep, uuid) in depstoml[depsver]
+                        deps[dep] = Dict{String, Any}(
+                            "name" => dep,
+                            "uuid" => uuid,
+                            "is_stdlib" => is_stdlib(uuid),
+                            "is_jll" => is_jll(dep),
+                            "slug" => Base.package_slug(UUID(uuid), 5),
+                            "versions" => "*",
+                            "registry" => !haskey(reg.info, uuid) ? "" : reg.info[uuid].registry
+                        )
 
-            isdir(pkgpath) || continue
-
-            pkgtoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Package.toml"))
-            versionstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Versions.toml"))
-
-            depsperversion = Dict{String, Dict}()
-
-            if isfile(joinpath(pkgpath, "Deps.toml"))
-                depstoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Deps.toml"))
-            else
-                depstoml = Dict()
+                    end
+                end
             end
 
-            if isfile(joinpath(pkgpath, "Compat.toml"))
-                compattoml = Pkg.TOML.parsefile(joinpath(pkgpath, "Compat.toml"))
-            else
-                compattoml = Dict()
-            end
-
-            for version in keys(versionstoml)
-                deps = Dict{String, Dict}()
-
-                for depsver in keys(depstoml)
-                    if VersionNumber(version) in Pkg.Types.VersionRange(depsver)
-                        for (dep, uuid) in depstoml[depsver]
-                            deps[dep] = Dict{String, Any}(
+            for compatver in keys(compattoml)
+                if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
+                    for (dep, vers) in compattoml[compatver]
+                        if !haskey(name_uuid_map, dep)
+                            @error "UUID not found for" dep
+                            continue
+                        end
+                        depdict = get!(deps, dep) do
+                            uuid = string(name_uuid_map[dep])
+                            Dict{String, Any}(
                                 "name" => dep,
                                 "uuid" => uuid,
                                 "is_stdlib" => is_stdlib(uuid),
                                 "is_jll" => is_jll(dep),
                                 "slug" => Base.package_slug(UUID(uuid), 5),
-                                "versions" => "*"
+                                "registry" => !haskey(reg.info, uuid) ? "" : reg.info[uuid].registry
                             )
-
                         end
+
+                        depdict["versions"] = vers
                     end
                 end
-
-                for compatver in keys(compattoml)
-                    if VersionNumber(version) in Pkg.Types.VersionRange(compatver)
-                        for (dep, vers) in compattoml[compatver]
-                            if !haskey(name_uuid_map, dep)
-                                @error "UUID not found for" dep
-                                continue
-                            end
-                            depdict = get!(deps, dep) do
-                                uuid = string(name_uuid_map[dep])
-                                Dict{String, Any}(
-                                    "name" => dep,
-                                    "uuid" => uuid,
-                                    "is_stdlib" => is_stdlib(uuid),
-                                    "is_jll" => is_jll(dep),
-                                    "slug" => Base.package_slug(UUID(uuid), 5),
-                                )
-                            end
-
-                            depdict["versions"] = vers
-                        end
-                    end
-                end
-
-                depsperversion[version] = deps
             end
 
-            name = pkgtoml["name"]
-            uuid = pkgtoml["uuid"]
-
-            depmap[uuid] = Dict(
-                "uuid" => uuid,
-                "name" => name,
-                "slug" => Base.package_slug(UUID(uuid), 5),
-                "deps" => depsperversion
-            )
+            depsperversion[version] = deps
         end
+
+        name = pkgtoml["name"]
+        uuid = pkgtoml["uuid"]
+
+        depmap[uuid] = Dict(
+            "uuid" => uuid,
+            "name" => name,
+            "slug" => Base.package_slug(UUID(uuid), 5),
+            "deps" => depsperversion,
+            "registry" => !haskey(reg.info, uuid) ? "" : reg.info[uuid].registry
+        )
     end
     return depmap
 end
 
-function dependencies_per_package(registries::Vector)
+dependencies_per_package(registry::AbstractString) = dependencies_per_package([registry])
+function dependencies_per_package(registrydirs::Vector)
     deps = Dict()
-    for reg in registries
-        dependencies_per_package(reg, deps)
-    end
+    dependencies_per_package(UnifiedRegistryInfo(registrydirs), deps)
     return deps
 end
 
@@ -196,12 +214,12 @@ function reverse_dependencies_per_package(deps_per_pkg)
                 depuuid = depdict["uuid"]
 
                 rdeps = get!(reversedeps, depuuid, Dict())
-
                 push!(get!(rdeps, depdict["versions"], Set([])), Dict(
                     "uuid" => uuid,
                     "name" => d["name"],
                     "slug" => Base.package_slug(UUID(uuid), 5),
-                    "version" => ver
+                    "version" => ver,
+                    "registry"=> d["registry"]
                 ))
             end
         end
@@ -224,7 +242,8 @@ function _alldeps(uuid, version, deps_per_pkg, deps, seen = Set([]), isdirect=tr
             "name" => depdict["name"],
             "slug" => depdict["slug"],
             "direct" => isdirect,
-            "versions" => vcat(depdict["versions"])
+            "versions" => vcat(depdict["versions"]),
+            "registry"=> depdict["registry"]
         ))
 
         sort!(unique!(append!(depentry["versions"], vcat(depdict["versions"]))))
@@ -288,42 +307,48 @@ directreversedeps(uuid, version, reversedeps) = allreversedeps(uuid, version, re
 Returns a Dict mapping from `uuid` to named tuples containing `(name, url, uuid, path, versions)`
 of packages in `registry` compatible with Julia version `version`.
 """
-function installable_on_version(version = VERSION; registry=joinpath(homedir(), ".julia/registries/General"))
+
+installable_on_version(reg::AbstractString, version) = installable_on_version(UnifiedRegistryInfo([reg]), version)
+function installable_on_version(reg::UnifiedRegistryInfo, version)
     allpkgs = Dict()
-    for initial in filter!(isdir, joinpath.(registry, readdir(registry)))
-        for pkg in filter!(isdir, joinpath.(registry, initial, readdir(initial)))
-            "Compat.toml" in readdir(pkg) || continue
-            pkgtoml = Pkg.TOML.parsefile(joinpath(pkg, "Package.toml"))
-            versions = Pkg.TOML.parsefile(joinpath(pkg, "Versions.toml"))
-            compat = Pkg.TOML.parsefile(joinpath(pkg, "Compat.toml"))
-            compatible_versions = VersionNumber[]
-            for pkgver in keys(compat)
-                try
-                    if haskey(compat[pkgver], "julia")
-                        if any(in.(version, Pkg.Types.VersionRange.(compat[pkgver]["julia"])))
-                            append!(compatible_versions, [
-                                                VersionNumber(v) for v in keys(versions) if
-                                                    VersionNumber(v) in Pkg.Types.VersionRange(pkgver)
-                                               ])
-                        end
-                    else
+    pkgpaths = map(x -> x.metadir, collect(values(reg.info)))
+    filter!(isdir, pkgpaths)
+    if isempty(pkgpaths)
+        @error "No package folders found inside the registry"
+        return allpkgs
+    end
+    for pkg in pkgpaths
+        "Compat.toml" in readdir(pkg) || continue
+        pkgtoml = Pkg.TOML.parsefile(joinpath(pkg, "Package.toml"))
+        versions = Pkg.TOML.parsefile(joinpath(pkg, "Versions.toml"))
+        compat = Pkg.TOML.parsefile(joinpath(pkg, "Compat.toml"))
+        compatible_versions = VersionNumber[]
+        for pkgver in keys(compat)
+            try
+                if haskey(compat[pkgver], "julia")
+                    if any(in.(version, Pkg.Types.VersionRange.(compat[pkgver]["julia"])))
                         append!(compatible_versions, [
                                             VersionNumber(v) for v in keys(versions) if
                                                 VersionNumber(v) in Pkg.Types.VersionRange(pkgver)
                                            ])
                     end
-                catch err
-                    @error err
+                else
+                    append!(compatible_versions, [
+                                        VersionNumber(v) for v in keys(versions) if
+                                            VersionNumber(v) in Pkg.Types.VersionRange(pkgver)
+                                       ])
                 end
+            catch err
+                @error err
             end
-            allpkgs[pkgtoml["uuid"]] = (
-                name = pkgtoml["name"],
-                url = pkgtoml["repo"],
-                uuid = pkgtoml["uuid"],
-                path = pkg,
-                versions = compatible_versions
-            )
         end
+        allpkgs[pkgtoml["uuid"]] = (
+            name = pkgtoml["name"],
+            url = pkgtoml["repo"],
+            uuid = pkgtoml["uuid"],
+            path = pkg,
+            versions = compatible_versions,
+        )
     end
     allpkgs
 end

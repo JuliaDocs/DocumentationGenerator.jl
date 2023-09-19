@@ -3,7 +3,7 @@ using Pkg
 
 const julia = first(Base.julia_cmd())
 
-@test length(keys(DocumentationGenerator.installable_on_version())) > 1500
+@test length(keys(DocumentationGenerator.installable_on_version(joinpath(homedir(), ".julia", "registries", "General"), VERSION))) > 1500
 
 @test DocumentationGenerator.maybe_redirect("https://docs.julialang.org/") == "https://docs.julialang.org/en/v1"
 
@@ -240,6 +240,18 @@ end
             url = "https://github.com/timholy/MethodAnalysis.jl.git",
             uuid = "85b6ec6f-f7df-4429-9514-a64bcd9ee824",
             versions = [v"0.4.4"],
+            server_type = "github",
+            api_url="",
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
+        ),
+        (
+            name = "HDF5",
+            url = "https://github.com/JuliaIO/HDF5.jl.git",
+            uuid = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f",
+            versions = [v"0.17.0"],
             server_type = "github",
             api_url="",
             installs = [true],
