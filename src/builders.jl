@@ -263,8 +263,6 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
     end
 
     @eval Module() begin
-        using Pkg
-        Pkg.add("Documenter")
         using Documenter
         makedocs(
             format = Documenter.HTML(),
