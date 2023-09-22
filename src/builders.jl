@@ -303,13 +303,35 @@ function find_readme(pkgroot)
 end
 
 function add_autodocs(docsdir, mod)
+    module_list = join((string(m) for m in submodules(mod)), ", ")
     open(joinpath(docsdir, "autodocs.md"), "w") do io
         println(io, """
         ```@autodocs
-        Modules = [$(Symbol(mod))]
+        Modules = [$module_list]
         ```
         """)
     end
+end
+
+# Borrowed from Documenter.jl (MIT)
+function submodules(modules::Vector{Module})
+    out = Set{Module}()
+    for each in modules
+        submodules(each, out)
+    end
+    out
+end
+function submodules(root::Module, seen = Set{Module}())
+    push!(seen, root)
+    for name in names(root, all=true)
+        if Base.isidentifier(name) && isdefined(root, name) && !Base.isdeprecated(root, name)
+            object = getfield(root, name)
+            if isa(object, Module) && !(object in seen) && parentmodule(object::Module) == root
+                submodules(object, seen)
+            end
+        end
+    end
+    return seen
 end
 
 function monkeypatchdocsearch(packagespec, buildpath)
