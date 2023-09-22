@@ -155,17 +155,6 @@ end
         ),
         # git-dir docs
         (
-            name = "Phylo",
-            url = "https://github.com/richardreeve/Phylo.jl.git",
-            uuid = "aea672f4-3940-5932-aa44-993d1c3ff149",
-            versions = [v"0.4.21"],
-            installs = [true],
-            success = [true],
-            server_type = "github",
-            api_url="",
-            doctype = ["documenter"],
-        ),
-        (
             name = "OpenSpiel_jll",
             url = "https://github.com/JuliaBinaryWrappers/OpenSpiel_jll.jl.git",
             uuid = "bd10a763-4654-5023-a028-c4918c6cd33e",
