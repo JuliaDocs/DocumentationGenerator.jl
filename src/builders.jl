@@ -263,7 +263,7 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
     end
 
     @eval Module() begin
-        using Main.DocumentationGenerator.Documenter
+        using ..DocumentationGenerator.Documenter
         makedocs(
             format = Documenter.HTML(),
             sitename = "$($pkgname).jl",
