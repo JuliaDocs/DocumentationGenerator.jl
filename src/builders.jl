@@ -3,7 +3,7 @@ using GithubMarkdown
 using HTMLSanitizer
 using Highlights
 using Downloads
-
+using Documenter
 function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
     pkgname = packagespec.name
     return mktempdir() do dir
@@ -263,7 +263,7 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
     end
 
     @eval Module() begin
-        using Documenter
+        using Main.DocumentationGenerator.Documenter
         makedocs(
             format = Documenter.HTML(),
             sitename = "$($pkgname).jl",
