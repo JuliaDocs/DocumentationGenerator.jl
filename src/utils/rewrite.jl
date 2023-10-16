@@ -34,8 +34,8 @@ function fix_makefile(makefile, documenter_version = v"0.24")
 
     for elem in ast.args
         # skip deploydocs
-        Meta.isexpr(elem, :call) && elem.args[1] == :deploydocs && continue
-        if Meta.isexpr(elem, :call) && elem.args[1] == :makedocs
+        Meta.isexpr(elem, :call) && (elem.args[1] == :deploydocs || elem.args[1] == :(Documenter.deploydocs)) && continue
+        if Meta.isexpr(elem, :call) && (elem.args[1] == :makedocs || elem.args[1] == :(Documenter.makedocs))
             should_break = true
 
             # rewrite makedoc call to respect our requirements
@@ -112,9 +112,8 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             end
 
             # make sure to overwrite `root`:
-            push!(new_args,
-                Expr(:kw, :root, dirname(makefile)),
-            )
+            push!(new_args,Expr(:kw, :root, dirname(makefile)))
+            push!(new_args, Expr(:kw, :remotes, nothing))
             elem = Expr(:call, new_args...)
         end
 
