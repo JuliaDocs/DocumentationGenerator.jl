@@ -4,6 +4,7 @@ using HTMLSanitizer
 using Highlights
 using Downloads
 using Documenter
+import Org
 function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
     pkgname = packagespec.name
     return mktempdir() do dir
@@ -242,7 +243,11 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
     mkpath(doc_src)
     index = joinpath(doc_src, "index.md")
 
-    render_html(readme, index, src_prefix, href_prefix; documenter = true)
+    if isnothing(readme)
+        @error "Readme missing, skipping generation." pkgroot
+    else
+        render_html(readme, index, src_prefix, href_prefix; documenter = true)
+    end
 
     if !isfile(index)
         open(index, "w") do io
@@ -285,7 +290,7 @@ function find_readme(pkgroot)
     allfiles = readdir(pkgroot)
     # look for readme.md/readme first
     for file in allfiles
-        if lowercase(file) in ("readme.md", "readme")
+        if lowercase(file) in ("readme.md", "readme", "readme.org")
             readme = joinpath(pkgroot, file)
             if isfile(readme)
                 return readme
@@ -387,27 +392,66 @@ function copy_package_source(packagespec, buildpath)
     end
 end
 
-function render_html(input, output, src_prefix="", href_prefix=""; documenter = false)
-    if input === nothing
-        @error("Package doesn't seem to have a readme. ")
+abstract type ReadmeFormat end
+struct GFMFormat <: ReadmeFormat end
+struct OrgFormat <: ReadmeFormat end
+struct TextFormat <: ReadmeFormat end
+struct UnknownFormat <: ReadmeFormat end
 
-        return
+function readme_format(readme_path::AbstractString)
+    _, ext = splitext(readme_path)
+    ext = lowercase(ext)
+    return if ext == ".md"
+        GFMFormat()
+    elseif ext == ".org"
+        OrgFormat()
+    elseif ext == ""
+        TextFormat()
+    else
+        UnknownFormat()
     end
+end
 
+function render_html(::GFMFormat, readme_path::AbstractString)
     io = IOBuffer()
-    GithubMarkdown.rendergfm(io, input; documenter = false)
+    GithubMarkdown.rendergfm(io, readme_path; documenter = false)
+    return String(take!(io))
+end
 
+function render_html(::OrgFormat, readme_path::AbstractString)
+    doc = parse(Org.OrgDoc, read(readme_path, String))
+    return sprint(show, "text/html", doc)
+end
+
+function render_html(format::Union{TextFormat,UnknownFormat}, readme_path::AbstractString)
+    out = IOBuffer()
+    if isa(format, UnknownFormat)
+        write(out, """
+        <strong><pre>WARNING! Unknown README file format: $(escapehtml(basename(readme_path)))</pre></strong>
+        """)
+    end
+    write(out, "<pre>")
+    write(out, escapehtml(read(readme_path, String)))
+    write(out, "</pre>")
+    return String(take!(out))
+end
+
+function render_html(
+    input::AbstractString,
+    output::AbstractString,
+    src_prefix::AbstractString="",
+    href_prefix::AbstractString="";
+    documenter::Bool = false
+)
     allow_class_on_code = deepcopy(HTMLSanitizer.WHITELIST)
     allow_class_on_code[:attributes]["code"] = ["class"]
 
-    out = sanitize(String(take!(io)), prettyprint = false, whitelist = allow_class_on_code)
-
+    readme_html = render_html(readme_format(input), input)
+    out = sanitize(readme_html, prettyprint = false, whitelist = allow_class_on_code)
     out = postprocess_html_readme(out; src_prefix = src_prefix, href_prefix = href_prefix)
     out = out.children[2]
 
-    print(io, out)
-    out = String(take!(io))
-
+    out = sprint(print, out)
     out = replace(out, r"^<body>" => "")
     out = replace(out, r"</body>$" => "")
 
@@ -421,15 +465,17 @@ end
 function render_readme_html(pkgroot, buildpath, src_prefix="", href_prefix=""; documenter = false)
     outpath = joinpath(buildpath, "_readme")
     try
-        readme = find_readme(pkgroot)
-
         mkpath(outpath)
         readmehtml = joinpath(outpath, "readme.html")
 
-        @info("Rendering readme to HTML.")
-        render_html(readme, readmehtml, src_prefix, href_prefix; documenter = false)
-        @info("Done rendering readme to HTML.")
-
+        readme = find_readme(pkgroot)
+        if isnothing(readme)
+            @error "Readme missing, skipping generation." pkgroot
+        else
+            @info("Rendering readme to HTML.")
+            render_html(readme, readmehtml, src_prefix, href_prefix; documenter = false)
+            @info("Done rendering readme to HTML.")
+        end
         return readmehtml
     catch err
         @error("Error trying to render readme to HTML.", exception=err)
