@@ -489,10 +489,6 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
                 if Gumbo.tag(el.parent) == :pre && length(el.children) == 1 && typeof(el.children[1]) == HTMLText
                     push!(highlight_elements, el)
                 end
-            elseif hasattr(el, "src")
-                replace_url(el, "src", src_prefix, fix_github = true)
-            elseif hasattr(el, "href")
-                replace_url(el, "href", href_prefix)
             end
         end
     end
@@ -535,6 +531,18 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
     # Mutate the highlighting-related elements
     for el in highlight_elements
         highlight_syntax_html(el)
+    end
+
+    # Update the 'src' and 'href' attributes of all the tags that have them,
+    # applying a URL prefix.
+    for el in AbstractTrees.PreOrderDFS(doc)
+        if el isa HTMLElement
+            if hasattr(el, "src")
+                replace_url(el, "src", src_prefix, fix_github = true)
+            elseif hasattr(el, "href")
+                replace_url(el, "href", href_prefix)
+            end
+        end
     end
 
     return doc
