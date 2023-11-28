@@ -482,7 +482,6 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
     # changed underneath it.
     heading_elements, highlight_elements = HTMLElement[], HTMLElement[]
     for el in AbstractTrees.PreOrderDFS(doc)
-        println(debug_io, '>', typeof(el))
         if el isa HTMLElement
             if Gumbo.tag(el) in [:h1, :h2, :h3, :h4, :h5]
                 push!(heading_elements, el)
