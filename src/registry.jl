@@ -47,6 +47,11 @@ function _clone_registry(registry::AbstractString; destdir::AbstractString)
         end
         mv(tempclone, destdir, force = true)
     end
+    tomlpath = joinpath(destdir, "Registry.toml")
+    if !isfile(tomlpath)
+        error("Registry clone succesful, but Registry.toml missing\n at $(tomlpath)")
+    end
+    return tomlpath
 end
 
 """
