@@ -4,7 +4,7 @@ const DOCS_REGISTRIES = [
 ]
 
 """
-    get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
+    get_registry(basepath; sync = true)
 
 Clone the DocumentationGenerator registry into `basepath`. No download will occur if `sync == false`
 and the registry already exists.
