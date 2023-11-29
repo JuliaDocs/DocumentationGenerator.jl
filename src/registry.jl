@@ -38,7 +38,10 @@ end
 function _clone_registry(registry::AbstractString; destdir::AbstractString)
     mktempdir() do temp
         tempclone = joinpath(temp, "registry")
-        run(`git clone --depth=1 $(registry) $(tempclone)`)
+        git = Sys.which("git")
+        isnothing(git) && error("Sys.which was unable to find the 'git' binary")
+        git = addenv(`$git`, "GIT_TERMINAL_PROMPT" => "0")
+        run(`$git clone --depth=1 $(registry) $(tempclone)`)
         if !isfile(joinpath(tempclone, "Registry.toml"))
             error("Failed to clone registry: Registry.toml missing")
         end
