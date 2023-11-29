@@ -475,43 +475,69 @@ function postprocess_html_readme(html; src_prefix="", href_prefix="")
         href_prefix = string(href_prefix, '/')
     end
 
-    header_refs = Set([])
-    for el in PreOrderDFS(doc)
+    # We'll be transforming some of the elements in the tree. For headings and
+    # code highlighting, we actually have to mutate the tree. So in that case
+    # we must perform the mutation after iterating with PreOrderDFS(), since the
+    # iteration is stateful and will get confused if the tree's structure gets
+    # changed underneath it.
+    heading_elements, highlight_elements = HTMLElement[], HTMLElement[]
+    for el in AbstractTrees.PreOrderDFS(doc)
         if el isa HTMLElement
             if Gumbo.tag(el) in [:h1, :h2, :h3, :h4, :h5]
-                heading = replace(text(el), r"\s" => "-")
-                heading = replace(heading, r"[^\w-]" => "")
-
-                while heading in header_refs
-                    new_heading = replace(heading, r"_\d+$" => s -> begin
-                        string('_', parse(Int, s[2:end]) + 1)
-                    end)
-                    if new_heading == heading
-                        heading = string(heading, "_1")
-                    else
-                        heading = new_heading
-                    end
-                end
-
-                orig_content = deepcopy(el.children)
-                a_el = HTMLElement{:a}(orig_content, el, Dict(
-                    "href" => string('#', heading),
-                    "class" => "docs-heading-anchor"
-                ))
-
-                for c in orig_content
-                    c.parent = a_el
-                end
-
-                el.children = [a_el]
-
-                setattr!(el, "id", heading)
-                push!(header_refs, heading)
+                push!(heading_elements, el)
             elseif Gumbo.tag(el) == :code
                 if Gumbo.tag(el.parent) == :pre && length(el.children) == 1 && typeof(el.children[1]) == HTMLText
-                    highlight_syntax_html(el)
+                    push!(highlight_elements, el)
                 end
-            elseif hasattr(el, "src")
+            end
+        end
+    end
+
+    # Mutate <h*> tags
+    header_refs = Set([]) # this is to avoid duplicate IDs
+    for el in heading_elements
+        # For heading elements we essentially just push a new <a>
+        # tag between the <h*> tag and the child nodes.
+        heading = replace(text(el), r"\s" => "-")
+        heading = replace(heading, r"[^\w-]" => "")
+
+        while heading in header_refs
+            new_heading = replace(heading, r"_\d+$" => s -> begin
+                string('_', parse(Int, s[2:end]) + 1)
+            end)
+            if new_heading == heading
+                heading = string(heading, "_1")
+            else
+                heading = new_heading
+            end
+        end
+
+        orig_content = deepcopy(el.children)
+        a_el = HTMLElement{:a}(orig_content, el, Dict(
+            "href" => string('#', heading),
+            "class" => "docs-heading-anchor"
+        ))
+
+        for c in orig_content
+            c.parent = a_el
+        end
+
+        el.children = [a_el]
+
+        setattr!(el, "id", heading)
+        push!(header_refs, heading)
+    end
+
+    # Mutate the highlighting-related elements
+    for el in highlight_elements
+        highlight_syntax_html(el)
+    end
+
+    # Update the 'src' and 'href' attributes of all the tags that have them,
+    # applying a URL prefix.
+    for el in AbstractTrees.PreOrderDFS(doc)
+        if el isa HTMLElement
+            if hasattr(el, "src")
                 replace_url(el, "src", src_prefix, fix_github = true)
             elseif hasattr(el, "href")
                 replace_url(el, "href", href_prefix)
