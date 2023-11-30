@@ -1,3 +1,7 @@
+# The registry cloning URLs are tried in order. Currently (on the 0.7 branch),
+# we still try to clone the registry first from JuliaDocs, remaining consistent
+# with the earlier releases. But we will fall back to the JuliaComputing URL
+# if it stops working.
 const DOCS_REGISTRIES = [
     "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git",
     "https://github.com/JuliaComputing/DocumentationGeneratorRegistry.git",
