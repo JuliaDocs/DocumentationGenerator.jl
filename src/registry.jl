@@ -1,37 +1,57 @@
-const DOCS_REGISTRY = "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git"
+const DOCS_REGISTRIES = [
+    "https://github.com/JuliaComputing/DocumentationGeneratorRegistry.git",
+    "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git",
+]
 
 """
-    get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
+    get_registry(basepath; sync = true)
 
 Clone the DocumentationGenerator registry into `basepath`. No download will occur if `sync == false`
 and the registry already exists.
 
 Returns the path to the `Registry.toml` (or `nothing` if an error occured).
 """
-function get_registry(basepath; registry=DOCS_REGISTRY, sync = true)
-    tomlpath = joinpath(basepath, "DocumentationGeneratorRegistry", "Registry.toml")
+function get_registry(basepath::AbstractString; sync::Bool = true)
+    destdir = joinpath(basepath, "DocumentationGeneratorRegistry")
     if sync
-        try
-
-            destdir = joinpath(basepath, "DocumentationGeneratorRegistry")
-            mktempdir() do temp
-                tempclone = joinpath(temp, "registry")
-                run(`git clone --depth=1 $(registry) $(tempclone)`)
-                @assert isfile(joinpath(tempclone, "Registry.toml"))
-                mv(tempclone, destdir, force = true)
+        for registry in DOCS_REGISTRIES
+            try
+                return _clone_registry(registry; destdir)
+            catch e
+                @warn "Unable to clone DocumentationGeneratorRegistry" registry exception = e
             end
-            return tomlpath
-        catch err
-            @warn("Couldn't download docs registry.", exception = err)
         end
+        # If we weren't able to download the registry from any of the URLs, we fall back
+        # to checking the local filesystem.
+        @warn "Couldn't download docs registry, see the warnings above."
     end
+    tomlpath = joinpath(destdir, "Registry.toml")
     if isfile(tomlpath)
         return tomlpath
     elseif !sync
         @warn("No registry found at `$(tomlpath)`. Cloning again.")
-        return get_registry(basepath; registry = registry, sync = true)
+        return get_registry(basepath; sync = true)
     end
     return nothing
+end
+
+function _clone_registry(registry::AbstractString; destdir::AbstractString)
+    mktempdir() do temp
+        tempclone = joinpath(temp, "registry")
+        git = Sys.which("git")
+        isnothing(git) && error("Sys.which was unable to find the 'git' binary")
+        git = addenv(`$git`, "GIT_TERMINAL_PROMPT" => "0")
+        run(`$git clone --depth=1 $(registry) $(tempclone)`)
+        if !isfile(joinpath(tempclone, "Registry.toml"))
+            error("Failed to clone registry: Registry.toml missing")
+        end
+        mv(tempclone, destdir, force = true)
+    end
+    tomlpath = joinpath(destdir, "Registry.toml")
+    if !isfile(tomlpath)
+        error("Registry clone succesful, but Registry.toml missing\n at $(tomlpath)")
+    end
+    return tomlpath
 end
 
 """
