@@ -1,6 +1,6 @@
 const DOCS_REGISTRIES = [
-    "https://github.com/JuliaComputing/DocumentationGeneratorRegistry.git",
     "https://github.com/JuliaDocs/DocumentationGeneratorRegistry.git",
+    "https://github.com/JuliaComputing/DocumentationGeneratorRegistry.git",
 ]
 
 """
