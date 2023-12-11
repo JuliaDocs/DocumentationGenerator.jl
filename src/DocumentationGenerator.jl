@@ -250,10 +250,10 @@ function with_juliaenv(func, temp_path=tempname())
     result = try
         func()
     catch ex
-        Pkg.activate(current_project)
         rethrow()
+    finally
+        Pkg.activate(current_project)
     end
-    Pkg.activate(current_project)
     return result
 end
 
