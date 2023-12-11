@@ -45,6 +45,8 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             has_sitename = false
             has_linkcheck = false
             has_doctest = false
+            has_root = false
+            has_remotes = false
             html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
 
             fixkwarg = argument -> begin
@@ -75,6 +77,14 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                         has_linkcheck = true
                         argument.args[2] = false
                     end
+                    if name == :root
+                        has_root = true
+                        argument.args[2] = dirname(makefile)
+                    end
+                    if name == :remotes
+                        has_remotes = true
+                        argument.args[2] = nothing
+                    end
                     if name == :doctest
                         has_doctest = true
                         argument.args[2] = false
@@ -90,7 +100,6 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                 else
                     fixkwarg(argument)
                 end
-
                 push!(new_args, argument)
             end
 
@@ -111,9 +120,13 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                 push!(new_args, Expr(:kw, :doctest, false))
             end
 
-            # make sure to overwrite `root`:
-            push!(new_args,Expr(:kw, :root, dirname(makefile)))
-            push!(new_args, Expr(:kw, :remotes, nothing))
+            if !has_root
+                push!(new_args,Expr(:kw, :root, dirname(makefile)))
+            end
+            if !has_remotes
+                push!(new_args, Expr(:kw, :remotes, nothing))
+            end
+
             elem = Expr(:call, new_args...)
         end
 
