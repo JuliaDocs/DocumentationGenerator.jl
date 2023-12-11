@@ -93,7 +93,7 @@ function build_documentation(
         false
     end
 
-    regpath = get_registry(basepath, sync = sync_registry)
+    regpath = get_registry(basepath; sync = sync_registry)
     process_queue = []
 
     # make sure registry is updated *before* we start multiple processes that might try that at the same time
