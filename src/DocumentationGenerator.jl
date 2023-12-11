@@ -244,6 +244,19 @@ function generate_dependency_list(packages;
     end
 end
 
+function with_juliaenv(func, temp_path=tempname())
+    current_project = Base.active_project()
+    Pkg.activate(temp_path)
+    result = try
+        func()
+    catch ex
+        Pkg.activate(current_project)
+        rethrow()
+    end
+    Pkg.activate(current_project)
+    return result
+end
+
 function start_builder(package, version;
         basepath = error("`basepath` is a required argument."),
         juliacmd = error("`juliacmd` is a required argument."),
@@ -276,39 +289,41 @@ function start_builder(package, version;
     isdir(builddir) || mkpath(builddir)
 
     logfile = joinpath(builddir, "..", "$(version).log")
+    docgen_path = dirname(dirname(Base.find_package("DocumentationGenerator")))
+    with_juliaenv() do
+        Pkg.develop(path=docgen_path)
+        Pkg.add("Pkg")
+        ## api_url needs to be set to "-", since empty string should not be passed as CLI argument
+        pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no" : ""
+        cmd = ```
+            $(juliacmd)
+                --project=$(Base.active_project())
+                --color=no
+                --compiled-modules=no
+                $(isempty(pkgimagesopt) ? [] : pkgimagesopt)
+                -O0
+                $workerfile
+                $uuid
+                $name
+                $url
+                $version
+                $builddir
+                $registry_path
+                $deployment_url
+                $src_prefix
+                $href_prefix
+                $(server_type)
+                $(isempty(api_url) ? "-" : api_url)
+                $(update_only ? "update" : "build")
 
-    thisproject = Base.active_project()
-
-    ## api_url needs to be set to "-", since empty string should not be passed as CLI argument
-    pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no" : ""
-
-    cmd = ```
-        $(juliacmd)
-            --project="$(thisproject)"
-            --color=no
-            --compiled-modules=no
-            $(isempty(pkgimagesopt) ? [] : pkgimagesopt)
-            -O0
-            $workerfile
-            $uuid
-            $name
-            $url
-            $version
-            $builddir
-            $registry_path
-            $deployment_url
-            $src_prefix
-            $href_prefix
-            $(server_type)
-            $(isempty(api_url) ? "-" : api_url)
-            $(update_only ? "update" : "build")
-    ```
-    process, task = run_with_timeout(cmd,
-                                     log=logfile,
-                                     name = string("docs build for ", name, "@", version, " (", uuid, ")"),
-                                     timeout = timeout,
-                                     max_timeout = max_timeout,
-                                     kill_timeout = kill_timeout)
-    return process
+        ```
+        process, task = run_with_timeout(cmd,
+                                         log=logfile,
+                                         name = string("docs build for ", name, "@", version, " (", uuid, ")"),
+                                         timeout = timeout,
+                                         max_timeout = max_timeout,
+                                         kill_timeout = kill_timeout)
+       return process
+    end
 end
 end
