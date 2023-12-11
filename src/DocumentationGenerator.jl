@@ -247,14 +247,13 @@ end
 function with_juliaenv(func, temp_path=tempname())
     current_project = Base.active_project()
     Pkg.activate(temp_path)
-    result = try
+    try
         func()
     catch ex
         rethrow()
     finally
         Pkg.activate(current_project)
     end
-    return result
 end
 
 function start_builder(package, version;
