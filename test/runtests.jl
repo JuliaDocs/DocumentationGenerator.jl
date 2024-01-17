@@ -62,9 +62,20 @@ const julia = first(Base.julia_cmd())
 end
 
 @testset "Readme rendering" begin
-    DocumentationGenerator.render_html(joinpath(@__DIR__, "fixtures", "readme.md"), joinpath(@__DIR__, "readme.html"), "/foo/", "/bar/")
-
-    @test read(joinpath(@__DIR__, "fixtures", "readme.html"), String) == read(joinpath(@__DIR__, "readme.html"), String)
+    @testset "Readme rendering: $file" for file in ("readme.md", "README", "readme.ORG", "readme.unknown.format")
+        input_path = joinpath(@__DIR__, "fixtures", file)
+        reference_path = joinpath(@__DIR__, "fixtures", "$(file).html")
+        tmp_output = tempname()
+        s = DocumentationGenerator.render_html(input_path, tmp_output, "/foo/", "/bar/")
+        # Test that the generated READMEs match the reference files
+        if haskey(ENV, "DOCUMENTATIONGENERATOR_UPDATE_REFERENCE_FILES")
+            @warn "Overwriting reference file" reference_path
+            cp(tmp_output, reference_path; force=true)
+        end
+        output = read(tmp_output, String)
+        reference = read(reference_path, String)
+        @test output == reference
+    end
 end
 
 @testset "Documentation Generation" begin
@@ -121,6 +132,18 @@ end
             url = "https://github.com/fredrikekre/jlpkg",
             uuid = "c4c688b2-6cc8-11e9-1c12-6d20b663313d",
             versions = [v"1.3.2"],
+            installs = [true],
+            success = [true],
+            server_type = "github",
+            api_url="",
+            doctype = ["fallback_autodocs"],
+        ),
+        # Org.jl README
+        (
+            name = "Bumper",
+            uuid = "8ce10254-0962-460f-a3d8-1f77fea1446e",
+            url = "https://github.com/MasonProtter/Bumper.jl",
+            versions = [v"0.4.1"],
             installs = [true],
             success = [true],
             server_type = "github",
