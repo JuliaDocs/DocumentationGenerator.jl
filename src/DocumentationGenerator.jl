@@ -31,12 +31,27 @@ end
 
 function try_use_package(packagespec)
     pkg_sym = Symbol(packagespec.name)
+    local pkg_module
 
-    pkg_module = try
-        @eval(Main, (using $pkg_sym; $pkg_sym))
-    catch err
-        @error("`using $(pkg_sym) did not succeed.`", exception=err)
-        nothing
+    p, _ = run_with_timeout(```
+        $(Base.julia_cmd())
+        --project="$(Pkg.project().path)"
+        --color=no
+        --compiled-modules=no
+        -O0
+        -e "using $pkg_sym; exit(99)"
+        ```; name="loading package $pkg_sym")
+    wait(p)
+    if p.exitcode == 99
+        pkg_module = try
+            @eval(Main, (using $pkg_sym; $pkg_sym))
+        catch err
+            @error("`using $(pkg_sym) did not succeed.`", exception=err)
+            nothing
+        end
+    else
+        @error("`using $(pkg_sym) did not succeed.`")
+        return nothing
     end
 
     return pkg_module
