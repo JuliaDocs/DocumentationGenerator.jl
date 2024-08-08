@@ -247,6 +247,21 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false]
+        ),
+        (
+            # This Horus.jl version has the `repo` keyword set in make.jl,
+            # but uses Documenter 1.0+, so we need to unset both `repo` and
+            # `remotes` for it to build correctly.
+            name = "Horus",
+            url = "https://github.com/aviks/Horus.jl.git",
+            uuid = "bc501ac0-6d4c-4855-b16f-b0e03415614f",
+            versions = [v"0.1.0"],
+            server_type = "github",
+            api_url="",
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false]
         )
     ]
 
