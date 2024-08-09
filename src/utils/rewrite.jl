@@ -47,6 +47,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             has_doctest = false
             has_root = false
             has_remotes = false
+            has_repo = false
             html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
 
             fixkwarg = argument -> begin
@@ -84,6 +85,10 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                     if name == :remotes
                         has_remotes = true
                         argument.args[2] = nothing
+                    end
+                    if name == :repo
+                        has_repo = true
+                        argument.args[2] = ""
                     end
                     if name == :doctest
                         has_doctest = true
@@ -125,6 +130,9 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             end
             if !has_remotes
                 push!(new_args, Expr(:kw, :remotes, nothing))
+            end
+            if !has_repo
+                push!(new_args, Expr(:kw, :repo, ""))
             end
 
             elem = Expr(:call, new_args...)
