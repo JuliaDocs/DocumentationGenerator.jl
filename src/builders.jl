@@ -217,8 +217,12 @@ function build_documenter(packagespec, docdir)
             ```
 
         try
-            run(cmd)
-
+            # We'll remove the JULIA_LOAD_PATH, since that can affect how the sub-process
+            # loads dependencies and therefore affect how the make.jl script gets executed.
+            #
+            # This is in particular necessary when we run a build as part of the test suite,
+            # which sets it.
+            run(addenv(cmd, "JULIA_LOAD_PATH" => nothing))
             return builddir
         catch err
             @error("Failed to evaluate specified make.jl-file.", exception=err)
