@@ -32,12 +32,14 @@ function fix_makefile(makefile, documenter_version = v"0.24")
     ast = parseall(read(makefile, String))
     make_expr = Expr(:block)
 
-    for elem in ast.args
-        # skip deploydocs
-        Meta.isexpr(elem, :call) && (elem.args[1] == :deploydocs || elem.args[1] == :(Documenter.deploydocs)) && continue
-        if Meta.isexpr(elem, :call) && (elem.args[1] == :makedocs || elem.args[1] == :(Documenter.makedocs))
-            should_break = true
+    for top_level_elem in ast.args
+        # skip deploydocs, if it appears on the top level
+        if Meta.isexpr(top_level_elem, :call) && (top_level_elem.args[1] == :deploydocs || top_level_elem.args[1] == :(Documenter.deploydocs))
+            continue
+        end
 
+        # Update the makedocs() call, if we find it.
+        should_break, new_elem = rewrite_makedocs_call(top_level_elem) do elem
             # rewrite makedoc call to respect our requirements
             new_args = []
 
@@ -48,6 +50,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             has_root = false
             has_remotes = false
             has_repo = false
+            has_warnonly = false
             html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
 
             fixkwarg = argument -> begin
@@ -94,6 +97,10 @@ function fix_makefile(makefile, documenter_version = v"0.24")
                         has_doctest = true
                         argument.args[2] = false
                     end
+                    if name == :warnonly
+                        has_warnonly = true
+                        argument.args[2] = true
+                    end
                 end
             end
 
@@ -134,11 +141,14 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             if !has_repo
                 push!(new_args, Expr(:kw, :repo, ""))
             end
+            if !has_warnonly
+                push!(new_args, Expr(:kw, :warnonly, true))
+            end
 
-            elem = Expr(:call, new_args...)
+            return Expr(:call, new_args...)
         end
 
-        push!(make_expr.args, elem)
+        push!(make_expr.args, new_elem)
 
         # ignore everything after `makedocs` call
         should_break && break
@@ -160,4 +170,23 @@ function fix_lnns(expr, filepath)
             fix_lnns(el, filepath)
         end
     end
+end
+
+function rewrite_makedocs_call(f!, ast)
+    if ast isa Expr
+        if Meta.isexpr(ast, :call) && (ast.args[1] == :makedocs || ast.args[1] == :(Documenter.makedocs))
+            return true, f!(ast)
+        else
+            should_break = false
+            for i in eachindex(ast.args)
+                if isa(ast.args[i], Expr)
+                    should_break_i, elem = rewrite_makedocs_call(f!, ast.args[i])
+                    ast.args[i] = elem
+                    should_break |= should_break_i
+                end
+            end
+            return should_break, ast
+        end
+    end
+    return false, ast
 end

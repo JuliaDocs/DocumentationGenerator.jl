@@ -277,6 +277,18 @@ end
                 )
             end
         end,
+        (
+            name="JuliaHub",
+            url="https://github.com/JuliaComputing/JuliaHub.jl.git",
+            uuid="bc7fa6ce-b75e-4d60-89ad-56c957190b6e",
+            versions=[v"0.1.11"],
+            server_type="github",
+            api_url="",
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false],
+        )
     ]
 
     basepath = @__DIR__
