@@ -100,6 +100,6 @@ function readstr_buffer(x::IOStream)
     return read(x, String)
 end
 
-function readstr_buffer(x::Base.GenericIOBuffer{Array{UInt8,1}})
+function readstr_buffer(x::IOBuffer)
     return String(take!(x))
 end
