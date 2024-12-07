@@ -18,3 +18,35 @@ function find_free_x_servernum()
 
     return i
 end
+
+# Borrowed from Documenter.jl (MIT)
+#
+# https://github.com/JuliaDocs/Documenter.jl/blob/5dafb6488f90d173ca4fcfeead0396332bdc6de6/src/utilities/DOM.jl#L269-L296
+"""
+Escape characters in the provided string. This converts the following characters:
+
+- `<` to `&lt;`
+- `>` to `&gt;`
+- `&` to `&amp;`
+- `'` to `&#39;`
+- `\"` to `&quot;`
+
+When no escaping is needed then the same object is returned, otherwise a new
+string is constructed with the characters escaped. The returned object should
+always be treated as an immutable copy and compared using `==` rather than `===`.
+"""
+function escapehtml(text::AbstractString)
+    if occursin(r"[<>&'\"]", text)
+        buffer = IOBuffer()
+        for char in text
+            char === '<'  ? write(buffer, "&lt;")   :
+            char === '>'  ? write(buffer, "&gt;")   :
+            char === '&'  ? write(buffer, "&amp;")  :
+            char === '\'' ? write(buffer, "&#39;")  :
+            char === '"'  ? write(buffer, "&quot;") : write(buffer, char)
+        end
+        String(take!(buffer))
+    else
+        text
+    end
+end
