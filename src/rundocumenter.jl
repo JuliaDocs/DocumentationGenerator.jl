@@ -27,12 +27,21 @@ let anonymous_module = Module()
             end
             Pkg.status()
 
-            documenter_version = v"0.24.10"
+            documenter_version = v"1.8.1"
             try
                 manifest = joinpath(docsdir, "Manifest.toml")
                 if isfile(manifest)
                     pm = TOML.parsefile(manifest)
-                    global documenter_version = VersionNumber(first(pm["Documenter"])["version"])
+                    if VersionNumber(get(pm, "manifest_format", "1.0")) > v"1"
+                        deps = pm["deps"]
+                    else
+                        deps = pm
+                    end
+                    if haskey(deps, "Documenter")
+                        documenter_version = VersionNumber(first(deps["Documenter"])["version"])
+                    else
+                        @warn("Documenter not found in `$(manifest). Defaulting to $(documenter_version).")
+                    end
                 else
                     @warn("No Mainfest.toml found at `$(manifest)`. Defaulting to $(documenter_version).")
                 end
@@ -40,7 +49,7 @@ let anonymous_module = Module()
                 @error(exception = err)
             end
 
-            @info("Detected Documenter version $(documenter_version).")
+            @info("Using Documenter version $(documenter_version).")
 
             expr, bpath = fix_makefile(makefile, documenter_version)
 
@@ -48,7 +57,7 @@ let anonymous_module = Module()
             task_local_storage()[:SOURCE_PATH] = makefile
             cd(docsdir) do
                 @info("Evaluating the following `make` expr:")
-                @info(expr)
+                println(stderr, "\n------------------\n", expr, "\n------------------\n")
                 Base.eval(Main, expr)
             end
         end

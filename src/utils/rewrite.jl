@@ -24,7 +24,7 @@ Takes in the path to a Documenter.jl-compatible `make.jl` file and
 
 Return a tuple of `new_make_expr, buildpath`.
 """
-function fix_makefile(makefile, documenter_version = v"0.24")
+function fix_makefile(makefile, documenter_version = v"1.8.1")
     # default output path:
     buildpath = joinpath(dirname(makefile), "build")
     should_break = false
@@ -56,7 +56,7 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             fixkwarg = argument -> begin
                 if Meta.isexpr(argument, :kw)
                     name, arg = argument.args
-                    # assure that we generate HTML
+                    # ensure that we generate HTML
                     if name == :format
                         has_fmt = true
                         if Meta.isexpr(arg, :call) && arg.args[1] == :(Documenter.HTML) && !(html isa QuoteNode)
@@ -123,25 +123,22 @@ function fix_makefile(makefile, documenter_version = v"0.24")
             if !has_fmt
                 push!(new_args, Expr(:kw, :format, html))
             end
-
             if !has_linkcheck
                 push!(new_args, Expr(:kw, :linkcheck, false))
             end
-
             if !has_doctest
                 push!(new_args, Expr(:kw, :doctest, false))
             end
-
             if !has_root
                 push!(new_args,Expr(:kw, :root, dirname(makefile)))
             end
-            if !has_remotes
+            if !has_remotes && documenter_version >= v"1"
                 push!(new_args, Expr(:kw, :remotes, nothing))
             end
             if !has_repo
                 push!(new_args, Expr(:kw, :repo, ""))
             end
-            if !has_warnonly
+            if !has_warnonly && documenter_version >= v"1"
                 push!(new_args, Expr(:kw, :warnonly, true))
             end
 
