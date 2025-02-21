@@ -103,7 +103,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
             pkgfile = Base.find_package(pkgname)
             pkgroot = normpath(joinpath(pkgfile, "..", ".."))
         end
-        mod = try_use_package(packagespec)
+        could_use_pkg = try_use_package(packagespec, envdir)
 
         # actual Documenter docs
         try
@@ -119,7 +119,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                             "doctype" => gitdirdocs ? "git-repo" : "documenter",
                             "documenter_errored" => documenter_errored,
                             "installable" => true,
-                            "using_failed" => mod == nothing,
+                            "using_failed" => !could_use_pkg,
                             "success" => true
                         )
                     else
@@ -139,14 +139,14 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
 
         # fallback docs (readme & docstrings)
         return mktempdir() do docsdir
-            output = build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix)
+            output = build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, could_use_pkg)
             if output !== nothing
                 cp(output, buildpath, force = true)
                 return Dict(
                     "doctype" => "fallback_autodocs",
                     "documenter_errored" => documenter_errored,
                     "installable" => true,
-                    "using_failed" => mod == nothing,
+                    "using_failed" => !could_use_pkg,
                     "success" => true
                 )
             end
@@ -154,7 +154,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
                 "doctype" => "fallback_autodocs",
                 "documenter_errored" => documenter_errored,
                 "installable" => true,
-                "using_failed" => mod == nothing,
+                "using_failed" => !could_use_pkg,
                 "success" => false
             )
         end
@@ -206,11 +206,9 @@ function build_documenter(packagespec, docdir)
         _, builddir = fix_makefile(makefile)
         pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no" : ""
         cmd = ```
-            $(first(Base.julia_cmd()))
+            $(julia())
                 --project="$(docdir)"
-                --compiled-modules=no
                 $(isempty(pkgimagesopt) ? [] : pkgimagesopt)
-                -O0
                 $(rundcocumenter)
                 $(pkgdir)
                 $(makefile)
@@ -231,15 +229,13 @@ function build_documenter(packagespec, docdir)
     end
 end
 
-function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_prefix)
+function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, could_use_pkg)
     @info("Generating readme-only fallback docs.")
 
     if pkgroot === nothing || !ispath(pkgroot)
         @error("Julia could not find the package directory. Aborting.")
         return
     end
-
-    pkgloads = mod !== nothing
 
     readme = find_readme(pkgroot)
     doc_src = joinpath(docsdir, "src")
@@ -248,34 +244,69 @@ function build_readme_docs(pkgname, pkgroot, docsdir, mod, src_prefix, href_pref
 
     render_html(readme, index, src_prefix, href_prefix; documenter = true)
 
+    pages = ["Readme" => "index.md"]
+
+    if could_use_pkg
+        @info("Deploying `autodocs`.")
+        add_autodocs(doc_src, Symbol(pkgname))
+        push!(pages, "Docstrings" => "autodocs.md")
+    end
+
     if !isfile(index)
         open(index, "w") do io
             println(io, """
             # $pkgname
             """)
+
+            if !could_use_pkg
+                println(io, """
+                > No documentation or readme found for this package.
+                """)
+            end
         end
     end
 
-    pages = ["Readme" => "index.md"]
-    modules = :(Module[Module()])
+    makejl_str = """
+    using Pkg
+    Pkg.add(name="Documenter", version="1")
+    Pkg.develop(path="$(pkgroot)")
 
-    if pkgloads
-        @info("Deploying `autodocs`.")
-        add_autodocs(doc_src, mod)
-        push!(pages, "Docstrings" => "autodocs.md")
-        modules = :(Module[$mod])
+    using Documenter
+    using $(pkgname)
+
+    makedocs(
+        format = Documenter.HTML(),
+        sitename = "$(pkgname).jl",
+        modules = [$(pkgname)],
+        root = "$(docsdir)",
+        pages = $(pages),
+        remotes = nothing,
+        repo = "",
+        doctest = false
+    )
+    """
+
+    makejl_path = joinpath(docsdir, "make.jl")
+
+    open(makejl_path, "w") do io
+        println(io, makejl_str)
     end
 
-    @eval Module() begin
-        const Documenter = $Documenter
-        using .Documenter
-        makedocs(
-            format = Documenter.HTML(),
-            sitename = "$($pkgname).jl",
-            modules = $(modules),
-            root = $(docsdir),
-            pages = $(pages)
-        )
+    cmd = ```
+    $(julia())
+        --project="$(docsdir)"
+        $(makejl_path)
+    ```
+
+    succeeded = try
+        success(pipeline(addenv(cmd, "JULIA_LOAD_PATH" => nothing); stdout=stdout, stderr=stderr))
+    catch err
+        @error "autodocs $pkgname issue" exception=(err, catch_backtrace())
+        false
+    end
+
+    if !succeeded
+        @error("Failed to generate readme autodocs for $pkgname")
     end
 
     build_dir = joinpath(docsdir, "build")
@@ -308,11 +339,10 @@ function find_readme(pkgroot)
 end
 
 function add_autodocs(docsdir, mod)
-    module_list = join((string(m) for m in submodules(mod)), ", ")
     open(joinpath(docsdir, "autodocs.md"), "w") do io
         println(io, """
         ```@autodocs
-        Modules = [$module_list]
+        Modules = [$mod]
         ```
         """)
     end

@@ -61,6 +61,15 @@ const julia = first(Base.julia_cmd())
     end
 end
 
+@testset "package installation and using" begin
+    mktempdir() do envdir
+        packagespec = Pkg.PackageSpec(name = "Example", version=v"0.5.3")
+
+        @test DocumentationGenerator.try_install_package(packagespec, envdir)
+        @test DocumentationGenerator.try_use_package(packagespec, envdir)
+    end
+end
+
 @testset "Readme rendering" begin
     DocumentationGenerator.render_html(joinpath(@__DIR__, "fixtures", "readme.md"), joinpath(@__DIR__, "readme.html"), "/foo/", "/bar/")
 
@@ -98,12 +107,12 @@ end
             name = "Example",
             url = "https://github.com/JuliaLang/Example.jl.git",
             uuid = "7876af07-990d-54b4-ab0e-23690620f79a",
-            versions = [v"0.5.1", v"0.5.3"],
-            installs = [true, true],
-            success = [true, true],
+            versions = [v"0.5.3"],
+            installs = [true],
+            success = [true],
             server_type = "github",
             api_url="",
-            doctype = ["fallback_autodocs", "fallback_autodocs"],
+            doctype = ["documenter"],
         ),
         (
             name = "DynamicHMC",
@@ -158,7 +167,7 @@ end
             name = "OpenSpiel_jll",
             url = "https://github.com/JuliaBinaryWrappers/OpenSpiel_jll.jl.git",
             uuid = "bd10a763-4654-5023-a028-c4918c6cd33e",
-            versions = [v"0.3.6+0"],
+            versions = [v"1.5.1+0"],
             installs = [true],
             success = [true],
             server_type = "github",
@@ -193,18 +202,6 @@ end
             url = "https://github.com/JuliaGraphics/Tk.jl.git",
             uuid = "4225ea8a-3324-57e7-9ddc-5798a2cb9eab",
             versions = [v"0.7.0"],
-            installs = [true],
-            server_type = "github",
-            api_url="",
-            success = [true],
-            doctype = ["documenter"],
-            using_failed = [false]
-        ),
-        (
-            name = "Zygote",
-            url = "https://github.com/FluxML/Zygote.jl.git",
-            uuid = "e88e6eb3-aa80-5325-afca-941959d7151f",
-            versions = [v"0.6.10"],
             installs = [true],
             server_type = "github",
             api_url="",
@@ -288,7 +285,19 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false],
-        )
+        ),
+        (
+            name="Arrow",
+            url="https://github.com/apache/arrow-julia.git",
+            uuid="69666777-d1a9-59fb-9406-91d4454c9d45",
+            versions=[v"2.8.0"],
+            server_type="github",
+            api_url="",
+            installs = [true],
+            success = [true],
+            doctype = ["documenter"],
+            using_failed = [false],
+        ),
     ]
 
     basepath = @__DIR__

@@ -29,17 +29,36 @@ function try_install_package(packagespec, envdir)
     return success
 end
 
-function try_use_package(packagespec)
+function julia()
+    return ```
+        $(first(Base.julia_cmd()))
+            --startup-file=no
+            --compiled-modules=$(VERSION >= v"1.11" ? "existing" : "no")
+            $(VERSION >= v"1.9" ? "--pkgimages=$(VERSION >= v"1.11" ? "existing" : "no")" : [])
+    ```
+end
+
+function try_use_package(packagespec, envdir)
     pkg_sym = Symbol(packagespec.name)
 
-    pkg_module = try
-        @eval(Main, (using $pkg_sym; $pkg_sym))
+    cmd = ```
+    $(julia())
+        --project="$(envdir)"
+        -e "using $(pkg_sym)"
+    ```
+
+    succeeded = try
+        success(pipeline(addenv(cmd, "JULIA_LOAD_PATH" => nothing); stdout=stdout, stderr=stderr))
     catch err
-        @error("`using $(pkg_sym) did not succeed.`", exception=err)
-        nothing
+        @error "using $pkgname issue" exception=(err, catch_backtrace())
+        false
     end
 
-    return pkg_module
+    if !succeeded
+        @error("`using $(pkg_sym) did not succeed.`")
+    end
+
+    return succeeded
 end
 
 function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="")
@@ -73,7 +92,7 @@ function build_documentation(
         packages;
         processes::Int = 8,
         sleeptime = 0.5,
-        juliacmd = first(Base.julia_cmd()),
+        juliacmd = julia(),
         basepath = joinpath(@__DIR__, ".."),
         envpath = normpath(joinpath(@__DIR__, "..")),
         filter_versions = last,
@@ -293,14 +312,10 @@ function start_builder(package, version;
         Pkg.develop(path=docgen_path)
         Pkg.add("Pkg")
         ## api_url needs to be set to "-", since empty string should not be passed as CLI argument
-        pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no" : ""
         cmd = ```
             $(juliacmd)
                 --project=$(Base.active_project())
                 --color=no
-                --compiled-modules=no
-                $(isempty(pkgimagesopt) ? [] : pkgimagesopt)
-                -O0
                 $workerfile
                 $uuid
                 $name
