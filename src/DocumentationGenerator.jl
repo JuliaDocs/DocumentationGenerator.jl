@@ -114,10 +114,10 @@ function build_documentation(
 
     regpath = get_registry(basepath; sync = sync_registry)
     process_queue = []
+    task_list = []
 
     # make sure registry is updated *before* we start multiple processes that might try that at the same time
     Pkg.Registry.update()
-
 
     envmod = []
 
@@ -141,7 +141,7 @@ function build_documentation(
 
                 # separate process for each version of a package
                 for version in vcat(filter_versions(package.versions))
-                    proc = start_builder(package, version;
+                    proc, task = start_builder(package, version;
                                            basepath = basepath,
                                            juliacmd = juliacmd,
                                            registry_path = regpath,
@@ -151,7 +151,15 @@ function build_documentation(
                                            max_timeout = max_timeout,
                                            kill_timeout = kill_timeout)
                     push!(process_queue, proc)
+                    push!(task_list, task)
                 end
+        end
+
+        while true
+            filter!(process_running, process_queue)
+            @debug "Generating docs. $(length(process_queue)) processes in flight."
+            isempty(process_queue) && break
+            sleep(10)
         end
 
         # wait for all queued processes to finish
@@ -163,6 +171,8 @@ function build_documentation(
     if has_xvfb
         kill(x_server_proc)
     end
+
+    @info "Docgen finished. Computing dependencies. "
 
     # record dependency relations specified in registry
     generate_dependency_list(packages, basepath = basepath, registry = registry, filter_versions = filter_versions)
@@ -337,7 +347,7 @@ function start_builder(package, version;
                                          timeout = timeout,
                                          max_timeout = max_timeout,
                                          kill_timeout = kill_timeout)
-       return process
+       return process, task
     end
 end
 end
