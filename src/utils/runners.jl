@@ -9,11 +9,19 @@ Runs `command` and pipes all output to `log`. The process will be terminated aft
 and `verbose` determines whether meta-logs ("process started" etc.) will be printed.
 """
 function run_with_timeout(
-        command; log=stdout, timeout = 40*60, name = "",
-        wait_time = 1, verbose = true, kill_timeout = 60,
-        max_timeout = 3*60*60
+    command;
+    log = stdout,
+    timeout = 40 * 60,
+    name = "",
+    wait_time = 1,
+    verbose = true,
+    kill_timeout = 60,
+    max_timeout = 3 * 60 * 60,
     )
-    print_interval = 60/wait_time
+    pushfirst!(command.exec, "setsid")
+    @info ">> starting" command timeout kill_timeout max_timeout
+
+    print_interval = 60 / wait_time
     print_in = print_interval
 
     out_io = IOBuffer()
@@ -35,7 +43,7 @@ function run_with_timeout(
         io = try
             log isa String ? open(log, "w") : log
         catch err
-            @error "Error opening logfile, falling back to stdout" error=err
+            @error "Error opening logfile, falling back to stdout" error = err
             logfallback = true
             stdout
         end
@@ -47,13 +55,13 @@ function run_with_timeout(
                 total = time() - job_start
                 if elapsed > timeout || total > max_timeout
                     verbose && @info("Terminating $name")
-                    kill(process)
+                    kill_pg(process)
                     # Handle scenarios where SIGTERM is blocked/ignored/handled by the process
                     start_time = time()
                     while process_running(process)
                         if time() - start_time > kill_timeout
                             verbose && @info("Killing $name")
-                            kill(process, Base.SIGKILL)
+                            kill_pg(process, true)
                         end
                         sleep(5)
                     end
@@ -79,9 +87,10 @@ function run_with_timeout(
             end
 
             verbose && println()
-            verbose && @info("$name completed in $(round(time() - tstart, digits=1)) seconds")
+            verbose &&
+                @info("$name completed in $(round(time() - tstart, digits=1)) seconds")
         catch err
-            @error "Error while running $(name) with timeout." error=err
+            @error "Error while running $(name) with timeout." error = err
         finally
             errstr, outstr = readstr_buffer.((out_io, err_io))
             isempty(outstr) || println(io, outstr)
@@ -102,4 +111,36 @@ end
 
 function readstr_buffer(x::IOBuffer)
     return String(take!(x))
+end
+
+function get_pgid(pid::Int32)
+    out = try
+        readchomp(`ps -o pgid= -p $pid`)
+    catch ex
+        @warn("Failed to fetch pgid", exception = (ex, catch_backtrace()))
+        nothing
+    end
+    isnothing(out) && return nothing
+    return parse(Int32, strip(out))
+end
+
+function kill_pg(p::Base.Process, force = false)
+    pgid = get_pgid(getpid(p))
+    if isnothing(pgid)
+        @warn "No process group found for $process"
+        kill(p)
+    else
+        kill_process_group(pgid, force)
+    end
+end
+
+function kill_process_group(pid::Int32, force)
+    pgid = get_pgid(pid)
+    type = if force
+        "KILL"
+    else
+        "TERM"
+    end
+    cmd = ["kill", "-$type", "--", "-$pgid"]
+    run(Cmd(cmd))
 end

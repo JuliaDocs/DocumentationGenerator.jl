@@ -156,7 +156,10 @@ function build_documentation(
 
         # wait for all queued processes to finish
         for proc in process_queue
-            wait(proc)
+            pid = getpid(proc)
+            pgid = get_pgid(pid)
+            @info "detected session id for process $(pid): $(pgid)"
+            wait(proc, false)
         end
     end
 

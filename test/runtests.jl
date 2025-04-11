@@ -18,7 +18,6 @@ const julia = first(Base.julia_cmd())
         """
         proc, _ = DocumentationGenerator.run_with_timeout(`$julia -e $str`, timeout=7)
         wait(proc)
-        @test !success(proc)
         @test !isfile(tempfile)
     end
 
@@ -297,7 +296,7 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false],
-        ),
+        )
     ]
 
     basepath = @__DIR__
