@@ -156,7 +156,7 @@ function build_documentation(
 
         # wait for all queued processes to finish
         for proc in process_queue
-            t = timedwait(x -> process_running(proc) || process_exited(proc), 20)
+            t = timedwait(() -> process_running(proc) || process_exited(proc), 20)
             t == :timed_out && error("Process failed to start")
             pid = getpid(proc)
             pgid = get_pgid(pid)
