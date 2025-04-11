@@ -159,7 +159,11 @@ function build_documentation(
             pid = getpid(proc)
             pgid = get_pgid(pid)
             @info "detected session id for process $(pid): $(pgid)"
-            wait(proc, false)
+            if VERSION < v"1.11"
+                wait(proc)
+            else
+                wait(proc, false)
+            end
         end
     end
 
