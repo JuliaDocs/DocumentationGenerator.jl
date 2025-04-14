@@ -265,12 +265,7 @@ end
                     using_failed = [false],
                 )
             else
-                (;
-                    p...,
-                    installs = [false],
-                    success = [false],
-                    doctype = ["missing"],
-                )
+                (; p..., installs = [false], success = [false], doctype = ["missing"])
             end
         end,
         (
@@ -296,20 +291,38 @@ end
             success = [true],
             doctype = ["documenter"],
             using_failed = [false],
-        )
+        ),
+        (
+            name = "NetworkDynamics",
+            url = "https://github.com/JuliaDynamics/NetworkDynamics.jl.git",
+            uuid = "22e9dc34-2a0d-11e9-0de0-8588d035468b",
+            versions = [v"0.9.16"],
+            server_type = "github",
+            api_url = "",
+            installs = [true],
+            success = [false],
+            doctype = ["documenter"],
+            using_failed = [false],
+        ),
     ]
 
     basepath = @__DIR__
     rm(joinpath(basepath, "build"), force = true, recursive = true)
 
     DocumentationGenerator.build_documentation(
-        packages, basepath = basepath, filter_versions = identity, processes = 6
+        packages,
+        basepath = basepath,
+        filter_versions = identity,
+        processes = 6,
+        timeout = 300,
     )
 
     build = joinpath(basepath, "build")
     @testset "build folder" begin
         for pkg in packages
-            pkgbuild = joinpath(build, DocumentationGenerator.get_docs_dir(pkg.name, pkg.uuid))
+            !pkg.success[1] && continue
+            pkgbuild =
+                joinpath(build, DocumentationGenerator.get_docs_dir(pkg.name, pkg.uuid))
             @test isdir(pkgbuild)
             @testset "$(pkg.name): $(version)" for (i, version) in enumerate(pkg.versions)
                 log = joinpath(pkgbuild, "$(version).log")
