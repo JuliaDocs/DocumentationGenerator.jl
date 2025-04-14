@@ -156,7 +156,11 @@ function build_documentation(
 
         # wait for all queued processes to finish
         for proc in process_queue
-            wait(proc)
+            if VERSION < v"1.11"
+                wait(proc)
+            else
+                wait(proc, false)
+            end
         end
     end
 
