@@ -314,7 +314,7 @@ end
         basepath = basepath,
         filter_versions = identity,
         processes = 6,
-        timeout = 300,
+        timeout = 600,
     )
 
     build = joinpath(basepath, "build")
