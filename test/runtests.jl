@@ -304,6 +304,18 @@ end
             doctype = ["documenter"],
             using_failed = [false],
         ),
+        (
+            name = "Pluto",
+            url = "https://github.com/fonsp/Pluto.jl.git",
+            uuid = "c3e4b0f8-55cb-11ea-2926-15256bba5781",
+            versions = [v"0.20.6"],
+            server_type = "github",
+            api_url = "",
+            installs = [true],
+            success = [false],
+            doctype = ["fallback_autodocs"],
+            using_failed = [false],
+        ),
     ]
 
     basepath = @__DIR__
