@@ -282,7 +282,8 @@ function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, c
         pages = $(pages),
         remotes = nothing,
         repo = "",
-        doctest = false
+        doctest = false,
+        warnonly = true,
     )
     """
 
@@ -298,6 +299,8 @@ function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, c
         $(makejl_path)
     ```
 
+    @info "running autodocs generation in $docsdir" makejl_str
+
     succeeded = try
         success(pipeline(addenv(cmd, "JULIA_LOAD_PATH" => nothing); stdout=stdout, stderr=stderr))
     catch err
@@ -310,7 +313,7 @@ function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, c
     end
 
     build_dir = joinpath(docsdir, "build")
-    if ispath(build_dir)
+    if ispath(build_dir) && succeeded
         return build_dir
     end
     return nothing
