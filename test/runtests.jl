@@ -5,7 +5,7 @@ const julia = first(Base.julia_cmd())
 
 @test length(keys(DocumentationGenerator.installable_on_version(joinpath(homedir(), ".julia", "registries", "General"), VERSION))) > 1500
 
-@test DocumentationGenerator.maybe_redirect("https://docs.julialang.org/") == "https://docs.julialang.org/en/v1"
+@test strip(DocumentationGenerator.maybe_redirect("https://docs.julialang.org/"), ['/']) == "https://docs.julialang.org/en/v1"
 
 @testset "Running code with a timeout" begin
     let
@@ -98,7 +98,7 @@ end
             success = [true],
             server_type = "github",
             api_url="",
-            hosted_uri=["https://docs.sciml.ai/Overview/"],
+            hosted_uri=["https://docs.sciml.ai/Overview"],
             doctype = ["hosted"],
         ),
         # with docs
@@ -358,7 +358,7 @@ end
                     @test pkgdoctype == pkg.doctype[i]
 
                     if pkg.doctype[i] == "hosted"
-                        @test get(toml, "hosted_uri", "") == pkg.hosted_uri[i]
+                        @test strip(get(toml, "hosted_uri", ""), ['/']) == pkg.hosted_uri[i]
                     end
 
                     if pkginstalls == true
