@@ -4,14 +4,15 @@ using HTMLSanitizer
 using Highlights
 using Downloads
 using Documenter
-function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="")
+
+function build_git_docs(packagespec, buildpath, uri; src_prefix="", href_prefix="", html_size_threshold_bytes=nothing)
     pkgname = packagespec.name
     return mktempdir() do dir
         return cd(dir) do
             run(`git clone --depth=1 $(uri) $(pkgname)`)
             docsproject = joinpath(dir, pkgname)
             return cd(docsproject) do
-                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true; src_prefix=src_prefix, href_prefix=href_prefix)
+                return build_local_docs(packagespec, buildpath, nothing, docsproject, gitdirdocs = true; src_prefix=src_prefix, href_prefix=href_prefix, html_size_threshold_bytes=html_size_threshold_bytes)
             end
         end
     end
@@ -84,7 +85,7 @@ function maybe_redirect(uri)
     return uri
 end
 
-function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="")
+function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdirdocs = false, src_prefix="", href_prefix="", html_size_threshold_bytes=nothing)
     uri = something(uri, "docs")
     mktempdir() do envdir
         pkgname = packagespec.name
@@ -139,7 +140,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
 
         # fallback docs (readme & docstrings)
         return mktempdir() do docsdir
-            output = build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, could_use_pkg)
+            output = build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, could_use_pkg, html_size_threshold_bytes)
             if output !== nothing
                 cp(output, buildpath, force = true)
                 return Dict(
@@ -229,7 +230,7 @@ function build_documenter(packagespec, docdir)
     end
 end
 
-function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, could_use_pkg)
+function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, could_use_pkg, html_size_threshold_bytes=nothing)
     @info("Generating readme-only fallback docs.")
 
     if pkgroot === nothing || !ispath(pkgroot)
@@ -265,7 +266,11 @@ function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, c
             end
         end
     end
-
+    doc_format_str = if isnothing(html_size_threshold_bytes)
+        "Documenter.HTML()"
+    else
+        "Documenter.HTML(;size_threshold=$html_size_threshold_bytes)"
+    end
     makejl_str = """
     using Pkg
     Pkg.add(name="Documenter", version="1")
@@ -275,7 +280,7 @@ function build_readme_docs(pkgname, pkgroot, docsdir, src_prefix, href_prefix, c
     using $(pkgname)
 
     makedocs(
-        format = Documenter.HTML(),
+        format = $(doc_format_str),
         sitename = "$(pkgname).jl",
         modules = [$(pkgname)],
         root = "$(docsdir)",

@@ -4,9 +4,10 @@ using DocumentationGenerator
 
 Pkg.status()
 
-function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, server_type, api_url, args...)
+function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, server_type, api_url, html_size_threshold_bytes, args...)
     packagespec = PackageSpec(uuid = uuid, name = name, version = VersionNumber(version))
     api_url = api_url == "-" ? "" : api_url
+    html_size_threshold_bytes = html_size_threshold_bytes == "-" ? nothing : html_size_threshold_bytes
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
         "CI" => "true",
@@ -20,7 +21,7 @@ function build(uuid, name, url, version, buildpath, registry, deployment_url, sr
         end
         new_metadata = DocumentationGenerator.package_metadata(packagespec, url, server_type; api_url = api_url)
         merge!(metadata, new_metadata)
-        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix)
+        build_meta = DocumentationGenerator.build_package_docs(packagespec, buildpath, registry; src_prefix=src_prefix, href_prefix=href_prefix, html_size_threshold_bytes=html_size_threshold_bytes)
         merge!(metadata, build_meta)
 
         isdir(buildpath) || mkpath(buildpath)
