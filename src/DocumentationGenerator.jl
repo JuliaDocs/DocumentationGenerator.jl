@@ -61,7 +61,7 @@ function try_use_package(packagespec, envdir)
     return succeeded
 end
 
-function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="")
+function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, registry; src_prefix="", href_prefix="", html_size_threshold_bytes=nothing)
     type, uri = doctype(packagespec, registry)
 
     @info("$(packagespec.name) specifies docs of type $(type).")
@@ -71,7 +71,7 @@ function build_package_docs(packagespec::Pkg.Types.PackageSpec, buildpath, regis
         elseif type == "git-repo"
             build_git_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix)
         elseif type == "vendored"
-            build_local_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix)
+            build_local_docs(packagespec, buildpath, uri; src_prefix=src_prefix, href_prefix=href_prefix, html_size_threshold_bytes=html_size_threshold_bytes)
         else
             @error("Invalid doctype specified: $(type).")
             Dict(
@@ -102,7 +102,8 @@ function build_documentation(
         registry = joinpath(homedir(), ".julia/registries/General"),
         timeout = RUNNER_TIMEOUT,
         max_timeout = RUNNER_MAX_TIMEOUT,
-        kill_timeout = RUNNER_KILL_TIMEOUT
+        kill_timeout = RUNNER_KILL_TIMEOUT,
+        html_size_threshold_bytes=nothing
     )
 
     has_xvfb = try
@@ -149,7 +150,7 @@ function build_documentation(
                                            update_only = update_only,
                                            timeout = timeout,
                                            max_timeout = max_timeout,
-                                           kill_timeout = kill_timeout)
+                                           kill_timeout = kill_timeout, html_size_threshold_bytes=html_size_threshold_bytes)
                     push!(process_queue, proc)
                 end
         end
@@ -290,6 +291,7 @@ function start_builder(package, version;
         timeout = RUNNER_TIMEOUT,
         max_timeout = RUNNER_MAX_TIMEOUT,
         kill_timeout = RUNNER_KILL_TIMEOUT,
+        html_size_threshold_bytes=nothing
     )
 
     workerfile = joinpath(@__DIR__, "workerfile.jl")
@@ -332,6 +334,7 @@ function start_builder(package, version;
                 $href_prefix
                 $(server_type)
                 $(isempty(api_url) ? "-" : api_url)
+                $(isnothing(html_size_threshold_bytes) ? "-" : html_size_threshold_bytes)
                 $(update_only ? "update" : "build")
 
         ```
