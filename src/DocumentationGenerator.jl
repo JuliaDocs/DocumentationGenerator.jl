@@ -334,8 +334,8 @@ function start_builder(package, version;
                 $href_prefix
                 $(server_type)
                 $(isempty(api_url) ? "-" : api_url)
-                $(update_only ? "update" : "build")
                 $(isnothing(html_size_threshold_bytes) ? "-" : html_size_threshold_bytes)
+                $(update_only ? "update" : "build")
 
         ```
         process, task = run_with_timeout(cmd,
