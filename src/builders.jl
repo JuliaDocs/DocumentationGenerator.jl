@@ -111,7 +111,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
             for docdir in joinpath.(pkgroot, unique([uri, "docs", "doc"]))
                 if isdir(docdir)
                     @info("Building vendored Documenter.jl documentation at $(docdir).")
-                    output = build_documenter(packagespec, docdir)
+                    output = build_documenter(packagespec, docdir; html_size_threshold_bytes)
                     @info("Documentation built at $(output).")
                     if output !== nothing
                         @info("Copying build documentation from $(output) to $(buildpath)")
@@ -162,7 +162,7 @@ function build_local_docs(packagespec, buildpath, uri, pkgroot = nothing; gitdir
     end
 end
 
-function build_legacy_documenter(packagespec, docdir)
+function build_legacy_documenter(packagespec, docdir; html_size_threshold_bytes=nothing)
     open(joinpath(docdir, "Project.toml"), "w") do io
         println(io, """
             [deps]
@@ -172,16 +172,16 @@ function build_legacy_documenter(packagespec, docdir)
             Documenter = "~0.20"
         """)
     end
-    build_documenter(packagespec, docdir)
+    build_documenter(packagespec, docdir; html_size_threshold_bytes)
 end
 
-function build_documenter(packagespec, docdir)
+function build_documenter(packagespec, docdir; html_size_threshold_bytes=nothing)
     pkgdir = normpath(joinpath(docdir, ".."))
     cd(pkgdir) do
         docsproject = joinpath(docdir, "Project.toml")
         docsmanifest = joinpath(docdir, "Manifest.toml")
         if !isfile(docsproject)
-            return build_legacy_documenter(packagespec, docdir)
+            return build_legacy_documenter(packagespec, docdir; html_size_threshold_bytes)
         end
 
         # fix permissions to allow us to add the main pacakge to the docs project
@@ -191,7 +191,7 @@ function build_documenter(packagespec, docdir)
         chmod(joinpath(pkgdir, "Project.toml"), 0o660)
         isfile(joinpath(pkgdir, "Manifest.toml")) && chmod(joinpath(pkgdir, "Manifest.toml"), 0o660)
 
-        rundcocumenter = joinpath(@__DIR__, "rundocumenter.jl")
+        rundocumenter = joinpath(@__DIR__, "rundocumenter.jl")
 
         makefile = joinpath(docdir, "make.jl")
         if !isfile(makefile)
@@ -204,15 +204,17 @@ function build_documenter(packagespec, docdir)
             makefile = joinpath(docdir, jlfiles[1])
             @info("Using $(makefile) to generate Documenter docs.")
         end
-        _, builddir = fix_makefile(makefile)
+        _, builddir = fix_makefile(makefile; html_size_threshold_bytes)
         pkgimagesopt = VERSION >= v"1.9" ? "--pkgimages=no" : ""
+        opt_ser = isnothing(html_size_threshold_bytes) ? "-" : html_size_threshold_bytes
         cmd = ```
             $(julia())
                 --project="$(docdir)"
                 $(isempty(pkgimagesopt) ? [] : pkgimagesopt)
-                $(rundcocumenter)
+                $(rundocumenter)
                 $(pkgdir)
                 $(makefile)
+                $(opt_ser)
             ```
 
         try

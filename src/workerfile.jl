@@ -7,7 +7,7 @@ Pkg.status()
 function build(uuid, name, url, version, buildpath, registry, deployment_url, src_prefix, href_prefix, server_type, api_url, html_size_threshold_bytes, args...)
     packagespec = PackageSpec(uuid = uuid, name = name, version = VersionNumber(version))
     api_url = api_url == "-" ? "" : api_url
-    html_size_threshold_bytes = html_size_threshold_bytes == "-" ? nothing : html_size_threshold_bytes
+    html_size_threshold_bytes = html_size_threshold_bytes == "-" ? nothing : tryparse(Int, html_size_threshold_bytes)
     withenv(
         "DOCUMENTATIONGENERATOR" => "true",
         "CI" => "true",

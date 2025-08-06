@@ -103,7 +103,7 @@ function build_documentation(
         timeout = RUNNER_TIMEOUT,
         max_timeout = RUNNER_MAX_TIMEOUT,
         kill_timeout = RUNNER_KILL_TIMEOUT,
-        html_size_threshold_bytes=nothing
+        html_size_threshold_bytes=12
     )
 
     has_xvfb = try

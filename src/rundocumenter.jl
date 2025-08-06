@@ -5,12 +5,14 @@ let anonymous_module = Module()
     Base.include(anonymous_module, joinpath(@__DIR__, "utils", "rewrite.jl"))
     @eval anonymous_module begin
         function main(args)
-            if length(args) == 2
+            if length(args) == 3
                 pkgdir = args[1]
                 makefile = args[2]
+                html_size_threshold_bytes = args[3] == "-" ? nothing : tryparse(Int, args[3])
             else
                 makefile = joinpath(pwd(), "make.jl")
                 pkgdir = normpath(joinpath(pwd(), ".."))
+                html_size_threshold_bytes = nothing
                 @info("No directory specified. Falling back to pkgdir=`$(pkgdir)` and makefile=`$(makefile)`.")
             end
             docsdir = dirname(makefile)
@@ -51,7 +53,7 @@ let anonymous_module = Module()
 
             @info("Using Documenter version $(documenter_version).")
 
-            expr, bpath = fix_makefile(makefile, documenter_version)
+            expr, bpath = fix_makefile(makefile, documenter_version; html_size_threshold_bytes)
 
             @info("`cd`ing to `$(docsdir)` and setting `tls[:SOURCE_PATH]` to `$(makefile)`.")
             task_local_storage()[:SOURCE_PATH] = makefile

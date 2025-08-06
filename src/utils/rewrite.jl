@@ -15,7 +15,7 @@ function parseall(str)
 end
 
 """
-    fix_makefile(makefile)
+    fix_makefile(makefile; html_size_threshold_bytes=nothing)
 
 Takes in the path to a Documenter.jl-compatible `make.jl` file and
 1. Removes all calls to `deploydocs`.
@@ -24,7 +24,7 @@ Takes in the path to a Documenter.jl-compatible `make.jl` file and
 
 Return a tuple of `new_make_expr, buildpath`.
 """
-function fix_makefile(makefile, documenter_version = v"1.8.1")
+function fix_makefile(makefile, documenter_version = v"1.8.1"; html_size_threshold_bytes=nothing)
     # default output path:
     buildpath = joinpath(dirname(makefile), "build")
     should_break = false
@@ -51,7 +51,12 @@ function fix_makefile(makefile, documenter_version = v"1.8.1")
             has_remotes = false
             has_repo = false
             has_warnonly = false
-            html = documenter_version < v"0.21" ? QuoteNode(:html) : :(Documenter.HTML())
+            docs_exp = if isnothing(html_size_threshold_bytes)
+                :(Documenter.HTML())
+            else
+                :(Documenter.HTML(;size_threshold=$html_size_threshold_bytes))
+            end
+            html = documenter_version < v"0.21" ? QuoteNode(:html) : docs_exp
 
             fixkwarg = argument -> begin
                 if Meta.isexpr(argument, :kw)
